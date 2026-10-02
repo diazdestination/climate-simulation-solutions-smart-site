@@ -1,0 +1,3 @@
+# Preserve reviewed artifact digests on Windows checkouts as well as Linux CI.
+adapter.mjs text eol=lf
+adapter.d.mts text eol=lf

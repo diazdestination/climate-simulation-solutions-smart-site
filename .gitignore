@@ -47,3 +47,10 @@ next-env.d.ts
 /home-mobile.png
 /home-mobile-final.png
 /booking-mobile.png
+
+# Private delivery journal and local synthetic QA artifacts.
+/.local/
+/.qa/
+*.sqlite
+*.sqlite-wal
+*.sqlite-shm

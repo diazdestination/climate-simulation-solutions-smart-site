@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { RequestForm } from "@/components/request-form";
+import { websiteRequestsConfigured } from "@/lib/growthos";
 export const metadata: Metadata = { title: "Book Service" };
 export const dynamic = "force-dynamic";
 export default async function BookService({
@@ -12,9 +13,7 @@ export default async function BookService({
     requestedIntent === "estimate" || requestedIntent === "maintenance"
       ? requestedIntent
       : "booking";
-  const enabled = Boolean(
-    process.env.GROWTHOS_LEAD_WEBHOOK_URL && process.env.GROWTHOS_LEAD_WEBHOOK_TOKEN,
-  );
+  const enabled = websiteRequestsConfigured();
   return (
     <>
       <section className="inner-hero">

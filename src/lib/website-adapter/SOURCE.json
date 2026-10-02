@@ -1,0 +1,10 @@
+{
+  "contract": "growthos-website-adapter-v1",
+  "source": "MogulForge GrowthOS: examples/website-connection",
+  "license": "Private project code; no third-party redistribution claim",
+  "runtime": "Node.js >=22.13 with a persistent local volume",
+  "sha256": {
+    "adapter.mjs": "60bf49a1d9472a4769427fde09f3b4bbfbfb0ed65ca8da89c771ca15b983dfab",
+    "adapter.d.mts": "0b57c77d8e2371309684fbe6a9cc5b5d5001188e1cceea9ae437c532804c2fe4"
+  }
+}
