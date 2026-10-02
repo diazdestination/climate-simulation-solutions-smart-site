@@ -810,6 +810,62 @@ a:focus-visible {
   display: grid;
   gap: 20px;
 }
+.request-fields {
+  display: grid;
+  gap: 20px;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  min-width: 0;
+}
+.request-fields[hidden] {
+  display: none;
+}
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+.request-consent {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 6px 0;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: #d7e6e9;
+}
+.request-consent input {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  margin-top: 2px;
+  accent-color: var(--aqua);
+}
+.request-consent input:focus-visible {
+  outline: 2px solid var(--aqua);
+  outline-offset: 4px;
+}
+.request-reference span {
+  overflow-wrap: anywhere;
+}
+.request-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.request-separate {
+  display: grid;
+  gap: 16px;
+  border-top: 1px solid #3b5964;
+  padding-top: 20px;
+}
 .form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;

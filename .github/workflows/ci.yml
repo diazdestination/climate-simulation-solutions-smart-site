@@ -1,0 +1,35 @@
+name: Private site validation
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: site-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      NEXT_TELEMETRY_DISABLED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci --ignore-scripts
+      - name: Exercise private delivery and request handlers
+        run: npm test
+      - name: Lint
+        run: npm run lint
+      - name: Typecheck
+        run: npx --no-install tsc --noEmit
+      - name: Build unconfigured private site
+        run: npm run build

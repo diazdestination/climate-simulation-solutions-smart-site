@@ -1,12 +1,11 @@
 import type { Metadata } from "next";
 import { RequestForm } from "@/components/request-form";
 import { site, phoneHref } from "@/lib/site";
+import { websiteRequestsConfigured } from "@/lib/growthos";
 export const metadata: Metadata = { title: "Emergency Service" };
 export const dynamic = "force-dynamic";
 export default function EmergencyService() {
-  const enabled = Boolean(
-    process.env.GROWTHOS_LEAD_WEBHOOK_URL && process.env.GROWTHOS_LEAD_WEBHOOK_TOKEN,
-  );
+  const enabled = websiteRequestsConfigured();
   return (
     <>
       <section className="inner-hero">

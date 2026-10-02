@@ -1,0 +1,10 @@
+import type { AdapterConfig, WebsiteIntake, WebsiteAdapter } from './website-adapter/adapter.mjs';
+type Environment = Record<string, string | undefined>;
+type Dependencies = { env?: Environment; limit?: () => void; readTimeoutMs?: number; adapterFactory?: (config: AdapterConfig) => WebsiteAdapter };
+export function loadWebsiteSettings(env?: Environment): { config: AdapterConfig; siteOrigin: string; operatorToken: string };
+export function websiteRequestsConfigured(env?: Environment): boolean;
+export function toWebsiteIntake(data: Record<string, unknown>): WebsiteIntake;
+export function createRequestLimiter(now?: () => number): () => void;
+export function handleServiceRequest(request: Request, dependencies?: Dependencies): Promise<Response>;
+export function handleRequestStatus(request: Request, dependencies?: Dependencies): Promise<Response>;
+export function handleWebsiteOperations(request: Request, dependencies?: Dependencies): Promise<Response>;
