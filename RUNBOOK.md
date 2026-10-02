@@ -37,6 +37,11 @@ Use the operator credential from the secret store in an authorized server/CLI pr
 
 ## Automatic retries and monitoring
 
+The private `growthos:health` and `growthos:backup` commands, restart template,
+attention thresholds and recovery sequence are described in [ops/RECOVERY.md](ops/RECOVERY.md).
+Health is read-only; backup uses SQLite's consistent backup API and requires Node
+>=22.16. No supervisor, monitor or backup schedule has been installed.
+
 Provision a supervised private process that runs `npm run growthos:worker` with the same server settings and `GROWTHOS_WORKER_ENABLED=true`. The script does not load `.env.local` itself: the host's service/secret configuration must provide its environment. It drains serially once per minute, exits safely on missing configuration/journal access, and logs counts only. No daemon or schedule is installed by this repository.
 
 Alternatively, an authorized scheduler can call the authenticated drain endpoint. Establish restart/alert handling and office review before accepting real traffic. Watch `needs-review`, `expired`, queued age, worker failures, free disk and `totalRecords/capacity`. The in-process 120 requests/minute backstop covers public submission and lookup; the chosen host must add a shared cross-instance edge limit and appropriate abuse controls. Application JSON body reads have a five-second deadline and byte cap; trusted ingress still needs connection/header timeouts and request-size limits.
