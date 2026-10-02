@@ -1,5 +1,17 @@
 # Decisions
 
+## 2026-10-01 — Worker health and consistent recovery
+
+- Keep supervision opt-in. Record heartbeat only after actual drain, emit counts
+  only, wake promptly for termination, close journal and signal failed/stopped state.
+- Keep health read-only. Include all journal partitions in capacity accounting;
+  do not expire payloads or drain while checking a worker.
+- Use the native SQLite backup API for committed WAL consistency, a new private
+  destination per run, integrity verification and a digest manifest. Recover keys
+  separately and require matching authoritative CRM receipts before replay.
+- Vendor reviewed GrowthOS operations helpers exactly and check their digest.
+  A host/monitor/backup schedule remains a separate deployment acceptance step.
+
 ## 2026-10-01 — Private GrowthOS website adapter
 
 - Replace the draft `smart_site.lead_requested` hook with the actual GrowthOS server-only v1 site intake/check routes. Saved means a validated durable CRM receipt and office task, never an appointment.

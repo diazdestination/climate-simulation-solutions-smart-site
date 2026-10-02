@@ -1,0 +1,29 @@
+# Review-only Linux template. This file does not provision or enable a service.
+# Resolve the approved host, checkout, node binary, account and private paths first.
+[Unit]
+Description=Climate website private GrowthOS delivery worker
+After=network-online.target
+Wants=network-online.target
+StartLimitIntervalSec=300
+StartLimitBurst=5
+
+[Service]
+Type=simple
+User=growthos-website
+Group=growthos-website
+WorkingDirectory=/opt/climate-simulation-solutions-smart-site
+EnvironmentFile=/etc/growthos/climate-site.env
+ExecStart=/usr/bin/node /opt/climate-simulation-solutions-smart-site/scripts/growthos-worker.mjs
+Restart=on-failure
+RestartSec=15
+TimeoutStopSec=90
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=strict
+ReadWritePaths=/var/lib/growthos-website
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+
+[Install]
+WantedBy=multi-user.target

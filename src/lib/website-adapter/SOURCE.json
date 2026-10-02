@@ -5,6 +5,8 @@
   "runtime": "Node.js >=22.13 with a persistent local volume",
   "sha256": {
     "adapter.mjs": "60bf49a1d9472a4769427fde09f3b4bbfbfb0ed65ca8da89c771ca15b983dfab",
-    "adapter.d.mts": "0b57c77d8e2371309684fbe6a9cc5b5d5001188e1cceea9ae437c532804c2fe4"
-  }
+    "adapter.d.mts": "0b57c77d8e2371309684fbe6a9cc5b5d5001188e1cceea9ae437c532804c2fe4",
+    "operations.mjs": "6d2b8b785fd093cdb2860a49e37b9fd83a03a8b98133e714b756be5adb6f5b97"
+  },
+  "backupRuntime": "Node.js >=22.16 for optional consistent backup command"
 }
