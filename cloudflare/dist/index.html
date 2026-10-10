@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#061f4d">
+  <meta name="description" content="Heating, cooling and refrigeration service for homes and businesses in Dawsonville and surrounding North Georgia communities.">
+  <title>Climate Simulation Solutions | Dawsonville HVAC</title>
+  <link rel="icon" type="image/png" href="assets/css-logo-transparent.png">
+  <link rel="apple-touch-icon" href="assets/css-logo-transparent.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <svg class="icon-defs" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+    <symbol id="icon-arrow-up-right" viewBox="0 0 24 24"><path d="M5 19 19 5M8 5h11v11"/></symbol>
+    <symbol id="icon-urgent" viewBox="0 0 32 32"><circle cx="16" cy="16" r="11"/><path d="M16 9.5v8"/><circle cx="16" cy="22" r="1" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="icon-repair" viewBox="0 0 32 32"><path d="M26 14a10 10 0 1 0-3 8"/><path d="M26 7v7h-7"/><path d="m12 16 3 3 5-6"/></symbol>
+    <symbol id="icon-install" viewBox="0 0 32 32"><rect x="5" y="6" width="22" height="20" rx="3"/><path d="M5 12h22M11 19h10m-5-5v10"/></symbol>
+    <symbol id="icon-commercial" viewBox="0 0 32 32"><path d="M6 27V8l10-3 10 3v19H6Z M16 5v22 M10 12h2m-2 5h2m-2 5h2m8-10h2m-2 5h2m-2 5h2"/></symbol>
+  </svg>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <a class="brand" href="#top" aria-label="Climate Simulation Solutions home">
+      <img class="brand-logo" src="assets/css-logo-transparent.png" width="1254" height="1254" alt="" decoding="async">
+      <span class="brand-copy"><strong>Climate Simulation</strong><span>Solutions</span></span>
+    </a>
+    <nav class="desktop-nav" aria-label="Primary navigation">
+      <a href="#services">Services</a>
+      <a href="#coverage">Service area</a>
+      <a href="#about">Why CSS</a>
+    </nav>
+    <a class="header-call" href="tel:+17068095076"><span>Call now</span><strong>(706) 809-5076</strong></a>
+  </header>
+
+  <main id="main">
+    <section class="hero" id="top">
+      <img class="hero-image" src="assets/climate-precision-hero.webp" width="1935" height="812" alt="Modern high-efficiency outdoor HVAC system beside a North Georgia home at dusk">
+      <div class="hero-shade"></div>
+      <div class="hero-content">
+        <div class="eyebrow"><span class="status-dot"></span><span id="hoursStatus">Checking Dawsonville hours…</span></div>
+        <h1>Your Indoor <em>Weather Experts</em></h1>
+        <p class="hero-lede">Heating, cooling and refrigeration help for North Georgia homes and businesses—from urgent repairs to long-term system care.</p>
+        <div class="hero-actions">
+          <a class="button button-primary" href="tel:+17068095076">Call (706) 809-5076 <svg class="arrow-icon" aria-hidden="true"><use href="#icon-arrow-up-right"/></svg></a>
+          <a class="button button-quiet" href="#service-guide">Find the right service</a>
+          <a class="button button-quiet" id="requestLink" href="#request" hidden>Request a callback</a>
+        </div>
+      </div>
+      <div class="hero-trust" aria-label="Service highlights">
+        <span>Residential</span><i></i><span>Commercial</span><i></i><span>Emergency hours</span>
+      </div>
+    </section>
+
+    <section class="service-guide" id="service-guide" aria-labelledby="guide-title">
+      <div class="section-intro">
+        <p class="kicker">Start here</p>
+        <h2 id="guide-title">What does your space need?</h2>
+        <p>Choose the closest match. We’ll point you toward the right conversation.</p>
+      </div>
+      <div class="need-grid" role="list">
+        <button class="need-card is-active" type="button" data-need="urgent" role="listitem" aria-pressed="true">
+          <span class="need-icon" aria-hidden="true"><svg><use href="#icon-urgent"/></svg></span>
+          <strong>I need help now</strong>
+          <span>No heat, no cooling, or an urgent system problem</span>
+        </button>
+        <button class="need-card" type="button" data-need="repair" role="listitem" aria-pressed="false">
+          <span class="need-icon" aria-hidden="true"><svg><use href="#icon-repair"/></svg></span>
+          <strong>My system isn’t performing</strong>
+          <span>Uneven comfort, unusual operation, or maintenance</span>
+        </button>
+        <button class="need-card" type="button" data-need="install" role="listitem" aria-pressed="false">
+          <span class="need-icon" aria-hidden="true"><svg><use href="#icon-install"/></svg></span>
+          <strong>I’m planning new equipment</strong>
+          <span>Replacement, new installation, or efficiency options</span>
+        </button>
+        <button class="need-card" type="button" data-need="commercial" role="listitem" aria-pressed="false">
+          <span class="need-icon" aria-hidden="true"><svg><use href="#icon-commercial"/></svg></span>
+          <strong>My business needs service</strong>
+          <span>Commercial HVAC maintenance or refrigeration</span>
+        </button>
+      </div>
+      <div class="guide-result" aria-live="polite">
+        <div><span id="resultLabel">Emergency repair</span><strong id="resultTitle">Let’s get a real person involved.</strong></div>
+        <p id="resultCopy">Call with your address and a short description of the problem. Emergency-hour requests are handled outside regular weekday hours; technician response depends on availability and location.</p>
+        <a id="resultAction" class="text-link" href="tel:+17068095076"><span class="action-label">Call for emergency help</span><svg class="arrow-icon" aria-hidden="true"><use href="#icon-arrow-up-right"/></svg></a>
+      </div>
+    </section>
+
+    <section class="request-section" id="request" aria-labelledby="request-title" hidden>
+      <div class="section-intro">
+        <p class="kicker">Request service</p>
+        <h2 id="request-title">Tell us what you need.</h2>
+        <p>This sends an inquiry to the team. It is not a confirmed appointment or dispatch.</p>
+      </div>
+      <form id="serviceRequest" class="request-form">
+        <label>Full name <input name="name" autocomplete="name" required minlength="2" maxlength="100"></label>
+        <label>Phone <input name="phone" type="tel" autocomplete="tel" maxlength="30" placeholder="(706) 555-0100"></label>
+        <label>Email <input name="email" type="email" autocomplete="email" maxlength="254"></label>
+        <label>Service ZIP <input name="postalCode" inputmode="numeric" autocomplete="postal-code" pattern="[0-9]{5}" maxlength="5"></label>
+        <label>Service needed <select name="serviceCode" required>
+          <option value="">Choose a service</option>
+          <option value="repair">Repair</option>
+          <option value="replacement">System replacement</option>
+          <option value="maintenance">Maintenance</option>
+          <option value="new-installation">New installation</option>
+          <option value="not-sure">Help choosing</option>
+        </select></label>
+        <label>Timing <select name="timing">
+          <option value="unsure">Not sure</option>
+          <option value="urgent">Urgent concern</option>
+          <option value="soon">Soon</option>
+          <option value="planning">Planning ahead</option>
+        </select></label>
+        <label class="request-wide">Brief description <textarea name="summary" rows="4" maxlength="2000" placeholder="Tell us what the system is doing and the best next step you’re looking for."></textarea></label>
+        <label class="request-consent request-wide"><input name="contactConsent" type="checkbox" required> <span id="contactDisclosure"></span></label>
+        <div class="request-wide request-review" id="requestReview" tabindex="-1" hidden>
+          <strong>Review your details</strong>
+          <p id="requestReviewDetails"></p>
+          <p>Check your contact details above. You can edit them before sending. This inquiry does not book a visit.</p>
+        </div>
+        <div class="request-wide request-actions">
+          <button class="button button-primary" type="submit">Review request</button>
+          <a href="tel:+17068095076">Prefer to talk? Call (706) 809-5076</a>
+        </div>
+        <p class="request-wide request-status" id="requestStatus" role="status" aria-live="polite"></p>
+      </form>
+    </section>
+
+    <section class="services" id="services" aria-labelledby="services-title">
+      <div class="services-heading">
+        <div>
+          <p class="kicker">What we handle</p>
+          <h2 id="services-title">One team for the system behind your space.</h2>
+        </div>
+        <p>Repair what’s wrong today. Plan what comes next. Keep the equipment you depend on working the way it should.</p>
+      </div>
+      <div class="services-list">
+        <article class="service-row">
+          <span class="service-number">01</span>
+          <h3>Emergency HVAC repair</h3>
+          <p>Help with urgent heating and cooling problems during emergency hours.</p>
+          <a href="tel:+17068095076" aria-label="Call about emergency HVAC repair">Call now <svg class="arrow-icon" aria-hidden="true"><use href="#icon-arrow-up-right"/></svg></a>
+        </article>
+        <article class="service-row">
+          <span class="service-number">02</span>
+          <h3>Residential installation</h3>
+          <p>System replacement and new installation conversations built around your property and comfort goals.</p>
+          <a href="tel:+17068095076" aria-label="Call about residential HVAC installation">Free estimate <svg class="arrow-icon" aria-hidden="true"><use href="#icon-arrow-up-right"/></svg></a>
+        </article>
+        <article class="service-row">
+          <span class="service-number">03</span>
+          <h3>HVAC maintenance</h3>
+          <p>Ongoing care and performance checks for residential comfort systems.</p>
+          <a href="tel:+17068095076" aria-label="Call about HVAC maintenance">Plan service <svg class="arrow-icon" aria-hidden="true"><use href="#icon-arrow-up-right"/></svg></a>
+        </article>
+        <article class="service-row">
+          <span class="service-number">04</span>
+          <h3>Commercial maintenance</h3>
+          <p>Maintenance conversations for the heating and cooling equipment supporting your business.</p>
+          <a href="tel:+17068095076" aria-label="Call about commercial HVAC maintenance">Discuss your facility <svg class="arrow-icon" aria-hidden="true"><use href="#icon-arrow-up-right"/></svg></a>
+        </article>
+        <article class="service-row">
+          <span class="service-number">05</span>
+          <h3>Refrigeration service</h3>
+          <p>Service inquiries for commercial refrigeration equipment and operating needs.</p>
+          <a href="tel:+17068095076" aria-label="Call about commercial refrigeration">Check service fit <svg class="arrow-icon" aria-hidden="true"><use href="#icon-arrow-up-right"/></svg></a>
+        </article>
+      </div>
+    </section>
+
+    <section class="decision-section" id="about" aria-labelledby="decision-title">
+      <div class="decision-visual">
+        <div class="orbit orbit-one"></div>
+        <div class="orbit orbit-two"></div>
+        <img class="brand-emblem" src="assets/css-logo-transparent.png" width="1254" height="1254" loading="lazy" alt="Climate Simulation Solutions logo: sun, snowflake, mountains and warm and cool airflow above CSS">
+        <span class="orbit-label label-repair" aria-hidden="true">Repair</span>
+        <span class="orbit-label label-install" aria-hidden="true">Install</span>
+        <span class="orbit-label label-maintain" aria-hidden="true">Maintain</span>
+      </div>
+      <div class="decision-copy">
+        <p class="kicker">A clearer next step</p>
+        <h2 id="decision-title">Good service starts before anyone turns a wrench.</h2>
+        <p>Tell us what the system is doing, where the property is, and what outcome you need. That first conversation helps identify whether the next step is repair, maintenance, installation, or a closer look at the equipment.</p>
+        <ul class="value-list">
+          <li><span>01</span><div><strong>Start with the situation</strong><p>Urgent issue, performance concern, planned replacement, or commercial need.</p></div></li>
+          <li><span>02</span><div><strong>Confirm location and fit</strong><p>Service availability depends on the address, equipment, timing, and type of work.</p></div></li>
+          <li><span>03</span><div><strong>Agree on the next step</strong><p>An inquiry begins the conversation; scheduling and dispatch are confirmed directly.</p></div></li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="coverage" id="coverage" aria-labelledby="coverage-title">
+      <div class="coverage-map" aria-hidden="true">
+        <span class="map-ring map-ring-1"></span>
+        <span class="map-ring map-ring-2"></span>
+        <span class="map-ring map-ring-3"></span>
+        <span class="map-origin"><i></i>Dawsonville</span>
+      </div>
+      <div class="coverage-copy">
+        <p class="kicker">North Georgia service area</p>
+        <h2 id="coverage-title">Based in Dawsonville. Building a wider reach.</h2>
+        <p>Climate Simulation Solutions serves Dawsonville and surrounding communities. Call with your service address so the team can confirm availability for your location and type of work.</p>
+        <div class="city-check">
+          <span>Nearby availability checks</span>
+          <div class="city-chips" aria-label="Communities where customers can call to check availability">
+            <span>Dahlonega</span><span>Cumming</span><span>Gainesville</span><span>Jasper</span>
+            <span>Ball Ground</span><span>Canton</span><span>Buford</span><span>Alpharetta</span>
+          </div>
+        </div>
+        <a class="button button-primary coverage-button" href="tel:+17068095076">Check your address <svg class="arrow-icon" aria-hidden="true"><use href="#icon-arrow-up-right"/></svg></a>
+      </div>
+    </section>
+
+    <section class="answers" id="answers" aria-labelledby="answers-title">
+      <div class="answers-heading">
+        <p class="kicker">Before you call</p>
+        <h2 id="answers-title">Straight answers to common questions.</h2>
+      </div>
+      <div class="faq-list">
+        <details open>
+          <summary>When are emergency hours?<span aria-hidden="true">＋</span></summary>
+          <p>Normal operating hours are Monday through Friday, 9:00am–5:00pm. Times and days outside that schedule are emergency hours. Call to describe the issue; technician response depends on availability and location.</p>
+        </details>
+        <details>
+          <summary>Do you offer free estimates?<span aria-hidden="true">＋</span></summary>
+          <p>Free estimates are available for HVAC installations. Diagnostic or repair pricing is confirmed separately based on the service request.</p>
+        </details>
+        <details>
+          <summary>Is financing available?<span aria-hidden="true">＋</span></summary>
+          <p>Financing options are available. Ask for the current provider, eligibility details, rates, and terms that apply to your project.</p>
+        </details>
+        <details>
+          <summary>Do you work with commercial properties?<span aria-hidden="true">＋</span></summary>
+          <p>Yes. Current services include commercial HVAC maintenance and refrigeration inquiries. Call with the facility and equipment details so the team can confirm fit.</p>
+        </details>
+        <details>
+          <summary>How do I know if you cover my address?<span aria-hidden="true">＋</span></summary>
+          <p>The business is based in Dawsonville and serves surrounding communities. Share the service address and the type of work needed to confirm availability before scheduling.</p>
+        </details>
+      </div>
+    </section>
+
+    <section class="closing-cta" aria-labelledby="closing-title">
+      <img class="closing-logo" src="assets/css-logo-transparent.png" width="1254" height="1254" loading="lazy" alt="Climate Simulation Solutions">
+      <p class="kicker">Your next step</p>
+      <h2 id="closing-title">Let’s get your space back to comfortable.</h2>
+      <p>Have the service address, a callback number, and a short description of the issue ready.</p>
+      <a class="button button-primary" href="tel:+17068095076">Call (706) 809-5076 <svg class="arrow-icon" aria-hidden="true"><use href="#icon-arrow-up-right"/></svg></a>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <a class="brand footer-brand" href="#top" aria-label="Climate Simulation Solutions home">
+      <img class="brand-logo" src="assets/css-logo-transparent.png" width="1254" height="1254" loading="lazy" alt="">
+      <span class="brand-copy"><strong>Climate Simulation</strong><span>Solutions</span></span>
+    </a>
+    <div class="footer-meta">
+      <p>Dawsonville, Georgia</p>
+      <p>Normal hours: Monday–Friday, 9am–5pm</p>
+      <a href="tel:+17068095076">(706) 809-5076</a>
+    </div>
+    <div class="footer-links">
+      <a href="#services">Services</a>
+      <a href="#coverage">Service area</a>
+      <a href="#answers">Questions</a>
+    </div>
+    <p class="copyright">© <span id="year"></span> Climate Simulation Solutions. All rights reserved.</p>
+  </footer>
+
+  <a class="mobile-call" href="tel:+17068095076"><span id="mobileCallLabel">Call Climate Simulation Solutions</span><strong>(706) 809-5076</strong></a>
+
+  <script src="site.js"></script>
+  <script type="module" src="request-form.js"></script>
+</body>
+</html>

@@ -1,5 +1,17 @@
 # Runbook
 
+## Cloudflare candidate (October 9, 2026)
+
+Use `cloudflare/README.md` for setup and release boundaries. From
+`cloudflare/`, run `npm ci`, `npm run check`, then `npm run dev` for a local
+preview. The Wrangler config disables capture, workers.dev and version URLs;
+no remote deploy or domain route is part of this candidate. Do not use the
+root Next.js `.env` settings for the Cloudflare Worker.
+
+The older Node/SQLite journal and worker below are separate draft work. They
+are not a Workers persistence solution. Reconcile that delivery design before
+enabling the Cloudflare inquiry form.
+
 ## Development
 
 Run `npm ci`, copy `.env.example` to `.env.local`, then run `npm run dev`. With blank env values, the site previews safely and forms remain disabled. Use `npm run lint` and `npm run build` before a PR.

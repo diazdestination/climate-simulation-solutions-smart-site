@@ -1,5 +1,17 @@
 # Climate Simulation Solutions Smart Site
 
+## Current website path (October 9, 2026)
+
+The [Cloudflare candidate](cloudflare/README.md) carries the exact current
+owner-private ChatGPT Site version 8 design and an inactive CSS-only GrowthOS
+adapter. It is the proposed GitHub source for a future Cloudflare deployment.
+The ChatGPT Site remains the live private demo. No Cloudflare route, domain,
+customer capture, provider, or public audience was activated by this branch.
+
+The Next.js application below is the earlier engineering candidate. Its
+Node/SQLite GrowthOS work remains in separate draft PRs and requires an
+explicit storage/runtime design before any Cloudflare migration.
+
 A Next.js App Router scaffold for Climate Simulation Solutions LLC, a local, family-owned HVAC and refrigeration business serving North Georgia. The design follows the [MogulForge discovery brief](https://docs.google.com/document/d/1h5EMSFodXCg0ldqBTyoyP6ajXY5P1lCR8AsFcPWVjJ4/edit): build trust quickly, then make **Book Service** effortless.
 
 ## Current scope
