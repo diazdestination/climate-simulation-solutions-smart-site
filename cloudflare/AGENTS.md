@@ -13,5 +13,3 @@ Do not infer customer-data migration, emergency dispatch, SMS, booking, payments
 analytics, or public-launch authority from a local build or private preview.
 Read the root AGENTS.md, C:\Forge\AGENTS.md, and the CSS owner intake before
 changing business copy or integration behavior.
-
-\n

@@ -62,5 +62,3 @@ a verified Site commit, record its SHA, review the diff, and preserve the
 approved logo bytes. Keep this GitHub repository as the review and eventual
 Cloudflare deployment source. Do not overwrite a newer Site revision with an
 older snapshot.
-
-\n

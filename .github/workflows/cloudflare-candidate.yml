@@ -29,5 +29,3 @@ jobs:
           cache-dependency-path: cloudflare/package-lock.json
       - run: npm ci
       - run: npm run check
-
-\n
