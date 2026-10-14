@@ -122,12 +122,13 @@ test("GET /api/lead never exposes credentials; voice endpoints stay private off 
   assert.equal(status.ready, true);
   assert.doesNotMatch(JSON.stringify(status), /ss_|eeeeeeee/);
   assert.deepEqual(status.forms["urgent-request"].channels, ["phone", "email"]);
-  const voice = await worker.fetch(new Request(`${PUBLIC_ORIGIN}/api/elevenlabs/token`), { ELEVENLABS_API_KEY: "test-key", ELEVENLABS_AGENT_ID: "agent_test", ELEVENLABS_VOICE_PUBLIC: "true" });
+  // Text chat uses the signed-URL session route; it stays private off loopback.
+  const voice = await worker.fetch(new Request(`${PUBLIC_ORIGIN}/api/elevenlabs/session`), { ELEVENLABS_API_KEY: "test-key", ELEVENLABS_AGENT_ID: "agent_test", ELEVENLABS_VOICE_PUBLIC: "true" });
   assert.equal(voice.status, 403);
   assert.equal((await worker.fetch(new Request(`${PUBLIC_ORIGIN}/api/weather/evidence`), {})).status, 404);
 });
 
-test("the Cloudflare entry (worker/index.js) routes through the abuse-guard hook to the core", async (t) => {
+test("the Cloudflare entry (worker/index.js) routes to the core router", async (t) => {
   const { calls, fetchImpl } = growthosStub();
   const original = globalThis.fetch;
   globalThis.fetch = fetchImpl;
@@ -138,4 +139,32 @@ test("the Cloudflare entry (worker/index.js) routes through the abuse-guard hook
   assert.equal(r.status, 201);
   assert.equal(calls[0].body.project.timing, "urgent");
   assert.deepEqual(await entry.scheduled({}, {}, {}), { skipped: "outbox_not_configured" });
+});
+
+test("the core router rate limits urgent requests per client and rejects a filled honeypot", async (t) => {
+  const { resetMemoryRateLimits } = await import("../core/worker/abuse.js");
+  resetMemoryRateLimits();
+  const { fetchImpl } = growthosStub();
+  const original = globalThis.fetch;
+  globalThis.fetch = fetchImpl;
+  t.after(() => (globalThis.fetch = original));
+  const entry = (await import("../worker/index.js")).default;
+  const send = (body) => entry.fetch(new Request(`${PUBLIC_ORIGIN}/api/lead`, { method: "POST", headers: { "content-type": "application/json", "cf-connecting-ip": "203.0.113.77" }, body: JSON.stringify(body) }), prodEnv(), {});
+  const trap = await send({ ...buildLeadRequest("urgent", customer({ issue: "no-heat" }), { requestId: requestId() }), website: "spam" });
+  assert.equal(trap.status, 400);
+  const statuses = [];
+  for (let i = 0; i < 5; i++) statuses.push((await send(buildLeadRequest("urgent", customer({ issue: "no-heat" }), { requestId: requestId() }))).status);
+  assert.equal(statuses.at(-1), 429, "the sixth request from one client in 10 minutes is limited");
+});
+
+test("CSS launches a text-only assistant: no voice token, status reports text mode", async () => {
+  const config = (await import("../site.config.mjs")).default;
+  assert.deepEqual(config.voice.modes, { text: true, voice: false });
+  const entry = (await import("../worker/index.js")).default;
+  const env = { ELEVENLABS_API_KEY: "test-key", ELEVENLABS_AGENT_ID: "agent_test" };
+  const status = await entry.fetch(new Request("http://localhost/api/elevenlabs/status"), env, {});
+  assert.deepEqual((await status.json()).modes, { text: true, voice: false });
+  const token = await entry.fetch(new Request("http://localhost/api/elevenlabs/token", { headers: { "cf-connecting-ip": "203.0.113.90" } }), env, {});
+  assert.equal(token.status, 404);
+  assert.equal((await token.json()).code, "voice_mode_disabled");
 });

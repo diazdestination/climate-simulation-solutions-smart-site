@@ -18,7 +18,49 @@ import {
   handleWeatherEvidenceRequest,
 } from "../modules/weather-hail.js";
 
+import {
+  checkRateLimit,
+  honeypotTripped,
+  publicProtectionSettings,
+  tooManyRequests,
+  turnstileConfigured,
+  verifyBotCheck,
+} from "./abuse.js";
+
 export const OUTBOX_OPERATIONS_PATH = "/api/internal/lead-outbox";
+export const PROTECTION_PATH = "/api/protection";
+
+// Lead forms: rate limit, honeypot and (when configured) Turnstile before any delivery path.
+export async function guardLeadSubmission(request, env, fetchImpl) {
+  if (request.method !== "POST") return null;
+  const limit = await checkRateLimit(request, env, "lead");
+  if (!limit.allowed) return tooManyRequests(limit.retryAfterSeconds);
+  let payload;
+  try {
+    payload = JSON.parse(await request.clone().text());
+  } catch {
+    return null; // The delivery handler reports invalid JSON with its own code.
+  }
+  if (honeypotTripped(payload)) return json({ ready: false, code: "request_rejected" }, 400);
+  const botCheck = await verifyBotCheck(request, env, payload?.botCheck, fetchImpl);
+  if (!botCheck.ok) return json({ ready: false, code: botCheck.code }, 403);
+  return null;
+}
+
+// Voice sessions spend provider minutes; public voice requires a configured bot check.
+export async function guardVoiceSession(request, env, config, fetchImpl) {
+  const pathname = new URL(request.url).pathname;
+  if (pathname === VOICE_PATHS.status) return null;
+  const limit = await checkRateLimit(request, env, pathname === VOICE_PATHS.files ? "files" : "voice");
+  if (!limit.allowed) return tooManyRequests(limit.retryAfterSeconds);
+  const publicVoice = config?.voice?.public === true && env.ELEVENLABS_VOICE_PUBLIC === "true";
+  if (publicVoice && pathname !== VOICE_PATHS.files) {
+    if (!turnstileConfigured(env)) return json({ ready: false, code: "bot_protection_not_configured" }, 503);
+    const botCheck = await verifyBotCheck(request, env, null, fetchImpl);
+    if (!botCheck.ok) return json({ ready: false, code: botCheck.code }, 403);
+  }
+  return null;
+}
 
 async function serveAsset(request, env, mode) {
   if (!env.ASSETS?.fetch) return new Response("Not found", { status: 404 });
@@ -57,34 +99,54 @@ export function createSmartSiteWorker(config, options = {}) {
   const weatherEnabled = config?.modules?.weatherHail?.enabled === true;
   const assetMode = config?.assets?.htmlFallback ?? "route-only";
 
-  async function fetchHandler(request, rawEnv) {
+  let lastOpportunisticDrain = 0;
+  // Hosts without cron still retry queued leads: at most once a minute per isolate, after the
+  // response is sent.
+  function scheduleOpportunisticDrain(env, ctx) {
+    if (typeof ctx?.waitUntil !== "function" || Date.now() - lastOpportunisticDrain < 60_000) return;
+    lastOpportunisticDrain = Date.now();
+    ctx.waitUntil(growthos.scheduledDrain(env, outboundFetch).catch(() => null));
+  }
+
+  async function fetchHandler(request, rawEnv, ctx) {
     const env = normalizeEnv(rawEnv);
     const pathname = new URL(request.url).pathname;
     if (pathname === OUTBOX_OPERATIONS_PATH)
       return growthos.handleOutboxOperations(request, env, outboundFetch);
+    if (pathname.startsWith("/api/")) scheduleOpportunisticDrain(env, ctx);
+    if (pathname === PROTECTION_PATH) return json({ ready: true, ...publicProtectionSettings(env) });
     if (leadPaths.has(pathname)) {
+      const guarded = await guardLeadSubmission(request, env, outboundFetch);
+      if (guarded) return guarded;
       // GrowthOS connected (env flag or config intent) => every form goes to GrowthOS
       // and the email bridge cannot run.
       if (growthOSOwnsLeadAutomations(env, config) || config?.emailBridge?.enabled !== true)
         return growthos.handleLead(request, env, outboundFetch);
       return handleEmailBridgeLead(request, env, config, outboundFetch);
     }
-    if (pathname.startsWith("/api/acquisition/"))
+    if (pathname.startsWith("/api/acquisition/")) {
+      if (request.method === "POST") {
+        const limit = await checkRateLimit(request, env, "measurement");
+        if (!limit.allowed) return tooManyRequests(limit.retryAfterSeconds);
+      }
       return growthos.handleAcquisition(request, env, outboundFetch);
+    }
     if (
       pathname === VOICE_PATHS.status ||
       pathname === VOICE_PATHS.session ||
       pathname === VOICE_PATHS.token
     ) {
       if (!voiceEnabled) return json({ ready: false, code: "voice_disabled" }, 404);
-      return handleVoiceSessionRequest(request, env, config, outboundFetch);
+      return (await guardVoiceSession(request, env, config, outboundFetch)) ?? handleVoiceSessionRequest(request, env, config, outboundFetch);
     }
     if (pathname === VOICE_PATHS.files) {
       if (!voiceEnabled) return json({ ready: false, code: "voice_disabled" }, 404);
-      return handleVoiceFileRequest(request, env, config, outboundFetch);
+      return (await guardVoiceSession(request, env, config, outboundFetch)) ?? handleVoiceFileRequest(request, env, config, outboundFetch);
     }
     if (pathname === WEATHER_EVIDENCE_PATH) {
       if (!weatherEnabled) return json({ ready: false, code: "module_disabled" }, 404);
+      const limit = await checkRateLimit(request, env, "weather");
+      if (!limit.allowed) return tooManyRequests(limit.retryAfterSeconds);
       return handleWeatherEvidenceRequest(request, outboundFetch);
     }
     // Unknown API routes never fall through to an HTML shell.

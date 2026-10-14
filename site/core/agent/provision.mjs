@@ -118,7 +118,8 @@ export function renderAgentPayload(config, templates, ctx = {}) {
         agent_output_audio_format: existingTts.agent_output_audio_format || "pcm_16000",
       },
       conversation: {
-        text_only: false,
+        // Text-only agents never open audio; voice can be switched on later via voice.modes.voice.
+        text_only: config?.voice?.modes?.voice === false,
         max_duration_seconds: limits.maxDurationSeconds ?? 900,
         client_events: ["audio", "interruption", "user_transcript", "agent_response", "client_tool_call"],
         file_input: {
@@ -214,7 +215,29 @@ function providerClient(apiKey, fetchImpl) {
   return { api, listAll };
 }
 
-export async function provisionAgent({ config, templates, apply = false, apiKey, envVoiceId, fetchImpl = fetch }) {
+// Knowledge documents are matched by name, so the name carries a short content hash: changed text
+// always creates (and attaches) a new document instead of silently reusing a stale one.
+async function contentAddressedName(doc) {
+  const bytes = new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(doc.text ?? "")));
+  const hash = [...bytes.slice(0, 4)].map((b) => b.toString(16).padStart(2, "0")).join("");
+  return `${doc.name} · ${hash}`;
+}
+
+function clientToolConfig(definition) {
+  return {
+    type: "client",
+    name: definition.name,
+    description: definition.description,
+    expects_response: definition.expects_response,
+    response_timeout_secs: 12,
+    interruption_mode: "allow",
+    pre_tool_speech: "auto",
+    execution_mode: definition.execution_mode ?? "immediate",
+    ...(definition.parameters ? { parameters: definition.parameters } : {}),
+  };
+}
+
+export async function provisionAgent({ config, templates, apply = false, apiKey, envVoiceId, agentId: configuredAgentId, fetchImpl = fetch }) {
   assertSiteConfig(config);
   if (!apply) {
     // Dry run: render with placeholder ids. No network access.
@@ -230,47 +253,34 @@ export async function provisionAgent({ config, templates, apply = false, apiKey,
     const existingDocs = await listAll("/convai/knowledge-base?page_size=100", "documents");
     const knowledge = [];
     for (const doc of preview.knowledgeDocuments) {
-      const found = existingDocs.find((d) => d.name === doc.name && d.type === "text");
-      if (found) knowledge.push({ id: found.id, name: found.name, action: "reused" });
+      const name = await contentAddressedName(doc);
+      const found = existingDocs.find((d) => d.name === name && d.type === "text");
+      if (found) knowledge.push({ id: found.id, name, action: "reused" });
       else {
-        const created = await api("/convai/knowledge-base/text", { method: "POST", body: JSON.stringify(doc) });
-        knowledge.push({ id: created.id, name: doc.name, action: "created" });
+        const created = await api("/convai/knowledge-base/text", { method: "POST", body: JSON.stringify({ ...doc, name }) });
+        knowledge.push({ id: created.id, name, action: "created" });
       }
     }
 
-    // TODO(starter): existing tools are reused by name, not updated. Changing a tool
-    // definition currently needs a manual update in ElevenLabs (kit/lessons-learned.md #10).
+    // Existing client tools are updated in place so definition changes reach the live agent.
     const existingTools = await listAll("/convai/tools?page_size=100", "tools");
     const tools = [];
     for (const def of preview.toolDefinitions) {
+      const { module: _module, ...definition } = def;
       const found = existingTools.find((t) => t.tool_config?.type === "client" && t.tool_config?.name === def.name);
       if (found) {
-        tools.push({ id: found.id, name: def.name, action: "reused" });
+        await api(`/convai/tools/${encodeURIComponent(found.id)}`, { method: "PATCH", body: JSON.stringify({ tool_config: clientToolConfig(definition) }) });
+        tools.push({ id: found.id, name: def.name, action: "updated" });
         continue;
       }
-      const { module: _module, ...definition } = def;
-      const created = await api("/convai/tools", {
-        method: "POST",
-        body: JSON.stringify({
-          tool_config: {
-            type: "client",
-            name: definition.name,
-            description: definition.description,
-            expects_response: definition.expects_response,
-            response_timeout_secs: 12,
-            interruption_mode: "allow",
-            pre_tool_speech: "auto",
-            execution_mode: definition.execution_mode ?? "immediate",
-            ...(definition.parameters ? { parameters: definition.parameters } : {}),
-          },
-        }),
-      });
+      const created = await api("/convai/tools", { method: "POST", body: JSON.stringify({ tool_config: clientToolConfig(definition) }) });
       tools.push({ id: created.id, name: def.name, action: "created" });
     }
 
     const agentName = preview.agentPayload.name;
     const agents = await listAll("/convai/agents?page_size=100", "agents");
-    const existingAgent = agents.find((a) => a.name === agentName);
+    // Prefer the agent the website is configured to use, then a name match.
+    const existingAgent = (configuredAgentId && agents.find((a) => a.agent_id === configuredAgentId)) || agents.find((a) => a.name === agentName);
     const existingConfig = existingAgent
       ? await api(`/convai/agents/${encodeURIComponent(existingAgent.agent_id)}`)
       : null;
@@ -338,6 +348,7 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.a
       apply: args.apply,
       apiKey: args.apply ? process.env.ELEVENLABS_API_KEY : undefined,
       envVoiceId: process.env.ELEVENLABS_VOICE_ID,
+      agentId: process.env.ELEVENLABS_AGENT_ID,
     });
     process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
   } catch (error) {

@@ -143,6 +143,14 @@ export function validateSiteConfig(config) {
     if (!isObject(v)) errors.push("voice must be an object");
     else {
       if (v.public !== undefined && typeof v.public !== "boolean") errors.push("voice.public must be boolean");
+      if (v.modes !== undefined) {
+        if (!isObject(v.modes)) errors.push("voice.modes must be an object");
+        else {
+          for (const k of ["text", "voice"])
+            if (v.modes[k] !== undefined && typeof v.modes[k] !== "boolean") errors.push(`voice.modes.${k} must be boolean`);
+          if (v.modes.text === false && v.modes.voice === false) errors.push("voice.modes must enable text or voice (or set voice.enabled false)");
+        }
+      }
       const tools = v.agent?.tools ?? [];
       if (!Array.isArray(tools)) errors.push("voice.agent.tools must be an array");
       else for (const name of tools) {

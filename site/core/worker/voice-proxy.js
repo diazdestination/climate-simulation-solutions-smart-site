@@ -15,6 +15,15 @@ import {
   BodyTooLargeError,
 } from "./http.js";
 
+/**
+ * Which assistant modes a site offers. Defaults keep both on (the original behavior); a site can
+ * launch text-only with config.voice.modes = { text: true, voice: false } and switch voice on later.
+ */
+export function assistantModes(siteConfig) {
+  const modes = siteConfig?.voice?.modes ?? {};
+  return { text: modes.text !== false, voice: modes.voice !== false };
+}
+
 export const VOICE_PATHS = Object.freeze({
   status: "/api/elevenlabs/status",
   session: "/api/elevenlabs/session",
@@ -56,14 +65,21 @@ export async function handleVoiceSessionRequest(
   const url = new URL(request.url);
   const ready = configured(env);
   const localOnly = !voiceIsPublic(env, siteConfig);
+  const modes = assistantModes(siteConfig);
   if (url.pathname === VOICE_PATHS.status)
     return json({
       ready,
       localOnly,
+      modes,
       code: ready ? "voice_preview_ready" : "voice_agent_not_configured",
     });
   if (url.pathname !== VOICE_PATHS.session && url.pathname !== VOICE_PATHS.token)
     return json({ ready: false, code: "not_found" }, 404);
+  // The WebRTC token is only for spoken sessions; text chat uses the signed URL.
+  if (url.pathname === VOICE_PATHS.token && !modes.voice)
+    return json({ ready: false, code: "voice_mode_disabled" }, 404);
+  if (url.pathname === VOICE_PATHS.session && !modes.text)
+    return json({ ready: false, code: "text_mode_disabled" }, 404);
   if (localOnly && !isLoopbackRequest(request))
     return json({ ready: false, code: "voice_preview_local_only" }, 403);
   if (!ready)

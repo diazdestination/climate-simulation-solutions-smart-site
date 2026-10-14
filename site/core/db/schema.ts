@@ -46,3 +46,14 @@ export const leadOutbox = sqliteTable(
     ),
   ],
 );
+
+// Short-lived abuse counters. Buckets hold a hashed client address, never a raw IP.
+export const requestRateLimits = sqliteTable(
+  "request_rate_limits",
+  {
+    bucket: text("bucket").primaryKey(),
+    hits: integer("hits").notNull().default(0),
+    expiresAt: integer("expires_at").notNull(),
+  },
+  (t) => [index("request_rate_limits_expiry_idx").on(t.expiresAt)],
+);
