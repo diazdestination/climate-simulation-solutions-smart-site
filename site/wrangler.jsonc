@@ -23,9 +23,9 @@
     {
       "binding": "DB",
       "database_name": "climate-simulation-solutions-site-outbox",
-      // Placeholder only. No account ID or real database ID belongs in git until Adam approves
-      // creating the D1 database.
-      "database_id": "00000000-0000-0000-0000-000000000000",
+      // Created by GEEKOM Codex 2026-10-14 under Adam's deploy approval. A database ID is not a
+      // credential; the account ID stays out of this file.
+      "database_id": "08f46781-1e6f-42cd-aeef-d1c503693e5e",
       "migrations_dir": "./core/db/migrations"
     }
   ],
@@ -48,6 +48,8 @@
   // No "routes" and no account_id: attaching csshvac.com (approved 2026-10-14) is done by Codex at launch.
   // Secrets (never in this file): GROWTHOS_SITE_ID, GROWTHOS_SITE_SECRET,
   // SITE_OUTBOX_ENCRYPTION_KEY, SITE_OUTBOX_DRAIN_SECRET, ELEVENLABS_API_KEY, ELEVENLABS_AGENT_ID,
-  // TURNSTILE_SITE_KEY, TURNSTILE_SECRET_KEY, and for the pre-GrowthOS email path RESEND_API_KEY,
+  // TURNSTILE_SITE_KEY, TURNSTILE_SECRET_KEY (both held in Cloudflare Secrets Store: bind them with
+  // a "secrets_store_secrets" entry per key, store_id + secret_name, at deploy; the core resolves
+  // the bindings), and for the pre-GrowthOS email path RESEND_API_KEY,
   // SITE_EMAIL_SENDER (a mogulforge.ai address) and SITE_EMAIL_INTERNAL_RECIPIENTS (owner addresses).
 }

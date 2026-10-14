@@ -1,7 +1,7 @@
 // createSmartSiteWorker(config) -> { fetch, scheduled }
 // Runtime-neutral: uses only Web Request/Response/fetch/crypto. Host adapters
 // (adapters/cloudflare, adapters/openai-sites) wire env bindings (DB, ASSETS) and cron.
-import { normalizeEnv } from "./env.js";
+import { normalizeEnv, resolveSecretBindings } from "./env.js";
 import { BodyTooLargeError, json, readBoundedText } from "./http.js";
 import {
   createGrowthOSConnector,
@@ -124,7 +124,7 @@ export function createSmartSiteWorker(config, options = {}) {
   }
 
   async function fetchHandler(request, rawEnv, ctx) {
-    const env = normalizeEnv(rawEnv);
+    const env = normalizeEnv(await resolveSecretBindings(rawEnv));
     const pathname = new URL(request.url).pathname;
     if (pathname === OUTBOX_OPERATIONS_PATH)
       return growthos.handleOutboxOperations(request, env, outboundFetch);
@@ -172,8 +172,8 @@ export function createSmartSiteWorker(config, options = {}) {
   }
 
   async function scheduled(_event, rawEnv, ctx) {
-    const work = growthos
-      .scheduledDrain(normalizeEnv(rawEnv), outboundFetch)
+    const work = resolveSecretBindings(rawEnv)
+      .then((env) => growthos.scheduledDrain(normalizeEnv(env), outboundFetch))
       .catch(() => ({ skipped: "drain_failed" }));
     if (ctx?.waitUntil) ctx.waitUntil(work);
     return work;

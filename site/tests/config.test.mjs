@@ -54,7 +54,7 @@ test("no owner direct contacts or invented claims in config", () => {
   assert.equal(config.site.maintenancePlans.pricing, null, "plan pricing not approved");
 });
 
-test("wrangler.jsonc: D1 DB binding, cron drain, /api/* worker-first, no workers.dev, no routes, no account ids", () => {
+test("wrangler.jsonc: D1 DB binding (real ID), cron drain, /api/* worker-first, no workers.dev, no routes, no account ids", () => {
   const raw = read("wrangler.jsonc");
   const w = JSON.parse(stripJsonc(raw));
   assert.equal(w.name, "climate-simulation-solutions-site");
@@ -64,7 +64,8 @@ test("wrangler.jsonc: D1 DB binding, cron drain, /api/* worker-first, no workers
   assert.deepEqual(w.assets.run_worker_first, ["/api/*"]);
   assert.equal(w.assets.directory, "./dist");
   assert.equal(w.d1_databases[0].binding, "DB");
-  assert.equal(w.d1_databases[0].database_id, "00000000-0000-0000-0000-000000000000");
+  assert.equal(w.d1_databases[0].database_id, "08f46781-1e6f-42cd-aeef-d1c503693e5e", "D1 created by GEEKOM 2026-10-14");
+  for (const s of w.secrets_store_secrets ?? []) assert.ok(s.binding && s.store_id && s.secret_name, "Secrets Store bindings name a store and secret, never a value");
   assert.deepEqual(w.triggers.crons, ["*/5 * * * *"]);
   assert.equal(w.routes, undefined);
   assert.equal(w.route, undefined);

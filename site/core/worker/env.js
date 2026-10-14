@@ -17,6 +17,51 @@ export const DEFAULT_ENV_ALIASES = Object.freeze({
 
 const NORMALIZED = Symbol.for("smart-site-starter.normalized-env");
 
+// Values that may arrive as Cloudflare Secrets Store bindings ({ get(): Promise<string> })
+// instead of plain Worker secrets. Only these names are resolved, so KV/D1/assets bindings
+// with their own get() are never touched.
+export const SECRET_STORE_NAMES = Object.freeze([
+  "TURNSTILE_SITE_KEY",
+  "TURNSTILE_SECRET_KEY",
+  "RESEND_API_KEY",
+  "GROWTHOS_SITE_SECRET",
+  "SITE_OUTBOX_ENCRYPTION_KEY",
+  "SITE_OUTBOX_DRAIN_SECRET",
+  "SITE_RATE_LIMIT_SALT",
+  "ELEVENLABS_API_KEY",
+]);
+const SECRET_TTL_MS = 5 * 60_000;
+const secretCache = new WeakMap();
+
+async function readSecretBinding(binding, now) {
+  const hit = secretCache.get(binding);
+  if (hit && now - hit.at < SECRET_TTL_MS) return hit.value;
+  const value = String((await binding.get()) ?? "");
+  secretCache.set(binding, { value, at: now });
+  return value;
+}
+
+/**
+ * Replaces Secrets Store bindings for the names above with their string values (cached per
+ * isolate for five minutes). A binding that cannot be read becomes "" so the feature fails
+ * closed exactly as if the secret were unset. Plain string secrets pass through unchanged.
+ */
+export async function resolveSecretBindings(env = {}, now = Date.now()) {
+  const pending = SECRET_STORE_NAMES.filter((name) => typeof env?.[name]?.get === "function");
+  if (!pending.length) return env;
+  const out = { ...env };
+  await Promise.all(
+    pending.map(async (name) => {
+      try {
+        out[name] = await readSecretBinding(env[name], now);
+      } catch {
+        out[name] = "";
+      }
+    }),
+  );
+  return out;
+}
+
 /**
  * Returns a shallow copy of env with canonical names filled from the first defined alias.
  * Bindings (DB, ASSETS, ...) are carried over by reference. Idempotent.
