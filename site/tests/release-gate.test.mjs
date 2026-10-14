@@ -47,20 +47,20 @@ test("public config exposes no approver notes, gates or [CONFIRM] markers", () =
   assert.doesNotMatch(text, /CONFIRM|approvedBy|releaseGates|BUSINESS-PROOF/);
 });
 
-test("release gate: NOT publishable while the domain and other gates are unconfirmed; hours no longer block", async () => {
+test("release gate: only the privacy attorney review still blocks (hours, consent, domain approved)", async () => {
   const result = await evaluateRelease({ config, env: {} });
   assert.equal(result.publishable, false);
   assert.equal(result.allowed, false);
-  assert.ok(!result.items.some((i) => i.path === "hours.summary.value"));
-  assert.ok(!result.items.some((i) => i.path === "site.releaseGates.hours"));
-  assert.ok(result.items.some((i) => i.path === "site.releaseGates.production-origin"));
+  assert.deepEqual(result.items.map((i) => i.path), ["site.releaseGates.privacy-policy"]);
+  assert.equal(config.site.origin, "https://csshvac.com");
+  for (const form of Object.values(config.growthos.forms)) assert.match(form.policyVersion, /^css-[a-z-]+-v1$/);
 });
 
-test("release gate CLI --strict exits 1 without the flag and names the domain gate", () => {
+test("release gate CLI --strict exits 1 without the flag and names the privacy gate", () => {
   const r = gateCli({});
   assert.equal(r.status, 1, r.stderr);
   assert.match(r.stderr, /NOT PUBLISHABLE/);
-  assert.match(r.stderr, /Production domain not chosen yet/);
+  assert.match(r.stderr, /attorney review/);
   assert.match(r.stderr, /Refusing to publish/);
 });
 

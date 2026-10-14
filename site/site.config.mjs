@@ -67,7 +67,7 @@ export default {
     // Phone + email only. No SMS until compliant SMS consent wording exists.
     forms: {
       "urgent-request": {
-        policyVersion: "css-urgent-request-draft-2026-10-14",
+        policyVersion: "css-urgent-request-v1",
         channels: ["phone", "email"],
         consentText:
           "By sending this urgent request, I agree that Climate Simulation Solutions may call me, or email me if I gave an email address, about this request. Sending it does not dispatch a technician or confirm an arrival time. This website does not send text messages.",
@@ -76,7 +76,7 @@ export default {
         requirePostalCode: true,
       },
       "service-request": {
-        policyVersion: "css-service-request-draft-2026-10-14",
+        policyVersion: "css-service-request-v1",
         channels: ["phone", "email"],
         consentText:
           "By sending this request, I agree that Climate Simulation Solutions may call me, or email me if I gave an email address, about this request. Preferred times are a request only; the office confirms any appointment. This website does not send text messages.",
@@ -84,7 +84,7 @@ export default {
         requirePostalCode: true,
       },
       "maintenance-plan": {
-        policyVersion: "css-maintenance-plan-draft-2026-10-14",
+        policyVersion: "css-maintenance-plan-v1",
         channels: ["phone", "email"],
         consentText:
           "By sending this request, I agree that Climate Simulation Solutions may call me, or email me if I gave an email address, about a maintenance plan. This is not an enrollment or a charge; the office explains plan details and pricing directly. This website does not send text messages.",
@@ -93,7 +93,7 @@ export default {
         requirePostalCode: true,
       },
       "estimate-question": {
-        policyVersion: "css-estimate-question-draft-2026-10-14",
+        policyVersion: "css-estimate-question-v1",
         channels: ["phone", "email"],
         consentText:
           "By sending this question, I agree that Climate Simulation Solutions may call me, or email me if I gave an email address, about my estimate. This does not accept, decline or change an estimate. This website does not send text messages.",
@@ -155,7 +155,9 @@ export default {
   site: {
     // Production domain comes from SITE_PUBLIC_ORIGIN at build time (e.g. https://www.example.com).
     // csshvacga.com is CSS's OLD domain (registered elsewhere, not securable); nothing depends on it.
-    origin: globalThis.process?.env?.SITE_PUBLIC_ORIGIN?.trim() || null,
+    // Approved 2026-10-14: csshvac.com (climatesimulationsolutions.com 301-redirects to it).
+    // SITE_PUBLIC_ORIGIN can override for previews.
+    origin: globalThis.process?.env?.SITE_PUBLIC_ORIGIN?.trim() || "https://csshvac.com",
     location: { city: "Dawsonville", state: "GA" },
     timezone: "America/New_York",
     // Structured weekday schedule used for the live "open now" badge. Stays null until
@@ -171,9 +173,9 @@ export default {
     // Release gates that are not single facts. status "approved" requires approvedBy/approvedOn.
     releaseGates: [
       { id: "hours", status: "approved", approvedBy: "CSS owners via Adam (Claude chat, 2026-10-14)", approvedOn: "2026-10-14", note: "Mon–Fri 7 a.m.–5 p.m. confirmed; older 9–5 superseded." },
-      { id: "consent-text", status: "unconfirmed", note: "[CONFIRM] Draft consent wording for all four forms needs owner/Adam approval (policyVersion *-draft-2026-10-14)." },
+      { id: "consent-text", status: "approved", approvedBy: "Adam (Claude chat, 2026-10-14)", approvedOn: "2026-10-14", note: "Consent wording for all four forms approved as drafted (policy versions css-*-v1)." },
       { id: "privacy-policy", status: "unconfirmed", note: "[CONFIRM] Privacy policy is a draft pending attorney review." },
-      { id: "production-origin", status: globalThis.process?.env?.SITE_PUBLIC_ORIGIN ? "approved" : "unconfirmed", approvedBy: "Domain chosen by Adam; set via SITE_PUBLIC_ORIGIN", approvedOn: "2026-10-14", note: "[CONFIRM] Production domain not chosen yet. csshvacga.com is the old domain and is not available; Codex buys the approved domain, then the build sets SITE_PUBLIC_ORIGIN." },
+      { id: "production-origin", status: "approved", approvedBy: "Adam (Claude chat, 2026-10-14)", approvedOn: "2026-10-14", note: "csshvac.com approved (purchase via Cloudflare by Codex); climatesimulationsolutions.com redirects to it. csshvacga.com is the old, unavailable domain." },
     ],
   },
 };
