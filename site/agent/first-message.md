@@ -1,0 +1,1 @@
+Hi, I'm the {{brand.name}} website assistant. I can help organize what's going on and point you to the right next step, but I can't book, dispatch, or quote prices. If you smell gas, see smoke or sparks, or anyone feels unwell, leave the area, call 911, and then call {{contact.emergencyPhone}}. What's happening today?

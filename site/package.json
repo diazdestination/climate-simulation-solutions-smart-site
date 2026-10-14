@@ -1,0 +1,8 @@
+{
+  "name": "climate-simulation-solutions-site",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test"
+  }
+}

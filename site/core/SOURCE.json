@@ -1,0 +1,29 @@
+{
+  "starter": "smart-site-starter",
+  "starterCommit": "5719cfc4aaaf237dea8a5cef3db361c2a84ec4af",
+  "starterDirty": false,
+  "adapter": "cloudflare",
+  "files": {
+    "agent/provision.mjs": "ceffd5a028ac20c79abcf618c66c71f1b98fe48034b081338c845e203638acff",
+    "agent/tool-registry.mjs": "1ff0df488476797851742975538cda9fad40d41fb5cadd354c32525cc1f6fc7a",
+    "config/growthos-profiles.mjs": "3344daa5b437a74679a17e0fda1ffd621a48cfbd5671718b47ef73a5bb195069",
+    "config/schema.mjs": "a0c9cd58bc6f62963a6d3d1129184c925f6c6ea83c237281ddaaf4227eaa6482",
+    "db/local-outbox-store.mjs": "a21c45f8d26b879654713f584faa317c7183dd50cc8ddba562b179ff3eeea118",
+    "db/migrations/0000_lead_delivery_outbox.sql": "5ed8ffaadb515ae7fd16b35edb0581be07c666065b1f93b2fd3885eb03e1671c",
+    "db/migrations/meta/0000_snapshot.json": "8f6b5f05b61a409efac1f66a6dbe2973d812c3e0ef01f0be44a812d563f64e6c",
+    "db/migrations/meta/_journal.json": "b23a17fbe4466b419ce0a38c83793dc0979212bd5fdac5aa125689a04a9887de",
+    "db/schema.ts": "c4b4161dc3dbd8b5b08e3dcbdbce23f06c5ebf05ff88a1d4278232d06ba0ca33",
+    "modules/weather-hail.js": "9110baecc88c51fd953d4245c1e0303f4350f791b9e514de1a90926afc7fa70b",
+    "ops/check-outbox-health.mjs": "cb0d21a582ee74d604f85fbeda0d7c6c2bed01fdbce7adeeb7f7d51c4a0bb28d",
+    "worker/email-bridge.js": "998686b364e4bb12bb3db77c3930539ea6f9c13f1efa31be275e6d549a12f6fc",
+    "worker/env.js": "c5544c1dc26fa007b2110524a50e00cead5955f834285bea72af8a30c16a5285",
+    "worker/growthos-connector.js": "3d258f156308f50af87384da98a00f5d46bdc9f1a7d59764c02af6f31e3fe84f",
+    "worker/http.js": "71629b5a76de4f406fb1014c88f33f6cb75c271a33715671b28cf4e6c025840e",
+    "worker/lead-outbox.js": "c703d41ec6cc82091afabd50661be0754e99c37f42576c3c1e5a1911fb291c8f",
+    "worker/router.js": "34b9f73d40af89e8811d2b3a072bc8ec862209364fa2472be1455f0d8701e8ea",
+    "worker/voice-proxy.js": "94c0fc7b24931d47e269f84dcb0ce99e67b93ac840f7fd9ab6b4373e6a4312a1",
+    "adapters/cloudflare/worker-entry.template.js": "f2991c401e0bce99fd225071c7c830c3fc0dad145266f9fcb28611ab9b938e94",
+    "adapters/cloudflare/wrangler.template.jsonc": "fd6a3bd5b3d7da5f97533dc1652ee69ee536d756d00d871ae588adc4ce924a34",
+    ".gitattributes": "51cf8a1e09fe10e4c4e2d118763cbbbcdb6ec7f668f26a9cd762cdd741270ab6"
+  }
+}
