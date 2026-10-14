@@ -1,6 +1,6 @@
 {
   "starter": "smart-site-starter",
-  "starterCommit": "8a915ccdeb8f3bd2f4583dad3a3ca91c324d00b5",
+  "starterCommit": "bb285e7d6ac25556f9a88d270c0cc99556d143d4",
   "starterDirty": false,
   "adapter": "cloudflare",
   "files": {
@@ -19,11 +19,11 @@
     "ops/check-outbox-health.mjs": "cb0d21a582ee74d604f85fbeda0d7c6c2bed01fdbce7adeeb7f7d51c4a0bb28d",
     "worker/abuse.js": "3893cbc23b7ef1c79964f7e337c4fe96508f72e1e1f9b0116b4f0ea995c5cdd8",
     "worker/email-bridge.js": "ae0fcd6f26de3ef3d44e69014e8d62cb26302c6ea0af58ead88f15d2296f937e",
-    "worker/env.js": "9d0b4baf80f28e013a206babab7c04020944156a48212b122720fb69b4c5f06f",
+    "worker/env.js": "9872c9820771e299a5a05668b2dff4109c0f512710f928f8068c1e05eef16bcf",
     "worker/growthos-connector.js": "bc37bda779c918989b54ef140a445732ce50d2e3dde9b0d3f3ced70f41e96820",
     "worker/http.js": "71629b5a76de4f406fb1014c88f33f6cb75c271a33715671b28cf4e6c025840e",
     "worker/lead-outbox.js": "c703d41ec6cc82091afabd50661be0754e99c37f42576c3c1e5a1911fb291c8f",
-    "worker/router.js": "4af67d55036e0c4a19420b297c22573d2e7f7ec1ef9474c35dd3e49da4b82979",
+    "worker/router.js": "0850477e41d899ee30640202ca100e54ba3141ddd3f3ee17012aaa986057d8e4",
     "worker/voice-proxy.js": "647ea43da648a7cb7a71afeb36ed862ed9592d247aa0b1d349a92471f53fb091",
     "adapters/cloudflare/worker-entry.template.js": "f2991c401e0bce99fd225071c7c830c3fc0dad145266f9fcb28611ab9b938e94",
     "adapters/cloudflare/wrangler.template.jsonc": "fd6a3bd5b3d7da5f97533dc1652ee69ee536d756d00d871ae588adc4ce924a34",

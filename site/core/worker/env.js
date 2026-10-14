@@ -41,25 +41,44 @@ async function readSecretBinding(binding, now) {
   return value;
 }
 
+// Names whose Secrets Store binding exists but could not be read (or read empty). Enumerable
+// symbol, so normalizeEnv's spread carries it along.
+export const SECRET_BINDING_FAILURES = Symbol.for("smart-site-starter.secret-binding-failures");
+
 /**
  * Replaces Secrets Store bindings for the names above with their string values (cached per
- * isolate for five minutes). A binding that cannot be read becomes "" so the feature fails
- * closed exactly as if the secret were unset. Plain string secrets pass through unchanged.
+ * isolate for five minutes). A binding that cannot be read becomes "" AND is recorded in
+ * env[SECRET_BINDING_FAILURES]: "configured but unreadable" must never look like "not
+ * configured" where that would switch a protection off (see botProtectionUnavailable).
+ * Plain string secrets pass through unchanged.
  */
 export async function resolveSecretBindings(env = {}, now = Date.now()) {
   const pending = SECRET_STORE_NAMES.filter((name) => typeof env?.[name]?.get === "function");
   if (!pending.length) return env;
   const out = { ...env };
+  const failures = new Set();
   await Promise.all(
     pending.map(async (name) => {
       try {
         out[name] = await readSecretBinding(env[name], now);
+        if (!out[name]) failures.add(name);
       } catch {
         out[name] = "";
+        failures.add(name);
       }
     }),
   );
+  // Turnstile bound from a store means "protection intended": the pair must be complete.
+  if (pending.some((name) => name.startsWith("TURNSTILE_")))
+    for (const name of ["TURNSTILE_SITE_KEY", "TURNSTILE_SECRET_KEY"]) if (!out[name]) failures.add(name);
+  out[SECRET_BINDING_FAILURES] = failures;
   return out;
+}
+
+/** True when a Turnstile key is bound from a Secrets Store but could not be read: fail closed. */
+export function botProtectionUnavailable(env) {
+  const failures = env?.[SECRET_BINDING_FAILURES];
+  return Boolean(failures?.has("TURNSTILE_SITE_KEY") || failures?.has("TURNSTILE_SECRET_KEY"));
 }
 
 /**

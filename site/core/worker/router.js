@@ -1,7 +1,7 @@
 // createSmartSiteWorker(config) -> { fetch, scheduled }
 // Runtime-neutral: uses only Web Request/Response/fetch/crypto. Host adapters
 // (adapters/cloudflare, adapters/openai-sites) wire env bindings (DB, ASSETS) and cron.
-import { normalizeEnv, resolveSecretBindings } from "./env.js";
+import { botProtectionUnavailable, normalizeEnv, resolveSecretBindings } from "./env.js";
 import { BodyTooLargeError, json, readBoundedText } from "./http.js";
 import {
   createGrowthOSConnector,
@@ -40,6 +40,8 @@ export const LEAD_BODY_LIMIT_BYTES = 12_000;
  */
 export async function guardLeadSubmission(request, env, fetchImpl, maxBytes = LEAD_BODY_LIMIT_BYTES) {
   if (request.method !== "POST") return { request };
+  // A bound-but-unreadable Turnstile key must not silently switch the bot check off.
+  if (botProtectionUnavailable(env)) return json({ ready: false, code: "bot_protection_unavailable" }, 503);
   const limit = await checkRateLimit(request, env, "lead");
   if (!limit.allowed) return tooManyRequests(limit.retryAfterSeconds);
   let text;
@@ -66,6 +68,7 @@ export async function guardLeadSubmission(request, env, fetchImpl, maxBytes = LE
 export async function guardVoiceSession(request, env, config, fetchImpl) {
   const pathname = new URL(request.url).pathname;
   if (pathname === VOICE_PATHS.status) return null;
+  if (botProtectionUnavailable(env)) return json({ ready: false, code: "bot_protection_unavailable" }, 503);
   const limit = await checkRateLimit(request, env, pathname === VOICE_PATHS.files ? "files" : "voice");
   if (!limit.allowed) return tooManyRequests(limit.retryAfterSeconds);
   const publicVoice = config?.voice?.public === true && env.ELEVENLABS_VOICE_PUBLIC === "true";
