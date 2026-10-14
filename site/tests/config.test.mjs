@@ -72,7 +72,9 @@ test("wrangler.jsonc: D1 DB binding, cron drain, /api/* worker-first, no workers
   // Pre-GrowthOS launch: email to owners until Codex connects GrowthOS and sets this to "true".
   assert.equal(w.vars.SMART_SITE_GROWTHOS_ENABLED, "false");
   assert.equal(w.vars.SITE_EMAIL_ENABLED, "true");
-  for (const secret of ["SITE_EMAIL_SENDER", "SITE_EMAIL_INTERNAL_RECIPIENTS", "MICROSOFT_CLIENT_SECRET"]) assert.equal(w.vars[secret], undefined, secret);
+  assert.equal(w.vars.SITE_EMAIL_PROVIDER, "resend");
+  assert.equal(w.vars.SITE_EMAIL_SENDER_NAME, "MogulForge Lead Alerts");
+  for (const secret of ["SITE_EMAIL_SENDER", "SITE_EMAIL_INTERNAL_RECIPIENTS", "RESEND_API_KEY", "MICROSOFT_CLIENT_SECRET"]) assert.equal(w.vars[secret], undefined, secret);
   assert.equal(w.vars.ELEVENLABS_VOICE_PUBLIC, "false");
   assert.equal(w.vars.SITE_ALLOW_UNCONFIRMED_FACTS, undefined);
   for (const secret of ["GROWTHOS_SITE_ID", "GROWTHOS_SITE_SECRET", "ELEVENLABS_API_KEY", "SITE_OUTBOX_ENCRYPTION_KEY"]) assert.equal(w.vars[secret], undefined, secret);

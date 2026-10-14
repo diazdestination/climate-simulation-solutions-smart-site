@@ -37,6 +37,9 @@
     // connection time; the email path then switches off automatically (no double alerts).
     "SMART_SITE_GROWTHOS_ENABLED": "false",
     "SITE_EMAIL_ENABLED": "true",
+    // Adam 2026-10-14: alerts go through Resend from the verified mogulforge.ai domain.
+    "SITE_EMAIL_PROVIDER": "resend",
+    "SITE_EMAIL_SENDER_NAME": "MogulForge Lead Alerts",
     "GROWTHOS_API_ORIGIN": "https://app.mogulforge.ai",
     "SITE_OUTBOX_ENABLED": "true",
     "ELEVENLABS_VOICE_PUBLIC": "false"
@@ -45,7 +48,6 @@
   // No "routes" and no account_id: attaching csshvac.com (approved 2026-10-14) is done by Codex at launch.
   // Secrets (never in this file): GROWTHOS_SITE_ID, GROWTHOS_SITE_SECRET,
   // SITE_OUTBOX_ENCRYPTION_KEY, SITE_OUTBOX_DRAIN_SECRET, ELEVENLABS_API_KEY, ELEVENLABS_AGENT_ID,
-  // TURNSTILE_SITE_KEY, TURNSTILE_SECRET_KEY, and for the pre-GrowthOS email path SITE_EMAIL_SENDER,
-  // SITE_EMAIL_INTERNAL_RECIPIENTS (owner addresses), MICROSOFT_TENANT_ID, MICROSOFT_CLIENT_ID,
-  // MICROSOFT_CLIENT_SECRET.
+  // TURNSTILE_SITE_KEY, TURNSTILE_SECRET_KEY, and for the pre-GrowthOS email path RESEND_API_KEY,
+  // SITE_EMAIL_SENDER (a mogulforge.ai address) and SITE_EMAIL_INTERNAL_RECIPIENTS (owner addresses).
 }

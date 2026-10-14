@@ -5,8 +5,10 @@
 - **Pre-GrowthOS email fallback (1c).** Until the CSS GrowthOS site record exists, web leads are
   emailed to the owners through the core email bridge (`emailBridge: { enabled: true,
   preGrowthOS: true }`, `wrangler.jsonc` `SMART_SITE_GROWTHOS_ENABLED: "false"`,
-  `SITE_EMAIL_ENABLED: "true"`). Owner addresses, the sender mailbox and the Microsoft Graph app
-  credentials are secrets set by Codex, never committed. When Codex connects GrowthOS it sets
+  `SITE_EMAIL_ENABLED: "true"`). Alerts go through **Resend** from the verified mogulforge.ai
+  domain with the display name "MogulForge Lead Alerts" (Adam, 2026-10-14, "A is perfect").
+  `RESEND_API_KEY`, the sender address and the owner addresses are secrets set by Codex, never
+  committed. When Codex connects GrowthOS it sets
   `SMART_SITE_GROWTHOS_ENABLED=true` with the site ID/secret; from then on every lead goes to
   GrowthOS and the bridge cannot send (no double alerts). If email fails the form shows an error
   and the phone number; nothing is claimed as received. Retried requests keep the same `RQ-`

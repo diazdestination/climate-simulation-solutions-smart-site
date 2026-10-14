@@ -1,7 +1,12 @@
-// OPTIONAL legacy email bridge (Microsoft Graph client-credentials). Generic port of
-// the Painless reference worker's email path. It exists only for sites that are NOT
-// connected to GrowthOS. Whenever growthOSOwnsLeadAutomations() is true it reports
-// not-ready and can never send, so a lead is never alerted or confirmed twice.
+// OPTIONAL email bridge for sites that are NOT (yet) connected to GrowthOS. Generic port of
+// the Painless reference worker's email path. Whenever growthOSOwnsLeadAutomations() is true
+// it reports not-ready and can never send, so a lead is never alerted or confirmed twice.
+//
+// Senders (SITE_EMAIL_PROVIDER):
+//   "resend"    - Resend API (RESEND_API_KEY); from "SITE_EMAIL_SENDER_NAME <SITE_EMAIL_SENDER>".
+//                 Each alert carries an Idempotency-Key from the browser requestId, so a retry
+//                 does not send a second email.
+//   "microsoft" - Microsoft Graph client credentials (the default, for existing configs).
 import { normalizeEnv } from "./env.js";
 import { growthOSOwnsLeadAutomations } from "./growthos-connector.js";
 import {
@@ -30,19 +35,27 @@ export function emailBridgeConfiguration(rawEnv, siteConfig) {
     .map((v) => v.trim().toLowerCase())
     .filter(isEmail);
   const sender = String(env.SITE_EMAIL_SENDER ?? "").trim().toLowerCase();
-  const present = Boolean(
-    env.MICROSOFT_TENANT_ID &&
-      env.MICROSOFT_CLIENT_ID &&
-      env.MICROSOFT_CLIENT_SECRET &&
-      isEmail(sender) &&
-      recipients.length,
-  );
+  const provider = String(env.SITE_EMAIL_PROVIDER ?? "microsoft").trim().toLowerCase();
+  const credentials =
+    provider === "resend"
+      ? /^re_[A-Za-z0-9_-]{8,}$/.test(String(env.RESEND_API_KEY ?? "").trim())
+      : provider === "microsoft"
+        ? Boolean(env.MICROSOFT_TENANT_ID && env.MICROSOFT_CLIENT_ID && env.MICROSOFT_CLIENT_SECRET)
+        : false;
+  const present = Boolean(credentials && isEmail(sender) && recipients.length);
   return {
     ready: siteConfig?.emailBridge?.enabled === true && env.SITE_EMAIL_ENABLED === "true" && present,
     customerConfirmationEnabled: env.SITE_EMAIL_CUSTOMER_CONFIRMATION === "true",
+    provider,
     sender,
+    senderName: displayName(env.SITE_EMAIL_SENDER_NAME),
     recipients,
   };
+}
+
+// Header-safe display name: quotes, angle brackets and line breaks are dropped.
+function displayName(value) {
+  return String(value ?? "").replace(/[\r\n"<>]/g, "").trim().slice(0, 80);
 }
 
 async function graphToken(env, fetchImpl) {
@@ -84,6 +97,42 @@ async function sendMail({ accessToken, sender, recipients, subject, content, rep
     },
   );
   if (!response.ok) throw new Error("microsoft_mail_send_failed");
+}
+
+async function sendResend({ apiKey, sender, senderName, recipients, subject, content, replyTo, idempotencyKey }, fetchImpl) {
+  const response = await fetchImpl("https://api.resend.com/emails", {
+    method: "POST",
+    redirect: "error",
+    ...fetchSignalOptions(8_000),
+    headers: {
+      authorization: `Bearer ${apiKey}`,
+      "content-type": "application/json",
+      ...(idempotencyKey ? { "idempotency-key": idempotencyKey } : {}),
+    },
+    body: JSON.stringify({
+      from: senderName ? `${senderName} <${sender}>` : sender,
+      to: recipients,
+      subject,
+      text: content,
+      ...(replyTo && isEmail(replyTo) ? { reply_to: replyTo } : {}),
+    }),
+  });
+  const result = response.ok ? await safeResponseJson(response) : null;
+  if (!result?.id) throw new Error("resend_send_failed");
+}
+
+/** One sender per request: Graph fetches its token once; Resend needs none. */
+function createMailer(env, configuration, fetchImpl) {
+  if (configuration.provider === "resend") {
+    const apiKey = String(env.RESEND_API_KEY).trim();
+    return (message) =>
+      sendResend({ apiKey, sender: configuration.sender, senderName: configuration.senderName, ...message }, fetchImpl);
+  }
+  let token;
+  return async ({ idempotencyKey: _unused, ...message }) => {
+    token ??= await graphToken(env, fetchImpl);
+    return sendMail({ accessToken: token, sender: configuration.sender, ...message }, fetchImpl);
+  };
 }
 
 const factValue = (fact) => (fact && typeof fact === "object" ? fact.display ?? fact.value : fact);
@@ -145,14 +194,13 @@ export async function handleEmailBridgeLead(request, rawEnv, siteConfig, fetchIm
   // Retries reuse the browser's requestId, so a duplicate alert carries the same reference.
   const requestId = String(payload?.requestId ?? "");
   const reference = `RQ-${(UUID.test(requestId) ? requestId : crypto.randomUUID()).replaceAll("-", "").slice(0, 8).toUpperCase()}`;
-  let accessToken;
+  const send = createMailer(env, configuration, fetchImpl);
+  const idempotencyKey = UUID.test(requestId) ? `smart-site-lead-${requestId}` : undefined;
   try {
-    accessToken = await graphToken(env, fetchImpl);
-    await sendMail(
+    await send(
       {
-        accessToken,
-        sender: configuration.sender,
         recipients: configuration.recipients,
+        idempotencyKey,
         subject: `New website request — ${reference}`,
         content: [
           `New ${brand} website request — ${reference}`,
@@ -172,7 +220,6 @@ export async function handleEmailBridgeLead(request, rawEnv, siteConfig, fetchIm
         ].join("\n"),
         replyTo: lead.email,
       },
-      fetchImpl,
     );
   } catch {
     return json({ ready: false, code: "email_delivery_unavailable" }, 502);
@@ -180,11 +227,10 @@ export async function handleEmailBridgeLead(request, rawEnv, siteConfig, fetchIm
   let confirmationSent = false;
   if (configuration.customerConfirmationEnabled && lead.email) {
     try {
-      await sendMail(
+      await send(
         {
-          accessToken,
-          sender: configuration.sender,
           recipients: [lead.email],
+          ...(idempotencyKey ? { idempotencyKey: `${idempotencyKey}-confirmation` } : {}),
           subject: `${brand} request received — ${reference}`,
           content: [
             `Hi ${lead.name.split(/\s+/)[0]},`,
@@ -194,7 +240,6 @@ export async function handleEmailBridgeLead(request, rawEnv, siteConfig, fetchIm
             "This confirmation is not an appointment, quote or arrival time.",
           ].join("\n"),
         },
-        fetchImpl,
       );
       confirmationSent = true;
     } catch {

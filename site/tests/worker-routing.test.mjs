@@ -157,6 +157,33 @@ test("pre-GrowthOS: without the GrowthOS flag, an urgent request is emailed to t
   assert.equal(calls.some((c) => c.url.includes("smart-sites")), false);
 });
 
+test("pre-GrowthOS via Resend (the configured sender): one alert to the owners, retry-safe key", async () => {
+  const calls = [];
+  const fetchImpl = async (url, init) => {
+    calls.push({ url: String(url), init });
+    return String(url) === "https://api.resend.com/emails" ? Response.json({ id: "email-1" }) : new Response(null, { status: 500 });
+  };
+  const worker = createSmartSiteWorker(config, { fetchImpl });
+  const id = requestId();
+  const resendEnv = {
+    SITE_EMAIL_ENABLED: "true",
+    SITE_EMAIL_PROVIDER: "resend",
+    SITE_EMAIL_SENDER_NAME: "MogulForge Lead Alerts",
+    SITE_EMAIL_SENDER: "alerts@example.test",
+    SITE_EMAIL_INTERNAL_RECIPIENTS: "owner-one@example.test,owner-two@example.test",
+    RESEND_API_KEY: "re_test_0123456789abcdef",
+  };
+  const r = await worker.fetch(postLead(buildLeadRequest("service", customer(), { requestId: id })), resendEnv);
+  assert.equal(r.status, 202);
+  assert.equal((await r.json()).status, "sent");
+  assert.equal(calls.length, 1);
+  const body = JSON.parse(calls[0].init.body);
+  assert.equal(body.from, "MogulForge Lead Alerts <alerts@example.test>");
+  assert.deepEqual(body.to, ["owner-one@example.test", "owner-two@example.test"]);
+  assert.equal(calls[0].init.headers["idempotency-key"], `smart-site-lead-${id}`);
+  assert.match(body.text, /Form: service-request/);
+});
+
 test("pre-GrowthOS: once SMART_SITE_GROWTHOS_ENABLED is on, leads go to GrowthOS and no email is sent", async () => {
   const { calls, fetchImpl } = graphStub();
   const worker = createSmartSiteWorker(config, { fetchImpl });
