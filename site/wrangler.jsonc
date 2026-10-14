@@ -38,7 +38,7 @@
     "ELEVENLABS_VOICE_PUBLIC": "false"
     // Never add SITE_ALLOW_UNCONFIRMED_FACTS here: it is a local-build override only.
   }
-  // No "routes" and no account_id: attaching csshvacga.com (or any domain) is Adam's launch decision.
+  // No "routes" and no account_id: attaching csshvac.com (approved 2026-10-14) is done by Codex at launch.
   // Secrets (never in this file): GROWTHOS_SITE_ID, GROWTHOS_SITE_SECRET,
   // SITE_OUTBOX_ENCRYPTION_KEY, SITE_OUTBOX_DRAIN_SECRET, ELEVENLABS_API_KEY, ELEVENLABS_AGENT_ID
 }

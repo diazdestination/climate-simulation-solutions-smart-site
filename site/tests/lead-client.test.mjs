@@ -11,7 +11,7 @@ test("a local-only 'prepared' state exists only on a loopback preview and never 
   assert.equal(publicHost.status, "error");
   assert.equal(publicHost.reference, undefined);
   assert.equal(isLoopbackPreview("127.0.0.1"), true);
-  assert.equal(isLoopbackPreview("csshvacga.com"), false);
+  assert.equal(isLoopbackPreview("csshvac.com"), false);
 });
 
 test("saved needs status saved + leadId + reference; queued/needs-review are honest pending states", () => {

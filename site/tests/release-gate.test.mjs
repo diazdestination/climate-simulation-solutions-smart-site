@@ -11,7 +11,7 @@ import { root } from "./helpers.mjs";
 const confirmedFixture = () => {
   const c = structuredClone(config);
   c.hours.summary = { value: "Monday–Friday, 8 a.m. to 4 p.m. (fixture)", approvedBy: "Fixture Owner", approvedOn: "2026-10-14" };
-  c.site.origin = "https://csshvacga.com";
+  c.site.origin = "https://csshvac.com";
   c.site.releaseGates = c.site.releaseGates.map((g) => ({ ...g, status: "approved", approvedBy: "Fixture Owner", approvedOn: "2026-10-14", note: "approved" }));
   return c;
 };
