@@ -116,9 +116,6 @@ export function EstimatePage() {
 }
 
 export function AssistantPage() {
-  useEffect(() => {
-    openAssistant();
-  }, []);
   return (
     <div className="page">
       <PageHero kicker="AI website assistant · private preview" title="Talk through your heating or cooling question." lede="The assistant helps organize what’s happening and points you to the right request. It can’t diagnose, quote prices, book or dispatch — and it doesn’t submit anything for you.">

@@ -30,5 +30,5 @@ export function NotFound() {
 
 export function App({ pathname }) {
   const route = routeFor(pathname);
-  return <Layout currentPath={route?.path}>{route ? PAGES[route.page](route) : <NotFound />}</Layout>;
+  return <Layout currentPath={route?.path} initialAssistantOpen={route?.page === "assistant"}>{route ? PAGES[route.page](route) : <NotFound />}</Layout>;
 }

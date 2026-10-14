@@ -41,10 +41,12 @@ export function HoursLine() {
 
 export function Layout({ children, currentPath, initialAssistantOpen = false }) {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [assistantOpen, setAssistantOpen] = useState(initialAssistantOpen);
+  const [assistantOpen, setAssistantOpen] = useState(false);
   const [year, setYear] = useState("");
   useEffect(() => setYear(String(new Date().getFullYear())), []);
   useEffect(() => {
+    // Opened after mount (never in prerendered HTML), e.g. on the /assistant/ route.
+    if (initialAssistantOpen) setAssistantOpen(true);
     const open = () => setAssistantOpen(true);
     window.addEventListener("css-open-assistant", open);
     return () => window.removeEventListener("css-open-assistant", open);
