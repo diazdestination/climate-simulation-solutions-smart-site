@@ -168,3 +168,18 @@ test("CSS launches a text-only assistant: no voice token, status reports text mo
   assert.equal(token.status, 404);
   assert.equal((await token.json()).code, "voice_mode_disabled");
 });
+
+test("an oversized chunked lead body is rejected with 413 before GrowthOS is contacted", async (t) => {
+  const { resetMemoryRateLimits } = await import("../core/worker/abuse.js");
+  resetMemoryRateLimits();
+  const { calls, fetchImpl } = growthosStub();
+  const original = globalThis.fetch;
+  globalThis.fetch = fetchImpl;
+  t.after(() => (globalThis.fetch = original));
+  const entry = (await import("../worker/index.js")).default;
+  const big = JSON.stringify({ ...buildLeadRequest("service", customer({ issue: "no-heat" }), { requestId: requestId() }), notes: "x".repeat(20_000) });
+  const body = new ReadableStream({ start(c) { c.enqueue(new TextEncoder().encode(big)); c.close(); } });
+  const response = await entry.fetch(new Request(`${PUBLIC_ORIGIN}/api/lead`, { method: "POST", body, duplex: "half", headers: { "cf-connecting-ip": "203.0.113.95" } }), prodEnv(), {});
+  assert.equal(response.status, 413);
+  assert.equal(calls.length, 0);
+});

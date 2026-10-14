@@ -2,7 +2,7 @@
 // Runtime-neutral: uses only Web Request/Response/fetch/crypto. Host adapters
 // (adapters/cloudflare, adapters/openai-sites) wire env bindings (DB, ASSETS) and cron.
 import { normalizeEnv } from "./env.js";
-import { json } from "./http.js";
+import { BodyTooLargeError, json, readBoundedText } from "./http.js";
 import {
   createGrowthOSConnector,
   growthOSOwnsLeadAutomations,
@@ -30,21 +30,36 @@ import {
 export const OUTBOX_OPERATIONS_PATH = "/api/internal/lead-outbox";
 export const PROTECTION_PATH = "/api/protection";
 
-// Lead forms: rate limit, honeypot and (when configured) Turnstile before any delivery path.
-export async function guardLeadSubmission(request, env, fetchImpl) {
-  if (request.method !== "POST") return null;
+export const LEAD_BODY_LIMIT_BYTES = 12_000;
+
+/**
+ * Lead forms: rate limit, then read the body ONCE within the size limit (413 when larger, chunked
+ * bodies included), then honeypot and (when configured) Turnstile. Returns a Response to stop, or
+ * { request } — a rebuilt request carrying the already-read bytes for the delivery handler, so the
+ * original stream is never cloned or buffered past the limit.
+ */
+export async function guardLeadSubmission(request, env, fetchImpl, maxBytes = LEAD_BODY_LIMIT_BYTES) {
+  if (request.method !== "POST") return { request };
   const limit = await checkRateLimit(request, env, "lead");
   if (!limit.allowed) return tooManyRequests(limit.retryAfterSeconds);
+  let text;
+  try {
+    text = await readBoundedText(request, maxBytes);
+  } catch (error) {
+    if (error instanceof BodyTooLargeError) return json({ ready: false, code: "request_too_large" }, 413);
+    return json({ ready: false, code: "invalid_request" }, 400);
+  }
+  const rebuilt = new Request(request.url, { method: request.method, headers: request.headers, body: text });
   let payload;
   try {
-    payload = JSON.parse(await request.clone().text());
+    payload = JSON.parse(text);
   } catch {
-    return null; // The delivery handler reports invalid JSON with its own code.
+    return { request: rebuilt }; // The delivery handler reports invalid JSON with its own code.
   }
   if (honeypotTripped(payload)) return json({ ready: false, code: "request_rejected" }, 400);
   const botCheck = await verifyBotCheck(request, env, payload?.botCheck, fetchImpl);
   if (!botCheck.ok) return json({ ready: false, code: botCheck.code }, 403);
-  return null;
+  return { request: rebuilt };
 }
 
 // Voice sessions spend provider minutes; public voice requires a configured bot check.
@@ -117,7 +132,8 @@ export function createSmartSiteWorker(config, options = {}) {
     if (pathname === PROTECTION_PATH) return json({ ready: true, ...publicProtectionSettings(env) });
     if (leadPaths.has(pathname)) {
       const guarded = await guardLeadSubmission(request, env, outboundFetch);
-      if (guarded) return guarded;
+      if (guarded instanceof Response) return guarded;
+      request = guarded.request;
       // GrowthOS connected (env flag or config intent) => every form goes to GrowthOS
       // and the email bridge cannot run.
       if (growthOSOwnsLeadAutomations(env, config) || config?.emailBridge?.enabled !== true)
