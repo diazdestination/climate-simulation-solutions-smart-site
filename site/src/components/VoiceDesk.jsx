@@ -19,6 +19,7 @@ import {
   FaXmark,
 } from "react-icons/fa6";
 import { trackAcquisition } from "../lib/acquisition.js";
+import { useBotCheck } from "./BotCheck.jsx";
 import { BRAND_NAME, PHONE_DISPLAY, PHONE_LINK } from "../lib/siteFacts.js";
 
 const ACCEPTED_FILE_TYPES = ["image/jpeg", "image/png", "image/webp", "application/pdf"];
@@ -48,6 +49,7 @@ function VoiceDeskContent({ onClose }) {
   const [localError, setLocalError] = useState("");
   const [transcript, setTranscript] = useState([]);
   const [mode, setMode] = useState("");
+  const botCheck = useBotCheck("assistant_session");
   const [textInput, setTextInput] = useState("");
   const [file, setFile] = useState(null);
   const [fileConsent, setFileConsent] = useState(false);
@@ -112,7 +114,7 @@ function VoiceDeskContent({ onClose }) {
     fetch("/api/elevenlabs/status", { headers: { accept: "application/json" }, signal: controller.signal })
       .then(async (r) => {
         const p = await r.json();
-        setReadiness({ state: p.ready ? "ready" : "gated", localOnly: p.localOnly !== false, code: p.code || "" });
+        setReadiness({ state: p.ready ? "ready" : "gated", localOnly: p.localOnly !== false, code: p.code || "", modes: { text: p.modes?.text !== false, voice: p.modes?.voice !== false } });
       })
       .catch((error) => error.name !== "AbortError" && setReadiness({ state: "error", localOnly: true }));
     const onKey = (event) => event.key === "Escape" && void close();
@@ -127,19 +129,27 @@ function VoiceDeskContent({ onClose }) {
   const isConnected = conversation.status === "connected";
   const isConnecting = conversation.status === "connecting";
   const isReady = readiness.state === "ready";
+  // Voice is offered only when the site enables it (CSS launches text-only; voice can be switched on later).
+  const voiceOffered = readiness.modes?.voice === true;
 
   const statusLabel = useMemo(() => {
     if (isConnected) return conversation.isSpeaking ? "Assistant is speaking" : mode === "text" ? "Text session connected" : "Listening";
     if (isConnecting) return "Connecting securely";
     if (readiness.state === "checking") return "Checking assistant availability";
-    return isReady ? "Assistant ready (private preview)" : "Assistant not connected on this site yet";
+    return isReady ? "Assistant ready" : "Assistant not available right now";
   }, [isConnected, isConnecting, conversation.isSpeaking, mode, readiness.state, isReady]);
 
   async function fetchCredential(path, key) {
-    const response = await fetch(path, { headers: { accept: "application/json" } });
-    const payload = await response.json();
-    if (!response.ok || !payload?.[key]) throw new Error(payload?.code || "session_unavailable");
-    return payload[key];
+    // Turnstile tokens are single-use: renew after every session request so a retry carries a
+    // fresh token. Start stays disabled until it arrives.
+    try {
+      const response = await fetch(path, { headers: { accept: "application/json", ...(botCheck.token ? { "x-bot-check": botCheck.token } : {}) } });
+      const payload = await response.json();
+      if (!response.ok || !payload?.[key]) throw new Error(payload?.code || "session_unavailable");
+      return payload[key];
+    } finally {
+      if (botCheck.required) botCheck.reset();
+    }
   }
 
   async function start(nextMode) {
@@ -243,8 +253,8 @@ function VoiceDeskContent({ onClose }) {
       <section className="voice-desk" role="dialog" aria-modal="true" aria-labelledby="voice-desk-title" aria-describedby="voice-desk-disclosure">
         <header className="voice-desk__header">
           <div>
-            <p className="kicker"><FaRobot aria-hidden="true" /> AI website assistant · private preview</p>
-            <h2 id="voice-desk-title">Talk through your heating or cooling problem.</h2>
+            <p className="kicker"><FaRobot aria-hidden="true" /> AI website assistant</p>
+            <h2 id="voice-desk-title">{voiceOffered ? "Talk through your heating or cooling problem." : "Chat about your heating or cooling problem."}</h2>
           </div>
           <button className="icon-button" type="button" onClick={() => void close()} aria-label="Close assistant"><FaXmark aria-hidden="true" /></button>
         </header>
@@ -257,7 +267,7 @@ function VoiceDeskContent({ onClose }) {
               can’t diagnose your system, quote prices, book appointments or send a technician, and it does not submit anything for you.
             </p>
             <p>
-              Your voice or text, and any file you choose to share, is processed by our AI service providers (ElevenLabs and the model providers it uses) to run the
+              {voiceOffered ? "Your voice or text" : "Your messages"}, and any file you choose to share, is processed by our AI service providers (ElevenLabs and the model providers it uses) to run the
               conversation. Audio is not recorded, and transcripts are set to be deleted after a short retention period. See our <a href="/privacy/" target="_blank" rel="noopener">Privacy Policy</a>.
             </p>
             <label className="consent-check">
@@ -291,18 +301,21 @@ function VoiceDeskContent({ onClose }) {
                 </span>
               </div>
               {!isReady && readiness.state !== "checking" && (
-                <p className="voice-gated">The assistant is a private preview and isn’t connected on this site yet. Please call {PHONE_DISPLAY} or use a request form.</p>
+                <p className="voice-gated">The assistant isn’t available right now. Please call {PHONE_DISPLAY} or use a request form.</p>
               )}
               <div className="voice-start-grid">
-                <button className="voice-mode-card" type="button" disabled={!acknowledged || !isReady || isConnecting || isConnected} onClick={() => void start("voice")}>
-                  <FaMicrophone aria-hidden="true" />
-                  <span><strong>Talk it through</strong><small>Voice starts only after you allow microphone access.</small></span>
-                </button>
-                <button className="voice-mode-card" type="button" disabled={!acknowledged || !isReady || isConnecting || isConnected} onClick={() => void start("text")}>
+                {voiceOffered && (
+                  <button className="voice-mode-card" type="button" disabled={!acknowledged || !isReady || isConnecting || isConnected || (botCheck.required && !botCheck.token)} onClick={() => void start("voice")}>
+                    <FaMicrophone aria-hidden="true" />
+                    <span><strong>Talk it through</strong><small>Voice starts only after you allow microphone access.</small></span>
+                  </button>
+                )}
+                <button className="voice-mode-card" type="button" disabled={!acknowledged || !isReady || isConnecting || isConnected || (botCheck.required && !botCheck.token)} onClick={() => void start("text")}>
                   <FaKeyboard aria-hidden="true" />
-                  <span><strong>Type instead</strong><small>Connect without using your microphone.</small></span>
+                  <span><strong>{voiceOffered ? "Type instead" : "Start a text chat"}</strong><small>{voiceOffered ? "Connect without using your microphone." : "Type your question; the assistant replies in writing."}</small></span>
                 </button>
               </div>
+              {botCheck.element}
               {transcript.length > 0 ? (
                 <div className="voice-transcript" aria-label="Conversation transcript" aria-live="polite">
                   {transcript.map((entry) => (

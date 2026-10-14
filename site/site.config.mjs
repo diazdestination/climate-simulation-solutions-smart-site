@@ -123,13 +123,16 @@ export default {
   sms: { compliantConsentApproved: false },
   emailBridge: { enabled: false },
 
-  // ---- Voice / text assistant (private preview) --------------------------------------
+  // ---- Website assistant -------------------------------------------------------------
+  // Owner decision 2026-10-14: CSS launches with a TEXT chat assistant. Spoken voice stays built in
+  // but off (modes.voice false) until CSS approves it; flip to true to demo or enable later.
   voice: {
     enabled: true,
     public: false,
+    modes: { text: true, voice: false },
     fileUploads: true,
     agent: {
-      name: "Climate Simulation Solutions Website Assistant (Preview)",
+      name: "Climate Simulation Solutions Website Assistant",
       language: "en",
       timezone: "America/New_York",
       llm: "gemini-2.5-flash",

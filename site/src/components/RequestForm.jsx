@@ -15,6 +15,7 @@ import {
   buildLeadRequest,
 } from "../lib/hvacRequest.js";
 import { PHONE_DISPLAY, PHONE_LINK, consentTextFor } from "../lib/siteFacts.js";
+import { HoneypotField, useBotCheck } from "./BotCheck.jsx";
 
 const FORM_IDS = { urgent: "urgent-request", service: "service-request", maintenance: "maintenance-plan", estimate: "estimate-question" };
 const SUBMIT_LABEL = { urgent: "Send urgent request", service: "Send service request", maintenance: "Send plan request", estimate: "Send my question" };
@@ -75,6 +76,8 @@ export function RequestForm({ kind, defaults = {}, heading, intro }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [result, setResult] = useState(null);
+  const [honeypot, setHoneypot] = useState("");
+  const botCheck = useBotCheck(`request_${kind}`);
   const started = useRef(false);
   const loopback = typeof window !== "undefined" && isLoopbackPreview();
 
@@ -105,13 +108,16 @@ export function RequestForm({ kind, defaults = {}, heading, intro }) {
     if (!form.consent) return setError(ERRORS.contact_consent_required);
     if (form.phone.replace(/\D/g, "").length < 10) return setError(ERRORS.phone_invalid);
     if (!/^\d{5}$/.test(form.zip)) return setError(ERRORS.zip_invalid);
+    if (botCheck.required && !botCheck.token) return setError("Please wait a moment while we confirm this request is from a person, then try again.");
     setBusy(true);
     setError("");
     const acquisition = form.analyticsConsent ? getAcquisitionContext() : null;
     const envelope = buildLeadRequest(kind, form, { requestId, analytics: acquisition });
-    const outcome = await submitLead(envelope);
+    // Abuse-check fields ride alongside the envelope; the server never forwards them to GrowthOS.
+    const outcome = await submitLead({ ...envelope, ...(botCheck.token ? { botCheck: botCheck.token } : {}), website: honeypot });
     setBusy(false);
     if (outcome.status === "error") {
+      botCheck.reset();
       setError(
         ERRORS[outcome.code] ??
           `We couldn’t confirm your request was received. Your details are still here — please try again (it will not create a duplicate) or call ${PHONE_DISPLAY}.`,
@@ -273,6 +279,8 @@ export function RequestForm({ kind, defaults = {}, heading, intro }) {
         <span>Optional: include how I found this website (campaign and referring site) so the office can understand which pages help. No cross-site tracking.</span>
       </label>
 
+      <HoneypotField value={honeypot} onChange={setHoneypot} />
+      {botCheck.element}
       <p className="delivery-notice">
         {ready === false && loopback
           ? "Local preview: the office’s request system is not connected here, so sending will not deliver anything."

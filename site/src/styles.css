@@ -247,3 +247,8 @@ h1 em { display: block; margin-top: .07em; color: var(--cyan); font-style: norma
   *, *::before, *::after { transition: none !important; animation: none !important; }
 }
 
+
+/* Honeypot: off-screen for people and assistive tech; bots that fill every input trip it. */
+.visually-hidden-field { position: absolute !important; left: -10000px !important; width: 1px; height: 1px; overflow: hidden; }
+.bot-check:empty { display: none; }
+.bot-check { margin: 10px 0; }

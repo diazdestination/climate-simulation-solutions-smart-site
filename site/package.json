@@ -4,7 +4,9 @@
   "private": true,
   "type": "module",
   "description": "Climate Simulation Solutions HVAC smart site: Vite + React front end on the smart-site-starter core (Cloudflare adapter).",
-  "engines": { "node": ">=22.5" },
+  "engines": {
+    "node": ">=22.5"
+  },
   "scripts": {
     "dev": "vite --host 127.0.0.1 --port 4391 --strictPort",
     "build": "node scripts/build.mjs",
@@ -13,7 +15,8 @@
     "check:config": "node scripts/check-config.mjs",
     "check:core": "node C:/Forge/workspace/smart-site-starter/scripts/sync-core.mjs --target . --check",
     "release:check": "node scripts/release-gate.mjs --strict",
-    "provision:dry-run": "node core/agent/provision.mjs --config site.config.mjs --templates agent --dry-run"
+    "provision:dry-run": "node core/agent/provision.mjs --config site.config.mjs --templates agent --dry-run",
+    "qa:bot-check": "node scripts/qa-bot-check-flow.mjs"
   },
   "dependencies": {
     "@elevenlabs/react": "1.12.1",
