@@ -1,5 +1,7 @@
-// Cloudflare Workers + static assets adapter for the smart-site starter.
-// Rendered by scripts/new-client.mjs into the client repo as wrangler.jsonc.
+// Climate Simulation Solutions site — Cloudflare Workers + static assets (smart-site-starter
+// cloudflare adapter, rendered by new-client.mjs). Worker name kept from the earlier CSS
+// candidate (cloudflare/wrangler.jsonc) so it replaces that worker rather than adding one.
+// Build first (npm run build -> ./dist). NEVER deploy while npm run release:check fails.
 // Safe defaults: no workers.dev, no preview URLs, NO routes (attaching a domain is a
 // launch decision for Adam), voice private, secrets only via `wrangler secret put`.
 {
@@ -21,6 +23,8 @@
     {
       "binding": "DB",
       "database_name": "climate-simulation-solutions-site-outbox",
+      // Placeholder only. No account ID or real database ID belongs in git until Adam approves
+      // creating the D1 database.
       "database_id": "00000000-0000-0000-0000-000000000000",
       "migrations_dir": "./core/db/migrations"
     }
@@ -32,7 +36,9 @@
     "GROWTHOS_API_ORIGIN": "https://app.mogulforge.ai",
     "SITE_OUTBOX_ENABLED": "true",
     "ELEVENLABS_VOICE_PUBLIC": "false"
+    // Never add SITE_ALLOW_UNCONFIRMED_FACTS here: it is a local-build override only.
   }
+  // No "routes" and no account_id: attaching csshvacga.com (or any domain) is Adam's launch decision.
   // Secrets (never in this file): GROWTHOS_SITE_ID, GROWTHOS_SITE_SECRET,
   // SITE_OUTBOX_ENCRYPTION_KEY, SITE_OUTBOX_DRAIN_SECRET, ELEVENLABS_API_KEY, ELEVENLABS_AGENT_ID
 }
