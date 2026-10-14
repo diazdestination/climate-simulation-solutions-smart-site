@@ -160,6 +160,8 @@ test("pre-GrowthOS: without the GrowthOS flag, an urgent request is emailed to t
 test("pre-GrowthOS via Resend (the configured sender): one alert to the owners, retry-safe key", async () => {
   const calls = [];
   const fetchImpl = async (url, init) => {
+    assert.equal(init.redirect, "manual", "workerd supports manual redirects; existing response checks reject 3xx");
+    new Request(url, init);
     calls.push({ url: String(url), init });
     return String(url) === "https://api.resend.com/emails" ? Response.json({ id: "email-1" }) : new Response(null, { status: 500 });
   };

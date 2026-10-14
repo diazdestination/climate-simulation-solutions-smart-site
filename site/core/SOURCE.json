@@ -1,6 +1,6 @@
 {
   "starter": "smart-site-starter",
-  "starterCommit": "bb285e7d6ac25556f9a88d270c0cc99556d143d4",
+  "starterCommit": "c805d8aa0023144176a9f5a4e331dc19f9e19885",
   "starterDirty": false,
   "adapter": "cloudflare",
   "files": {
@@ -18,7 +18,7 @@
     "modules/weather-hail.js": "9110baecc88c51fd953d4245c1e0303f4350f791b9e514de1a90926afc7fa70b",
     "ops/check-outbox-health.mjs": "cb0d21a582ee74d604f85fbeda0d7c6c2bed01fdbce7adeeb7f7d51c4a0bb28d",
     "worker/abuse.js": "3893cbc23b7ef1c79964f7e337c4fe96508f72e1e1f9b0116b4f0ea995c5cdd8",
-    "worker/email-bridge.js": "ae0fcd6f26de3ef3d44e69014e8d62cb26302c6ea0af58ead88f15d2296f937e",
+    "worker/email-bridge.js": "a0c576541d4ea2c40ea32ab76d1ef0f536f51704c92fc01621f9cc1aa16bc499",
     "worker/env.js": "9872c9820771e299a5a05668b2dff4109c0f512710f928f8068c1e05eef16bcf",
     "worker/growthos-connector.js": "bc37bda779c918989b54ef140a445732ce50d2e3dde9b0d3f3ced70f41e96820",
     "worker/http.js": "71629b5a76de4f406fb1014c88f33f6cb75c271a33715671b28cf4e6c025840e",

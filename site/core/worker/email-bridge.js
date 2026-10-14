@@ -102,7 +102,7 @@ async function sendMail({ accessToken, sender, recipients, subject, content, rep
 async function sendResend({ apiKey, sender, senderName, recipients, subject, content, replyTo, idempotencyKey }, fetchImpl) {
   const response = await fetchImpl("https://api.resend.com/emails", {
     method: "POST",
-    redirect: "error",
+    redirect: "manual",
     ...fetchSignalOptions(8_000),
     headers: {
       authorization: `Bearer ${apiKey}`,
