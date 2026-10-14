@@ -22,18 +22,24 @@ const gateCli = (env) =>
     env: { PATH: process.env.PATH, SystemRoot: process.env.SystemRoot, ...env },
   });
 
-test("hours conflict is recorded as [CONFIRM] in config, never guessed", () => {
-  assert.match(config.hours.summary.value, /^\[CONFIRM: .*7–5.*9–5/);
-  assert.equal(config.site.hoursSchedule, null);
+test("hours are confirmed as Mon–Fri 7 a.m.–5 p.m. (CSS owners via Adam, 2026-10-14)", () => {
+  assert.equal(config.hours.summary.value, "Monday–Friday, 7 a.m. to 5 p.m.");
+  assert.equal(config.hours.summary.approvedOn, "2026-10-14");
+  assert.deepEqual(config.site.hoursSchedule, { days: ["Mon", "Tue", "Wed", "Thu", "Fri"], open: "07:00", close: "17:00" });
+  assert.equal(config.site.releaseGates.find((g) => g.id === "hours").status, "approved");
 });
 
-test("the site renders the neutral fallback while hours are unconfirmed", () => {
-  assert.equal(HOURS_CONFIRMED, false);
-  assert.equal(HOURS_FALLBACK, "Call for current office hours");
-  assert.doesNotMatch(pub.hours.text, /CONFIRM|7|9/);
-  assert.equal(pub.hours.schedule, null);
-  assert.equal(officeStatus(new Date("2026-10-14T15:00:00Z")), null, "no open/closed claim");
-  assert.equal(publicFactText(config.hours.summary), config.hours.summary.display);
+test("the site shows the confirmed hours and an accurate open/closed state", () => {
+  assert.equal(HOURS_CONFIRMED, true);
+  assert.equal(pub.hours.text, "Monday–Friday, 7 a.m. to 5 p.m.");
+  assert.equal(publicFactText(config.hours.summary), "Monday–Friday, 7 a.m. to 5 p.m.");
+  assert.doesNotMatch(JSON.stringify(pub.hours), /CONFIRM|9 a\.m/);
+  assert.equal(typeof HOURS_FALLBACK, "string");
+  // 2026-10-14 is a Wednesday: 15:00Z = 11:00 EDT (open), 22:30Z = 18:30 EDT (closed); Oct 17 is a Saturday.
+  assert.equal(officeStatus(new Date("2026-10-14T15:00:00Z")), "office-open");
+  assert.equal(officeStatus(new Date("2026-10-14T10:30:00Z")), "office-closed", "6:30 a.m. is before opening");
+  assert.equal(officeStatus(new Date("2026-10-14T22:30:00Z")), "office-closed");
+  assert.equal(officeStatus(new Date("2026-10-17T15:00:00Z")), "office-closed");
 });
 
 test("public config exposes no approver notes, gates or [CONFIRM] markers", () => {
@@ -41,19 +47,20 @@ test("public config exposes no approver notes, gates or [CONFIRM] markers", () =
   assert.doesNotMatch(text, /CONFIRM|approvedBy|releaseGates|BUSINESS-PROOF/);
 });
 
-test("release gate: NOT publishable while hours (and other gates) are unconfirmed", async () => {
+test("release gate: NOT publishable while the domain and other gates are unconfirmed; hours no longer block", async () => {
   const result = await evaluateRelease({ config, env: {} });
   assert.equal(result.publishable, false);
   assert.equal(result.allowed, false);
-  assert.ok(result.items.some((i) => i.path === "hours.summary.value"));
-  assert.ok(result.items.some((i) => i.path === "site.releaseGates.hours"));
+  assert.ok(!result.items.some((i) => i.path === "hours.summary.value"));
+  assert.ok(!result.items.some((i) => i.path === "site.releaseGates.hours"));
+  assert.ok(result.items.some((i) => i.path === "site.releaseGates.production-origin"));
 });
 
-test("release gate CLI --strict exits 1 without the flag and names the hours conflict", () => {
+test("release gate CLI --strict exits 1 without the flag and names the domain gate", () => {
   const r = gateCli({});
   assert.equal(r.status, 1, r.stderr);
   assert.match(r.stderr, /NOT PUBLISHABLE/);
-  assert.match(r.stderr, /7–5 per Oct 9 interview vs 9–5 per older docs/);
+  assert.match(r.stderr, /Production domain not chosen yet/);
   assert.match(r.stderr, /Refusing to publish/);
 });
 

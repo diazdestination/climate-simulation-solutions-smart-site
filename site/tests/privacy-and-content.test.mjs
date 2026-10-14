@@ -48,7 +48,8 @@ test("built output: every route prerendered, noindex while unconfirmed, privacy 
   assert.match(read("dist", "robots.txt"), /Disallow: \//);
   assert.ok(!existsSync(path.join(root, "dist", "sitemap.xml")), "no sitemap while blocked");
   assert.match(read("dist", "privacy", "index.html"), /Draft — pending attorney review/);
-  assert.match(read("dist", "index.html"), /Call for current office hours/);
+  assert.match(read("dist", "index.html"), /Monday–Friday, 7 a.m. to 5 p.m./, "confirmed hours are published");
+  assert.doesNotMatch(read("dist", "index.html"), /9 a.m.|9–5|CONFIRM/);
   assert.doesNotMatch(read("dist", "index.html"), /9am|9:00|7am|7:00|Mon–Fri, 9|seven to five/i, "no guessed hours");
 });
 

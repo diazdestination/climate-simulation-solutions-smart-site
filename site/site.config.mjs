@@ -23,7 +23,7 @@ export default {
 
   // ---- Contact facts (E.164) ---------------------------------------------------------
   // (706) 809-5076 is the existing public business line (BUSINESS-PROOF CSS-P03, all 13 core
-  // pages of csshvacga.com, and the CSS v8 demo). Line ownership/portability is not verified.
+  // pages of the old csshvacga.com site, and the CSS v8 demo). Line ownership/portability is not verified.
   // No public business email exists in the intake; owners' direct contacts are NOT published.
   contact: {
     mainPhone: { value: "+17068095076", display: "(706) 809-5076", ...DEMO_APPROVAL },
@@ -36,11 +36,12 @@ export default {
   // Older intake (OPERATING-PLAN, BUSINESS-PROOF CSS-P05) and the current site: Mon-Fri 9am-5pm.
   hours: {
     summary: {
-      value: "[CONFIRM: Mon–Fri 7–5 per Oct 9 interview vs 9–5 per older docs]",
-      // Neutral text rendered on the site and in the agent until the owners confirm.
-      display: "Please call the office for current office hours",
-      approvedBy: "[CONFIRM] owner sign-off pending",
-      approvedOn: "2026-10-09",
+      // Confirmed 2026-10-14 (CSS owners via Adam): Mon–Fri 7–5, matching the Oct 9 interview.
+      // The older 9–5 in earlier docs/site is superseded.
+      value: "Monday–Friday, 7 a.m. to 5 p.m.",
+      display: "Monday–Friday, 7 a.m. to 5 p.m.",
+      approvedBy: "CSS owners via Adam (Claude chat, 2026-10-14)",
+      approvedOn: "2026-10-14",
     },
   },
 
@@ -141,7 +142,7 @@ export default {
       // sync_case is the registry's service-case tool (no HVAC-specific name exists yet).
       tools: ["sync_case", "show_call_path", "open_written_request"],
       asrKeywords: ["furnace", "heat pump", "air handler", "condenser", "thermostat", "ductwork", "refrigeration", "Dawsonville"],
-      limits: { dailyLimit: 25, concurrency: 1, maxDurationSeconds: 900 },
+      limits: { dailyLimit: 15, concurrency: 2, maxDurationSeconds: 600 }, // budget plan 2026-10-14
       privacy: { recordVoice: false, retentionDays: 1, deleteTranscriptAndPii: true, deleteAudio: true },
       voiceId: undefined,
     },
@@ -152,12 +153,14 @@ export default {
 
   // ---- CSS site-only settings (ignored by the core schema) ---------------------------
   site: {
-    origin: "https://csshvacga.com", // [CONFIRM] final production domain; canonical URLs only
+    // Production domain comes from SITE_PUBLIC_ORIGIN at build time (e.g. https://www.example.com).
+    // csshvacga.com is CSS's OLD domain (registered elsewhere, not securable); nothing depends on it.
+    origin: globalThis.process?.env?.SITE_PUBLIC_ORIGIN?.trim() || null,
     location: { city: "Dawsonville", state: "GA" },
     timezone: "America/New_York",
     // Structured weekday schedule used for the live "open now" badge. Stays null until
     // hours.summary is confirmed; the site then shows only the neutral fallback.
-    hoursSchedule: null,
+    hoursSchedule: { days: ["Mon", "Tue", "Wed", "Thu", "Fri"], open: "07:00", close: "17:00" },
     // Maintenance plan facts (Oct 9 owner interview). Prices/inclusions are NOT approved.
     maintenancePlans: {
       residential: { cadence: "One visit every six months", approvedBy: "Owner interview (Heather/Nathaniel via Adam)", approvedOn: "2026-10-09" },
@@ -167,10 +170,10 @@ export default {
     },
     // Release gates that are not single facts. status "approved" requires approvedBy/approvedOn.
     releaseGates: [
-      { id: "hours", status: "unconfirmed", note: "[CONFIRM: Mon–Fri 7–5 per Oct 9 interview vs 9–5 per older docs]" },
+      { id: "hours", status: "approved", approvedBy: "CSS owners via Adam (Claude chat, 2026-10-14)", approvedOn: "2026-10-14", note: "Mon–Fri 7 a.m.–5 p.m. confirmed; older 9–5 superseded." },
       { id: "consent-text", status: "unconfirmed", note: "[CONFIRM] Draft consent wording for all four forms needs owner/Adam approval (policyVersion *-draft-2026-10-14)." },
       { id: "privacy-policy", status: "unconfirmed", note: "[CONFIRM] Privacy policy is a draft pending attorney review." },
-      { id: "production-origin", status: "unconfirmed", note: "[CONFIRM] Final production domain for canonical URLs (csshvacga.com assumed)." },
+      { id: "production-origin", status: globalThis.process?.env?.SITE_PUBLIC_ORIGIN ? "approved" : "unconfirmed", approvedBy: "Domain chosen by Adam; set via SITE_PUBLIC_ORIGIN", approvedOn: "2026-10-14", note: "[CONFIRM] Production domain not chosen yet. csshvacga.com is the old domain and is not available; Codex buys the approved domain, then the build sets SITE_PUBLIC_ORIGIN." },
     ],
   },
 };

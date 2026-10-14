@@ -1,5 +1,20 @@
 # Decisions
 
+## 2026-10-14 — React smart site launch decisions (Adam, relayed in Claude chat)
+
+- **Office hours confirmed: Monday–Friday, 7 a.m.–5 p.m.** (Oct 9 owner interview). The older 9–5 in
+  earlier intake docs and the HTML preview is superseded. Applied in `site/site.config.mjs`
+  (`hours.summary`, `hoursSchedule`), the homepage FAQ and the assistant knowledge base.
+- **Domain:** csshvacga.com is CSS's old domain (registered elsewhere, locked) and is not assumed.
+  The production origin comes from `SITE_PUBLIC_ORIGIN` at build; Codex buys the approved new domain.
+- **Assistant:** launch with a text-chat website assistant; spoken voice stays built in but off
+  (`voice.modes.voice: false`) until CSS approves it. Live phone answering is post-launch.
+- **Hero image:** the generated hero image is approved.
+- **ElevenLabs:** a monthly budget cap is required (amount pending); agent limits set to 15
+  conversations/day, 2 concurrent, 10-minute maximum, bursting off.
+- **SMS:** no text consent until Telnyx 10DLC/toll-free registration and approved wording exist
+  (`site/docs/sms-consent-telnyx.md`).
+
 ## 2026-10-09 — Existing GitHub repo and Cloudflare path
 
 - Use the existing private `diazdestination/climate-simulation-solutions-smart-site`

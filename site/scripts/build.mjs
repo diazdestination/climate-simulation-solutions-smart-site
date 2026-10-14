@@ -30,7 +30,9 @@ await build({ root, logLevel: "warn", build: { ssr: "src/entry-server.jsx", outD
 
 const server = await import(pathToFileURL(path.join(ssrOut, "entry-server.js")).href);
 const siteConfig = (await import(pathToFileURL(path.join(root, "site.config.mjs")).href)).default;
-const origin = siteConfig.site.origin.replace(/\/$/, "");
+// Until the production domain is chosen (SITE_PUBLIC_ORIGIN), canonical URLs use the local preview
+// origin; such builds are blocked from publishing and fully noindexed by the release gate.
+const origin = (siteConfig.site.origin ?? "http://127.0.0.1:4391").replace(/\/$/, "");
 const brand = siteConfig.brand.name.value;
 const blocked = !gate.publishable;
 
