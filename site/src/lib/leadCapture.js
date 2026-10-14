@@ -20,6 +20,8 @@ export function interpretLeadResponse(status, body, { loopback = isLoopbackPrevi
   if (status === 200 && body?.status === "delivered" && body?.reference) return { status: "saved", reference: body.reference };
   if (status === 202 && ["queued", "needs-review"].includes(body?.status) && body?.reference)
     return { status: body.status, reference: body.reference };
+  // Pre-GrowthOS email fallback: the office was emailed (worker returns 202 only after Graph accepts it).
+  if (status === 202 && body?.status === "sent" && body?.reference) return { status: "sent", reference: body.reference };
   if (status === 409) return { status: "error", code: "idempotency_conflict" };
   return { status: "error", code: body?.code || "delivery_unavailable" };
 }

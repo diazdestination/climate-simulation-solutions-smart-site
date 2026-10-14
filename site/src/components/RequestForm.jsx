@@ -134,7 +134,7 @@ export function RequestForm({ kind, defaults = {}, heading, intro }) {
       <div className={`request-result${pending ? " request-result--pending" : ""}${local ? " request-result--local" : ""}`} role="status">
         {pending ? <FaClock aria-hidden="true" /> : local ? <FaTriangleExclamation aria-hidden="true" /> : <FaCircleCheck aria-hidden="true" />}
         <p className="kicker">
-          {result.status === "saved" ? "Request received" : result.status === "queued" ? "Received · awaiting transfer" : result.status === "needs-review" ? "Received · please call" : "Local preview only"}
+          {result.status === "saved" || result.status === "sent" ? "Request received" : result.status === "queued" ? "Received · awaiting transfer" : result.status === "needs-review" ? "Received · please call" : "Local preview only"}
         </p>
         <h3>{local ? "Nothing was sent." : `Thanks, ${form.name.split(" ")[0] || "and thank you"}.`}</h3>
         <p>
@@ -142,6 +142,10 @@ export function RequestForm({ kind, defaults = {}, heading, intro }) {
             (kind === "urgent"
               ? "Your urgent request reached the office’s request system. This does not dispatch a technician or confirm an arrival time. If you have not heard back, or the situation gets worse, call now."
               : "Your request reached the office’s request system. The office will contact you to confirm details. This is not a confirmed appointment.")}
+          {result.status === "sent" &&
+            (kind === "urgent"
+              ? "Your urgent request was sent to the office. This does not dispatch a technician or confirm an arrival time. If you have not heard back, or the situation gets worse, call now."
+              : "Your request was sent to the office. The office will contact you to confirm details. This is not a confirmed appointment.")}
           {result.status === "queued" && "Your details are securely held by this website and transfer to the office is being retried. No appointment or arrival time is confirmed. Please call if you need help now."}
           {result.status === "needs-review" && "Your details are securely held, but transfer to the office needs attention. Please call and mention this reference."}
           {local && "This local preview is not connected to the office’s request system, so your details were not delivered to anyone. Please call to reach the office."}

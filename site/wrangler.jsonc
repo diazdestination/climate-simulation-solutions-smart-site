@@ -32,7 +32,11 @@
   // scheduled() drains the outbox every five minutes (kit/lessons-learned.md #15).
   "triggers": { "crons": ["*/5 * * * *"] },
   "vars": {
-    "SMART_SITE_GROWTHOS_ENABLED": "true",
+    // Pre-GrowthOS launch (Adam, 2026-10-14 "1c"): leads are emailed to the owners until the CSS
+    // GrowthOS site record exists. Codex flips this to "true" with GROWTHOS_SITE_ID/SECRET at
+    // connection time; the email path then switches off automatically (no double alerts).
+    "SMART_SITE_GROWTHOS_ENABLED": "false",
+    "SITE_EMAIL_ENABLED": "true",
     "GROWTHOS_API_ORIGIN": "https://app.mogulforge.ai",
     "SITE_OUTBOX_ENABLED": "true",
     "ELEVENLABS_VOICE_PUBLIC": "false"
@@ -40,5 +44,8 @@
   }
   // No "routes" and no account_id: attaching csshvac.com (approved 2026-10-14) is done by Codex at launch.
   // Secrets (never in this file): GROWTHOS_SITE_ID, GROWTHOS_SITE_SECRET,
-  // SITE_OUTBOX_ENCRYPTION_KEY, SITE_OUTBOX_DRAIN_SECRET, ELEVENLABS_API_KEY, ELEVENLABS_AGENT_ID
+  // SITE_OUTBOX_ENCRYPTION_KEY, SITE_OUTBOX_DRAIN_SECRET, ELEVENLABS_API_KEY, ELEVENLABS_AGENT_ID,
+  // TURNSTILE_SITE_KEY, TURNSTILE_SECRET_KEY, and for the pre-GrowthOS email path SITE_EMAIL_SENDER,
+  // SITE_EMAIL_INTERNAL_RECIPIENTS (owner addresses), MICROSOFT_TENANT_ID, MICROSOFT_CLIENT_ID,
+  // MICROSOFT_CLIENT_SECRET.
 }

@@ -4,6 +4,7 @@ import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { ensureBuilt, read, root, walkFiles } from "./helpers.mjs";
 import { ROUTES } from "../src/routes.js";
+import { previewNoindex } from "../scripts/release-gate.mjs";
 
 const BANNED = /painless|roof|claim|adjuster|storm|444-4476|hail/gi;
 // Justified third-party hits: the JWT library bundled inside the ElevenLabs/LiveKit SDK
@@ -35,22 +36,33 @@ test("every consent point and the AI disclosure link to /privacy/", () => {
   assert.match(read("src", "components", "MeasurementChoices.jsx"), /href="\/privacy\/"/);
 });
 
-test("built output: every route prerendered, noindex while unconfirmed, privacy copied", () => {
+test("built output: every route prerendered, indexable on csshvac.com, privacy copied as a noindex labeled draft", () => {
   ensureBuilt();
   for (const route of ROUTES) {
     const file = route.path === "/" ? path.join(root, "dist", "index.html") : path.join(root, "dist", ...route.path.split("/").filter(Boolean), "index.html");
     assert.ok(existsSync(file), route.path);
     const html = readFileSync(file, "utf8");
     assert.ok(html.includes(`<title>${route.title.replaceAll("&", "&amp;")}</title>`), `${route.path} title`);
-    assert.match(html, /<meta name="robots" content="noindex,nofollow">/, `${route.path} noindex while facts unconfirmed`);
+    const expected = route.noindex ? /<meta name="robots" content="noindex,nofollow">/ : /<meta name="robots" content="index,follow,max-image-preview:large">/;
+    assert.match(html, expected, `${route.path} robots`);
     assert.match(html, /<div id="root">(<link [^>]+>)*<div class="site">/, `${route.path} prerendered`);
   }
-  assert.match(read("dist", "robots.txt"), /Disallow: \//);
-  assert.ok(!existsSync(path.join(root, "dist", "sitemap.xml")), "no sitemap while blocked");
-  assert.match(read("dist", "privacy", "index.html"), /Draft — pending attorney review/);
+  assert.match(read("dist", "robots.txt"), /Allow: \/\n\nSitemap: https:\/\/csshvac\.com\/sitemap\.xml/);
+  const sitemap = read("dist", "sitemap.xml");
+  assert.doesNotMatch(sitemap, /privacy/, "the draft policy is not in the sitemap");
+  const privacy = read("dist", "privacy", "index.html");
+  assert.match(privacy, /Draft — pending attorney review/);
+  assert.match(privacy, /<meta name="robots" content="noindex">/);
   assert.match(read("dist", "index.html"), /Monday–Friday, 7 a.m. to 5 p.m./, "confirmed hours are published");
   assert.doesNotMatch(read("dist", "index.html"), /9 a.m.|9–5|CONFIRM/);
   assert.doesNotMatch(read("dist", "index.html"), /9am|9:00|7am|7:00|Mon–Fri, 9|seven to five/i, "no guessed hours");
+});
+
+test("a preview host stays noindex even though the release gate passes", () => {
+  assert.equal(previewNoindex("https://css-preview.example.workers.dev", {}), true);
+  assert.equal(previewNoindex("https://csshvac.com", { SITE_NOINDEX: "true" }), true);
+  assert.equal(previewNoindex("https://csshvac.com", {}), false);
+  assert.match(read("scripts", "build.mjs"), /const blocked = !gate\.publishable \|\| previewHost;/);
 });
 
 test("content guard: no Painless/roofing/claims/storm/hail strings or [CONFIRM] notes in the built site", () => {

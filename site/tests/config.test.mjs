@@ -13,11 +13,12 @@ test("site.config.mjs passes the core schema", () => {
   assert.equal(ok, true);
 });
 
-test("GrowthOS is connected by default on the hvac profile; email bridge and SMS stay off", () => {
+test("GrowthOS is connected by default on the hvac profile; email only in pre-GrowthOS mode; SMS off", () => {
   assert.equal(config.growthos.enabled, true);
   assert.equal(config.growthos.profile, "hvac");
   for (const code of config.growthos.serviceCodes) assert.ok(GROWTHOS_PROFILES.hvac.includes(code), code);
-  assert.equal(config.emailBridge.enabled, false);
+  assert.deepEqual(config.emailBridge, { enabled: true, preGrowthOS: true });
+  assert.doesNotMatch(JSON.stringify(config), /@(?!example\.)[a-z0-9-]+\.[a-z]{2,}/i, "no real email addresses in config");
   assert.equal(config.sms.compliantConsentApproved, false);
   assert.equal(config.growthos.requireOriginHeader, true);
 });
@@ -68,7 +69,10 @@ test("wrangler.jsonc: D1 DB binding, cron drain, /api/* worker-first, no workers
   assert.equal(w.routes, undefined);
   assert.equal(w.route, undefined);
   assert.equal(w.account_id, undefined);
-  assert.equal(w.vars.SMART_SITE_GROWTHOS_ENABLED, "true");
+  // Pre-GrowthOS launch: email to owners until Codex connects GrowthOS and sets this to "true".
+  assert.equal(w.vars.SMART_SITE_GROWTHOS_ENABLED, "false");
+  assert.equal(w.vars.SITE_EMAIL_ENABLED, "true");
+  for (const secret of ["SITE_EMAIL_SENDER", "SITE_EMAIL_INTERNAL_RECIPIENTS", "MICROSOFT_CLIENT_SECRET"]) assert.equal(w.vars[secret], undefined, secret);
   assert.equal(w.vars.ELEVENLABS_VOICE_PUBLIC, "false");
   assert.equal(w.vars.SITE_ALLOW_UNCONFIRMED_FACTS, undefined);
   for (const secret of ["GROWTHOS_SITE_ID", "GROWTHOS_SITE_SECRET", "ELEVENLABS_API_KEY", "SITE_OUTBOX_ENCRYPTION_KEY"]) assert.equal(w.vars[secret], undefined, secret);

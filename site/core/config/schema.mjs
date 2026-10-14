@@ -134,8 +134,14 @@ export function validateSiteConfig(config) {
   }
 
   // Email bridge
-  if (config.emailBridge?.enabled === true && g?.enabled === true)
-    errors.push("emailBridge.enabled must be false while growthos.enabled is true (GrowthOS owns lead automations)");
+  const preGrowthOS = config.emailBridge?.preGrowthOS;
+  if (preGrowthOS !== undefined && typeof preGrowthOS !== "boolean")
+    errors.push("emailBridge.preGrowthOS must be boolean");
+  if (preGrowthOS === true && config.emailBridge?.enabled !== true)
+    errors.push("emailBridge.preGrowthOS requires emailBridge.enabled");
+  // The one allowed overlap: pre-GrowthOS mode stops the bridge once SMART_SITE_GROWTHOS_ENABLED is on.
+  if (config.emailBridge?.enabled === true && g?.enabled === true && preGrowthOS !== true)
+    errors.push("emailBridge.enabled must be false while growthos.enabled is true (GrowthOS owns lead automations) unless emailBridge.preGrowthOS is true");
 
   // Voice / agent
   const v = config.voice;

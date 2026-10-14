@@ -4,9 +4,10 @@ import { spawnSync } from "node:child_process";
 import path from "node:path";
 import config from "../site.config.mjs";
 import { evaluateRelease } from "../scripts/release-gate.mjs";
+import { PRIVACY_DRAFT_LABEL, privacyDraftLabelProblems, unconfirmedItems } from "../scripts/unconfirmed.mjs";
 import pub, { publicFactText, toPublicConfig } from "../src/lib/publicConfig.js";
 import { HOURS_CONFIRMED, HOURS_FALLBACK, officeStatus } from "../src/lib/siteFacts.js";
-import { root } from "./helpers.mjs";
+import { read, root } from "./helpers.mjs";
 
 const confirmedFixture = () => {
   const c = structuredClone(config);
@@ -47,28 +48,47 @@ test("public config exposes no approver notes, gates or [CONFIRM] markers", () =
   assert.doesNotMatch(text, /CONFIRM|approvedBy|releaseGates|BUSINESS-PROOF/);
 });
 
-test("release gate: only the privacy attorney review still blocks (hours, consent, domain approved)", async () => {
+test("release gate: publishable with the privacy policy released as a labeled draft (Adam, 2026-10-14)", async () => {
   const result = await evaluateRelease({ config, env: {} });
-  assert.equal(result.publishable, false);
-  assert.equal(result.allowed, false);
-  assert.deepEqual(result.items.map((i) => i.path), ["site.releaseGates.privacy-policy"]);
+  assert.equal(result.publishable, true);
+  assert.deepEqual(result.items, []);
+  assert.deepEqual(result.drafts.map((d) => d.path), ["site.releaseGates.privacy-policy"]);
+  assert.match(result.drafts[0].pendingReview, /attorney review/);
+  const gate = config.site.releaseGates.find((g) => g.id === "privacy-policy");
+  assert.equal(gate.status, "approved-draft", "not an attorney approval");
   assert.equal(config.site.origin, "https://csshvac.com");
   for (const form of Object.values(config.growthos.forms)) assert.match(form.policyVersion, /^css-[a-z-]+-v1$/);
 });
 
-test("release gate CLI --strict exits 1 without the flag and names the privacy gate", () => {
-  const r = gateCli({});
-  assert.equal(r.status, 1, r.stderr);
-  assert.match(r.stderr, /NOT PUBLISHABLE/);
-  assert.match(r.stderr, /attorney review/);
-  assert.match(r.stderr, /Refusing to publish/);
+test("the labeled-draft release only holds while the policy page keeps its banner and noindex", () => {
+  const html = read("public", "privacy", "index.html");
+  assert.deepEqual(privacyDraftLabelProblems(html), []);
+  const unlabeled = html.replace(PRIVACY_DRAFT_LABEL, "Privacy policy");
+  assert.match(unconfirmedItems(config, { privacyHtml: unlabeled })[0].note, /lacks the "Draft — pending attorney review" banner/);
+  const indexable = html.replace(/<meta name="robots" content="noindex">/, "");
+  assert.match(unconfirmedItems(config, { privacyHtml: indexable })[0].note, /not noindex/);
+  // A draft status without a named pending review, or without a signer, still blocks.
+  const c = structuredClone(config);
+  delete c.site.releaseGates.find((g) => g.id === "privacy-policy").pendingReview;
+  assert.deepEqual(unconfirmedItems(c, { privacyHtml: html }).map((i) => i.path), ["site.releaseGates.privacy-policy"]);
 });
 
-test("release gate CLI allows a LOCAL build only with SITE_ALLOW_UNCONFIRMED_FACTS=true", () => {
-  const r = gateCli({ SITE_ALLOW_UNCONFIRMED_FACTS: "true" });
+test("release gate CLI --strict passes and announces the pending attorney review", () => {
+  const r = gateCli({});
   assert.equal(r.status, 0, r.stderr);
-  assert.match(r.stderr, /local override in effect\. Do not deploy/);
-  assert.equal(gateCli({ SITE_ALLOW_UNCONFIRMED_FACTS: "1" }).status, 1, "only the exact value true counts");
+  assert.match(r.stdout, /privacy-policy released as a LABELED DRAFT/);
+  assert.match(r.stdout, /still pending: attorney review/);
+});
+
+test("an unconfirmed gate still blocks; the LOCAL override needs exactly SITE_ALLOW_UNCONFIRMED_FACTS=true", async () => {
+  const c = structuredClone(config);
+  c.site.releaseGates.find((g) => g.id === "privacy-policy").status = "unconfirmed";
+  const blocked = await evaluateRelease({ config: c, env: {} });
+  assert.equal(blocked.publishable, false);
+  assert.equal(blocked.allowed, false);
+  assert.deepEqual(blocked.items.map((i) => i.path), ["site.releaseGates.privacy-policy"]);
+  assert.equal((await evaluateRelease({ config: c, env: { SITE_ALLOW_UNCONFIRMED_FACTS: "true" } })).allowed, true);
+  assert.equal((await evaluateRelease({ config: c, env: { SITE_ALLOW_UNCONFIRMED_FACTS: "1" } })).allowed, false);
 });
 
 test("release gate passes once every fact and gate is confirmed", async () => {

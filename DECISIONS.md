@@ -1,5 +1,23 @@
 # Decisions
 
+## 2026-10-14 — Launch decisions "1c, 2 yes" (Adam, relayed in Claude chat)
+
+- **Pre-GrowthOS email fallback (1c).** Until the CSS GrowthOS site record exists, web leads are
+  emailed to the owners through the core email bridge (`emailBridge: { enabled: true,
+  preGrowthOS: true }`, `wrangler.jsonc` `SMART_SITE_GROWTHOS_ENABLED: "false"`,
+  `SITE_EMAIL_ENABLED: "true"`). Owner addresses, the sender mailbox and the Microsoft Graph app
+  credentials are secrets set by Codex, never committed. When Codex connects GrowthOS it sets
+  `SMART_SITE_GROWTHOS_ENABLED=true` with the site ID/secret; from then on every lead goes to
+  GrowthOS and the bridge cannot send (no double alerts). If email fails the form shows an error
+  and the phone number; nothing is claimed as received. Retried requests keep the same `RQ-`
+  reference so a duplicate alert is recognisable.
+- **Privacy policy launches as a labeled draft (2 yes).** The `privacy-policy` release gate is
+  `approved-draft` with `pendingReview` naming the attorney review. `release:check` passes only
+  while `public/privacy/index.html` keeps the "Draft — pending attorney review" banner and
+  `noindex`, and prints the pending review on every run. This is not an attorney approval: set
+  the gate to `approved` only after the review.
+- Preview hosts (`*.workers.dev` or `SITE_NOINDEX=true`) are always built noindex.
+
 ## 2026-10-14 — React smart site launch decisions (Adam, relayed in Claude chat)
 
 - **Office hours confirmed: Monday–Friday, 7 a.m.–5 p.m.** (Oct 9 owner interview). The older 9–5 in

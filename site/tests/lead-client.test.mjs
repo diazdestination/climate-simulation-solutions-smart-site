@@ -18,6 +18,9 @@ test("saved needs status saved + leadId + reference; queued/needs-review are hon
   assert.equal(interpretLeadResponse(201, { status: "saved", leadId: "x", reference: "y" }).status, "saved");
   assert.equal(interpretLeadResponse(201, { status: "saved" }).status, "error");
   assert.equal(interpretLeadResponse(200, { status: "sent", reference: "y" }).status, "error");
+  assert.deepEqual(interpretLeadResponse(202, { status: "sent", reference: "RQ-1" }), { status: "sent", reference: "RQ-1" });
+  assert.equal(interpretLeadResponse(202, { status: "sent" }).status, "error", "no reference, no success");
+  assert.equal(interpretLeadResponse(502, { code: "email_delivery_unavailable" }).status, "error");
   assert.deepEqual(interpretLeadResponse(202, { status: "queued", reference: "r" }), { status: "queued", reference: "r" });
   assert.deepEqual(interpretLeadResponse(202, { status: "needs-review", reference: "r" }), { status: "needs-review", reference: "r" });
   assert.equal(interpretLeadResponse(409, {}).code, "idempotency_conflict");

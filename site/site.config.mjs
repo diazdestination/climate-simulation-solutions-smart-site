@@ -122,7 +122,10 @@ export default {
   },
 
   sms: { compliantConsentApproved: false },
-  emailBridge: { enabled: false },
+  // Owner decision 2026-10-14 ("1c"): until the CSS GrowthOS site record exists, web leads are
+  // emailed to the owners (addresses only in secrets). Setting SMART_SITE_GROWTHOS_ENABLED=true
+  // switches every lead to GrowthOS and the email path off automatically.
+  emailBridge: { enabled: true, preGrowthOS: true },
 
   // ---- Website assistant -------------------------------------------------------------
   // Owner decision 2026-10-14: CSS launches with a TEXT chat assistant. Spoken voice stays built in
@@ -174,7 +177,9 @@ export default {
     releaseGates: [
       { id: "hours", status: "approved", approvedBy: "CSS owners via Adam (Claude chat, 2026-10-14)", approvedOn: "2026-10-14", note: "Mon–Fri 7 a.m.–5 p.m. confirmed; older 9–5 superseded." },
       { id: "consent-text", status: "approved", approvedBy: "Adam (Claude chat, 2026-10-14)", approvedOn: "2026-10-14", note: "Consent wording for all four forms approved as drafted (policy versions css-*-v1)." },
-      { id: "privacy-policy", status: "unconfirmed", note: "[CONFIRM] Privacy policy is a draft pending attorney review." },
+      // Owner decision 2026-10-14 ("2 yes"): launch with the draft clearly labeled and the policy page
+      // noindex. Not an attorney approval: set status "approved" only after review.
+      { id: "privacy-policy", status: "approved-draft", pendingReview: "attorney review of the privacy policy (legal entity, mailing address, privacy email, retention)", approvedBy: "Adam (Claude chat, 2026-10-14)", approvedOn: "2026-10-14", note: "Launch with the policy labeled \"Draft — pending attorney review\" and noindex; attorney review still pending." },
       { id: "production-origin", status: "approved", approvedBy: "Adam (Claude chat, 2026-10-14)", approvedOn: "2026-10-14", note: "csshvac.com approved (purchase via Cloudflare by Codex); climatesimulationsolutions.com redirects to it. csshvacga.com is the old, unavailable domain." },
     ],
   },

@@ -105,7 +105,9 @@ test("fails closed: 503 without GrowthOS credentials, 403 without an Origin head
   const { calls, fetchImpl } = growthosStub();
   const worker = createSmartSiteWorker(config, { fetchImpl });
   const env = prodEnv({ GROWTHOS_SITE_SECRET: "" });
-  let r = await worker.fetch(postLead(buildLeadRequest("urgent", customer({ issue: "no-heat" }), { requestId: requestId() })), env);
+  let r = await worker.fetch(postLead(buildLeadRequest("urgent", customer({ issue: "no-heat" }), { requestId: requestId() })), {});
+  assert.equal(r.status, 503, "no GrowthOS flag and no email settings: visible failure");
+  r = await worker.fetch(postLead(buildLeadRequest("urgent", customer({ issue: "no-heat" }), { requestId: requestId() })), env);
   assert.equal(r.status, 503);
   assert.equal((await r.json()).code, "growthos_not_configured");
   r = await worker.fetch(postLead(buildLeadRequest("service", customer(), { requestId: requestId() }), { origin: null }), prodEnv());
@@ -114,6 +116,68 @@ test("fails closed: 503 without GrowthOS credentials, 403 without an Origin head
   assert.equal(r.status, 400);
   assert.equal((await r.json()).code, "contact_consent_required");
   assert.equal(calls.length, 0);
+});
+
+// Synthetic Graph settings; real owner addresses live only in Codex-managed secrets.
+const emailEnv = {
+  SITE_EMAIL_ENABLED: "true",
+  SITE_EMAIL_SENDER: "office@example.test",
+  SITE_EMAIL_INTERNAL_RECIPIENTS: "owner-one@example.test,owner-two@example.test",
+  MICROSOFT_TENANT_ID: "tenant",
+  MICROSOFT_CLIENT_ID: "client",
+  MICROSOFT_CLIENT_SECRET: "server-secret",
+};
+function graphStub({ mailStatus = 202 } = {}) {
+  const calls = [];
+  const fetchImpl = async (url, init) => {
+    calls.push({ url: String(url), body: init?.body && typeof init.body === "string" ? init.body : null });
+    if (String(url).includes("microsoftonline")) return Response.json({ access_token: "short-lived" });
+    if (String(url).includes("graph.microsoft.com")) return new Response(null, { status: mailStatus });
+    return Response.json({ status: "saved", leadId: "dddddddd-1111-4111-8111-aaaaaaaaaaaa", receiptId: "cccccccc-1111-4111-8111-aaaaaaaaaaaa" }, { status: 201 });
+  };
+  return { calls, fetchImpl };
+}
+
+test("pre-GrowthOS: without the GrowthOS flag, an urgent request is emailed to the owners (no GrowthOS call)", async () => {
+  const { calls, fetchImpl } = graphStub();
+  const worker = createSmartSiteWorker(config, { fetchImpl });
+  const id = requestId();
+  const r = await worker.fetch(postLead(buildLeadRequest("urgent", customer({ issue: "no-heat" }), { requestId: id })), emailEnv);
+  assert.equal(r.status, 202);
+  const body = await r.json();
+  assert.equal(body.status, "sent");
+  assert.equal(body.reference, `RQ-${id.replaceAll("-", "").slice(0, 8).toUpperCase()}`);
+  const mail = calls.find((c) => c.url.includes("/sendMail"));
+  const message = JSON.parse(mail.body).message;
+  assert.deepEqual(message.toRecipients.map((t) => t.emailAddress.address), ["owner-one@example.test", "owner-two@example.test"]);
+  assert.match(message.body.content, /Form: urgent-request/);
+  assert.match(message.body.content, /Timing: urgent/);
+  assert.match(message.body.content, /100 Example Test Way, Dawsonville, GA/);
+  assert.match(message.body.content, /consent css-urgent-request-v1: phone, email/);
+  assert.equal(calls.some((c) => c.url.includes("smart-sites")), false);
+});
+
+test("pre-GrowthOS: once SMART_SITE_GROWTHOS_ENABLED is on, leads go to GrowthOS and no email is sent", async () => {
+  const { calls, fetchImpl } = graphStub();
+  const worker = createSmartSiteWorker(config, { fetchImpl });
+  const r = await worker.fetch(postLead(buildLeadRequest("service", customer(), { requestId: requestId() })), prodEnv(emailEnv));
+  assert.equal(r.status, 201);
+  assert.equal(calls.some((c) => c.url.includes("microsoft")), false);
+  // Flag on but site secret missing: fails closed to the phone path; still no email.
+  calls.length = 0;
+  const half = await worker.fetch(postLead(buildLeadRequest("service", customer(), { requestId: requestId() })), prodEnv({ ...emailEnv, GROWTHOS_SITE_SECRET: "" }));
+  assert.equal(half.status, 503);
+  assert.equal(calls.length, 0);
+});
+
+test("pre-GrowthOS: an email failure is a visible error (phone fallback), never 'received'", async () => {
+  const { fetchImpl } = graphStub({ mailStatus: 500 });
+  const worker = createSmartSiteWorker(config, { fetchImpl });
+  const r = await worker.fetch(postLead(buildLeadRequest("service", customer(), { requestId: requestId() })), emailEnv);
+  assert.equal(r.status, 502);
+  assert.equal((await r.json()).code, "email_delivery_unavailable");
+  const none = await worker.fetch(postLead(buildLeadRequest("service", customer(), { requestId: requestId() })), {});
+  assert.equal(none.status, 503);
 });
 
 test("GET /api/lead never exposes credentials; voice endpoints stay private off loopback", async () => {

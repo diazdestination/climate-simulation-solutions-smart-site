@@ -12,7 +12,7 @@ import path from "node:path";
 import process from "node:process";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { build } from "vite";
-import { evaluateRelease } from "./release-gate.mjs";
+import { evaluateRelease, previewNoindex } from "./release-gate.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const dist = path.join(root, "dist");
@@ -34,7 +34,10 @@ const siteConfig = (await import(pathToFileURL(path.join(root, "site.config.mjs"
 // origin; such builds are blocked from publishing and fully noindexed by the release gate.
 const origin = (siteConfig.site.origin ?? "http://127.0.0.1:4391").replace(/\/$/, "");
 const brand = siteConfig.brand.name.value;
-const blocked = !gate.publishable;
+// Preview hosts (SITE_NOINDEX=true or any *.workers.dev origin) are never indexed, even when the
+// release gate passes; only the production domain gets index,follow, a sitemap and Allow.
+const previewHost = previewNoindex(origin);
+const blocked = !gate.publishable || previewHost;
 
 const esc = (v) => String(v).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;");
 const businessSchema = {
@@ -74,7 +77,7 @@ for (const route of server.ROUTES) {
 }
 
 if (blocked) {
-  writeFileSync(path.join(dist, "robots.txt"), "# Local build: owner facts unconfirmed. Not for publication.\nUser-agent: *\nDisallow: /\n", "utf8");
+  writeFileSync(path.join(dist, "robots.txt"), `# ${previewHost && gate.publishable ? "Preview host" : "Local build: owner facts unconfirmed"}. Not for indexing.\nUser-agent: *\nDisallow: /\n`, "utf8");
   rmSync(path.join(dist, "sitemap.xml"), { force: true });
 } else {
   const urls = server.ROUTES.filter((r) => !r.noindex).map((r) => `  <url><loc>${esc(origin + r.path)}</loc></url>`).join("\n");
@@ -84,12 +87,14 @@ if (blocked) {
 // Release status lives OUTSIDE dist/ so internal notes are never served.
 writeFileSync(
   path.join(root, ".release-status.json"),
-  `${JSON.stringify({ builtAt: new Date().toISOString(), publishable: gate.publishable, override: gate.override, unconfirmed: gate.items.map((i) => i.path) }, null, 2)}\n`,
+  `${JSON.stringify({ builtAt: new Date().toISOString(), origin, publishable: gate.publishable, previewNoindex: previewHost, override: gate.override, unconfirmed: gate.items.map((i) => i.path), labeledDrafts: gate.drafts.map((d) => d.path) }, null, 2)}\n`,
 );
 rmSync(ssrOut, { recursive: true, force: true });
 
 process.stdout.write(`Built ${server.ROUTES.length} prerendered routes + /privacy/.\n`);
-if (blocked)
+if (gate.publishable && previewHost)
+  process.stdout.write(`Preview build for ${origin}: publishable, but every page is noindex and robots.txt disallows crawling.\n`);
+else if (blocked)
   process.stderr.write(
     `LOCAL BUILD ONLY — not publishable: ${gate.items.length} unconfirmed item(s) (${gate.items.map((i) => i.path).join(", ")}). Pages are noindex; npm run release:check will refuse.\n`,
   );

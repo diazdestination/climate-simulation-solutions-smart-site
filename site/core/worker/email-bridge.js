@@ -5,6 +5,7 @@
 import { normalizeEnv } from "./env.js";
 import { growthOSOwnsLeadAutomations } from "./growthos-connector.js";
 import {
+  UUID,
   json,
   readBoundedJson,
   BodyTooLargeError,
@@ -98,7 +99,8 @@ export async function handleEmailBridgeLead(request, rawEnv, siteConfig, fetchIm
     });
   if (request.method !== "POST")
     return json({ ready: false, code: "method_not_allowed" }, 405, { allow: "GET, POST" });
-  if (isCrossSite(request)) return json({ code: "cross_site_request_rejected" }, 403);
+  if (isCrossSite(request, { requireOriginHeader: siteConfig?.growthos?.requireOriginHeader === true }))
+    return json({ code: "cross_site_request_rejected" }, 403);
   let payload;
   try {
     payload = await readBoundedJson(request, 12_000);
@@ -118,16 +120,31 @@ export async function handleEmailBridgeLead(request, rawEnv, siteConfig, fetchIm
     postalCode: String(payload?.project?.postalCode ?? "").trim(),
     serviceCode: String(payload?.project?.serviceCode ?? "").trim(),
     summary: String(payload?.project?.summary ?? "").trim(),
+    address: [payload?.project?.address, payload?.project?.city, payload?.project?.state]
+      .map((v) => String(v ?? "").trim())
+      .filter(Boolean)
+      .join(", ")
+      .slice(0, 240),
   };
+  const formId = String(payload?.formId ?? "").trim();
+  const form = g.forms?.[formId];
+  // Same vocabulary GrowthOS would record (timingMap), with the visitor's own choice alongside.
+  const rawTiming = String(payload?.project?.timing ?? payload?.project?.urgency ?? "").trim().slice(0, 40);
+  const mappedTiming = g.timingMap?.[formId]?.[rawTiming];
+  lead.timing = mappedTiming && mappedTiming !== rawTiming ? `${mappedTiming} (${rawTiming})` : rawTiming;
   if (lead.name.length < 2 || lead.name.length > 100) return json({ ready: false, code: "name_invalid" }, 400);
   if (lead.phone.replace(/\D/g, "").length < 10 || lead.phone.length > 30) return json({ ready: false, code: "phone_invalid" }, 400);
   if (lead.email && !isEmail(lead.email)) return json({ ready: false, code: "email_invalid" }, 400);
-  if (!(g.serviceCodes ?? []).includes(lead.serviceCode)) return json({ ready: false, code: "service_invalid" }, 400);
+  if (!(form?.serviceCodes ?? g.serviceCodes ?? []).includes(lead.serviceCode)) return json({ ready: false, code: "service_invalid" }, 400);
   if (lead.summary.length > 2000) return json({ ready: false, code: "details_too_long" }, 400);
+  if (g.forms && Object.keys(g.forms).length && !form) return json({ ready: false, code: "form_invalid" }, 400);
+  if (form?.requirePostalCode && !/^\d{5}$/.test(lead.postalCode)) return json({ ready: false, code: "zip_invalid" }, 400);
   if (!configuration.ready) return json({ ready: false, code: "email_not_configured" }, 503);
 
   const brand = factValue(siteConfig?.brand?.name) ?? "the team";
-  const reference = `RQ-${crypto.randomUUID().replaceAll("-", "").slice(0, 8).toUpperCase()}`;
+  // Retries reuse the browser's requestId, so a duplicate alert carries the same reference.
+  const requestId = String(payload?.requestId ?? "");
+  const reference = `RQ-${(UUID.test(requestId) ? requestId : crypto.randomUUID()).replaceAll("-", "").slice(0, 8).toUpperCase()}`;
   let accessToken;
   try {
     accessToken = await graphToken(env, fetchImpl);
@@ -143,11 +160,14 @@ export async function handleEmailBridgeLead(request, rawEnv, siteConfig, fetchIm
           `Name: ${lead.name}`,
           `Phone: ${lead.phone}`,
           `Email: ${lead.email || "Not provided"}`,
+          `Address: ${lead.address || "Not provided"}`,
           `ZIP: ${lead.postalCode || "Not provided"}`,
+          ...(formId ? [`Form: ${formId}`] : []),
           `Service: ${lead.serviceCode}`,
+          ...(lead.timing ? [`Timing: ${lead.timing}`] : []),
           `Notes: ${lead.summary || "None provided"}`,
           "",
-          "The visitor authorized contact about this request.",
+          `The visitor authorized contact about this request${form?.policyVersion ? ` (consent ${form.policyVersion}: ${(form.channels ?? []).join(", ")})` : ""}.`,
           "This alert is not a diagnosis, quote, dispatch or appointment confirmation.",
         ].join("\n"),
         replyTo: lead.email,

@@ -46,13 +46,17 @@ const AUTOMATION_AGENT =
  * nothing is alerted or sent twice. Config intent (growthos.enabled) is enough to turn
  * site-side automations off; actually delivering to GrowthOS additionally requires the
  * env flag and credentials (fail closed).
+ *
+ * Pre-GrowthOS mode (emailBridge.preGrowthOS): a site launched before its GrowthOS site
+ * record exists emails leads to the owners until the operator sets
+ * SMART_SITE_GROWTHOS_ENABLED=true; from then on this returns true and the bridge can never
+ * send, so there are no double alerts.
  */
 export function growthOSOwnsLeadAutomations(rawEnv, siteConfig) {
   const env = normalizeEnv(rawEnv);
-  return (
-    env.SMART_SITE_GROWTHOS_ENABLED === "true" ||
-    siteConfig?.growthos?.enabled === true
-  );
+  if (env.SMART_SITE_GROWTHOS_ENABLED === "true") return true;
+  if (siteConfig?.emailBridge?.preGrowthOS === true) return false;
+  return siteConfig?.growthos?.enabled === true;
 }
 
 function stayedOnConfiguredOrigin(response, origin) {
