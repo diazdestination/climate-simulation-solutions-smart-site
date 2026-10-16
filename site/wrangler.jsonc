@@ -1,0 +1,55 @@
+// Climate Simulation Solutions site — Cloudflare Workers + static assets (smart-site-starter
+// cloudflare adapter, rendered by new-client.mjs). Worker name kept from the earlier CSS
+// candidate (cloudflare/wrangler.jsonc) so it replaces that worker rather than adding one.
+// Build first (npm run build -> ./dist). NEVER deploy while npm run release:check fails.
+// Safe defaults: no workers.dev, no preview URLs, NO routes (attaching a domain is a
+// launch decision for Adam), voice private, secrets only via `wrangler secret put`.
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "climate-simulation-solutions-site",
+  "main": "./worker/index.js",
+  "compatibility_date": "2026-10-09",
+  "workers_dev": false,
+  "preview_urls": false,
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+    // The worker sees API traffic first; everything else is served from static assets.
+    "run_worker_first": ["/api/*"]
+  },
+  // Durable lead outbox journal. Create the database only with operator approval, then
+  // replace database_id. Apply schema with: wrangler d1 migrations apply DB
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "climate-simulation-solutions-site-outbox",
+      // Created by GEEKOM Codex 2026-10-14 under Adam's deploy approval. A database ID is not a
+      // credential; the account ID stays out of this file.
+      "database_id": "08f46781-1e6f-42cd-aeef-d1c503693e5e",
+      "migrations_dir": "./core/db/migrations"
+    }
+  ],
+  // scheduled() drains the outbox every five minutes (kit/lessons-learned.md #15).
+  "triggers": { "crons": ["*/5 * * * *"] },
+  "vars": {
+    // Pre-GrowthOS launch (Adam, 2026-10-14 "1c"): leads are emailed to the owners until the CSS
+    // GrowthOS site record exists. Codex flips this to "true" with GROWTHOS_SITE_ID/SECRET at
+    // connection time; the email path then switches off automatically (no double alerts).
+    "SMART_SITE_GROWTHOS_ENABLED": "false",
+    "SITE_EMAIL_ENABLED": "true",
+    // Adam 2026-10-14: alerts go through Resend from the verified mogulforge.ai domain.
+    "SITE_EMAIL_PROVIDER": "resend",
+    "SITE_EMAIL_SENDER_NAME": "MogulForge Lead Alerts",
+    "GROWTHOS_API_ORIGIN": "https://app.mogulforge.ai",
+    "SITE_OUTBOX_ENABLED": "true",
+    "ELEVENLABS_VOICE_PUBLIC": "false"
+    // Never add SITE_ALLOW_UNCONFIRMED_FACTS here: it is a local-build override only.
+  }
+  // No "routes" and no account_id: attaching csshvac.com (approved 2026-10-14) is done by Codex at launch.
+  // Secrets (never in this file): GROWTHOS_SITE_ID, GROWTHOS_SITE_SECRET,
+  // SITE_OUTBOX_ENCRYPTION_KEY, SITE_OUTBOX_DRAIN_SECRET, ELEVENLABS_API_KEY, ELEVENLABS_AGENT_ID,
+  // TURNSTILE_SITE_KEY, TURNSTILE_SECRET_KEY (both held in Cloudflare Secrets Store: bind them with
+  // a "secrets_store_secrets" entry per key, store_id + secret_name, at deploy; the core resolves
+  // the bindings), and for the pre-GrowthOS email path RESEND_API_KEY,
+  // SITE_EMAIL_SENDER (a mogulforge.ai address) and SITE_EMAIL_INTERNAL_RECIPIENTS (owner addresses).
+}
