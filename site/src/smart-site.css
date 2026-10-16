@@ -125,7 +125,10 @@ body.modal-open { overflow: hidden; }
 .request-result h3 { margin: 0; font: 800 1.6rem Manrope, sans-serif; }
 .request-result p { margin: 0; color: #c6d6e2; }
 .request-result .kicker { margin: 0; }
-.request-reference { color: var(--white) !important; font-family: ui-monospace, monospace; overflow-wrap: anywhere; }
+.request-reference { display: grid; gap: .15rem; width: 100%; padding: .75rem 1rem; border-radius: .6rem; background: rgba(86,209,250,.12); color: var(--white) !important; overflow-wrap: anywhere; }
+.request-reference span { font-size: .78rem; letter-spacing: .08em; text-transform: uppercase; color: #9fb7c9; }
+.request-reference strong { font-family: ui-monospace, monospace; font-size: 1.5rem; letter-spacing: .04em; }
+.request-next { font-size: .95rem; }
 .request-aside { position: sticky; top: 2rem; padding: 1.6rem; border: 1px solid var(--line); border-radius: 1rem; background: rgba(255,255,255,.03); }
 .request-aside h2 { margin-bottom: 1rem; font-size: 1.4rem; }
 .request-aside p { color: var(--muted); }

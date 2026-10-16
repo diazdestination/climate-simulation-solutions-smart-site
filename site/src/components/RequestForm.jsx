@@ -14,7 +14,7 @@ import {
   SYSTEM_TYPES,
   buildLeadRequest,
 } from "../lib/hvacRequest.js";
-import { PHONE_DISPLAY, PHONE_LINK, consentTextFor } from "../lib/siteFacts.js";
+import { HOURS_CONFIRMED, HOURS_TEXT, PHONE_DISPLAY, PHONE_LINK, consentTextFor } from "../lib/siteFacts.js";
 import { HoneypotField, useBotCheck } from "./BotCheck.jsx";
 
 const FORM_IDS = { urgent: "urgent-request", service: "service-request", maintenance: "maintenance-plan", estimate: "estimate-question" };
@@ -158,7 +158,18 @@ export function RequestForm({ kind, defaults = {}, heading, intro }) {
           {result.status === "needs-review" && "Your details are securely held, but transfer to the office needs attention. Please call and mention this reference."}
           {local && "This local preview is not connected to the office’s request system, so your details were not delivered to anyone. Please call to reach the office."}
         </p>
-        {!local && result.reference && <p className="request-reference">Reference: {result.reference}</p>}
+        {!local && result.reference && (
+          <p className="request-reference">
+            <span>Your reference</span>
+            <strong>{result.reference}</strong>
+          </p>
+        )}
+        {!local && (
+          <p className="request-next">
+            <strong>What happens next:</strong> the office reviews requests
+            {HOURS_CONFIRMED ? ` ${HOURS_TEXT},` : " during office hours"} and contacts you at the number you gave. Mention this reference if you call.
+          </p>
+        )}
         <a className="button button-primary" href={PHONE_LINK} data-surface={SURFACE[kind]}>
           <FaPhone aria-hidden="true" /> Call {PHONE_DISPLAY}
         </a>

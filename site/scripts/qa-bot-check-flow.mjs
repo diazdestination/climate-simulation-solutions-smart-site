@@ -102,7 +102,8 @@ try {
     // 2026-10-16: on phones the short result panel rendered above the screen, so no reference was seen.
     await service.page.waitForTimeout(900);
     const panel = service.page.locator(".request-result").first();
-    assert.match(await panel.innerText(), /Reference: /);
+    assert.match(await panel.innerText(), /Your reference/i);
+    assert.match(await panel.innerText(), /What happens next/);
     const box = await panel.boundingBox();
     assert.ok(box && box.y >= 0 && box.y < height, `result panel on screen (${name}, y=${box?.y})`);
     assert.equal(service.posts[0].botCheck, "qa-token-request_service");
