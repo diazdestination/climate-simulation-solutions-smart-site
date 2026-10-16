@@ -118,7 +118,8 @@ body.modal-open { overflow: hidden; }
 .field-error { margin: 0; padding: .8rem 1rem; border-left: 3px solid var(--brand-red); border-radius: .4rem; background: rgba(255,53,27,.12); color: #ffd9d2; }
 .request-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem; }
 .request-actions .text-link { color: var(--cyan); white-space: normal; }
-.request-result { display: grid; justify-items: start; gap: .6rem; padding: 2rem; border: 1px solid rgba(86,209,250,.5); border-radius: 1rem; background: var(--panel); }
+.request-result { display: grid; justify-items: start; gap: .6rem; padding: 2rem; border: 1px solid rgba(86,209,250,.5); border-radius: 1rem; background: var(--panel); scroll-margin-top: 6rem; }
+.request-result:focus { outline: none; }
 .request-result > svg { font-size: 2rem; color: var(--cyan); }
 .request-result--pending > svg, .request-result--local > svg { color: var(--amber); }
 .request-result h3 { margin: 0; font: 800 1.6rem Manrope, sans-serif; }

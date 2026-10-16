@@ -79,6 +79,14 @@ export function RequestForm({ kind, defaults = {}, heading, intro }) {
   const [honeypot, setHoneypot] = useState("");
   const botCheck = useBotCheck(`request_${kind}`);
   const started = useRef(false);
+  const resultRef = useRef(null);
+  // The short result panel replaces a long form, so on a phone it would render above the
+  // visible screen (2026-10-16 launch test: no reference was seen). Bring it into view.
+  useEffect(() => {
+    if (!result || !resultRef.current) return;
+    resultRef.current.scrollIntoView?.({ block: "start", behavior: "smooth" });
+    resultRef.current.focus?.({ preventScroll: true });
+  }, [result]);
   const loopback = typeof window !== "undefined" && isLoopbackPreview();
 
   useEffect(() => {
@@ -131,7 +139,7 @@ export function RequestForm({ kind, defaults = {}, heading, intro }) {
     const pending = ["queued", "needs-review"].includes(result.status);
     const local = result.status === "prepared-locally";
     return (
-      <div className={`request-result${pending ? " request-result--pending" : ""}${local ? " request-result--local" : ""}`} role="status">
+      <div className={`request-result${pending ? " request-result--pending" : ""}${local ? " request-result--local" : ""}`} role="status" ref={resultRef} tabIndex={-1}>
         {pending ? <FaClock aria-hidden="true" /> : local ? <FaTriangleExclamation aria-hidden="true" /> : <FaCircleCheck aria-hidden="true" />}
         <p className="kicker">
           {result.status === "saved" || result.status === "sent" ? "Request received" : result.status === "queued" ? "Received · awaiting transfer" : result.status === "needs-review" ? "Received · please call" : "Local preview only"}

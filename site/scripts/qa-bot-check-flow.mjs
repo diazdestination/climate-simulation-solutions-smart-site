@@ -99,6 +99,12 @@ try {
     await form.getByRole("button", { name: /Send service request/ }).click();
     await service.page.waitForTimeout(800);
     assert.equal(service.posts.length, 1, "one service request POST");
+    // 2026-10-16: on phones the short result panel rendered above the screen, so no reference was seen.
+    await service.page.waitForTimeout(900);
+    const panel = service.page.locator(".request-result").first();
+    assert.match(await panel.innerText(), /Reference: /);
+    const box = await panel.boundingBox();
+    assert.ok(box && box.y >= 0 && box.y < height, `result panel on screen (${name}, y=${box?.y})`);
     assert.equal(service.posts[0].botCheck, "qa-token-request_service");
     assert.equal(service.posts[0].website, "");
     assert.deepEqual(service.errors, []);
