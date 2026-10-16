@@ -37,6 +37,23 @@ const ACCEPTED_FILE_TYPES = new Set([
   "image/webp",
   "application/pdf",
 ]);
+// Leading-byte signatures: the browser's MIME label alone is not trusted. (Ported from the
+// parallel Painless review, claude/painless-launch-hardening-20261013.)
+const FILE_SIGNATURES = {
+  "image/jpeg": (b) => b[0] === 0xff && b[1] === 0xd8 && b[2] === 0xff,
+  "image/png": (b) => b[0] === 0x89 && b[1] === 0x50 && b[2] === 0x4e && b[3] === 0x47,
+  "image/webp": (b) =>
+    b[0] === 0x52 && b[1] === 0x49 && b[2] === 0x46 && b[3] === 0x46 &&
+    b[8] === 0x57 && b[9] === 0x45 && b[10] === 0x42 && b[11] === 0x50,
+  "application/pdf": (b) => b[0] === 0x25 && b[1] === 0x50 && b[2] === 0x44 && b[3] === 0x46,
+};
+
+export async function fileMatchesDeclaredType(file) {
+  const check = FILE_SIGNATURES[file?.type];
+  if (!check || typeof file.slice !== "function") return false;
+  const head = new Uint8Array(await file.slice(0, 12).arrayBuffer());
+  return head.length >= 4 && check(head);
+}
 const MAX_FILE_BYTES = 12 * 1024 * 1024;
 // Multipart framing overhead on top of the file itself.
 const MAX_UPLOAD_BYTES = MAX_FILE_BYTES + 64 * 1024;
@@ -160,7 +177,7 @@ export async function handleVoiceFileRequest(
   const file = incoming.get("file");
   if (!file || typeof file.arrayBuffer !== "function")
     return json({ ready: false, code: "file_required" }, 400);
-  if (!ACCEPTED_FILE_TYPES.has(file.type) || file.size > MAX_FILE_BYTES)
+  if (!ACCEPTED_FILE_TYPES.has(file.type) || file.size > MAX_FILE_BYTES || !(await fileMatchesDeclaredType(file)))
     return json({ ready: false, code: "file_invalid" }, 400);
 
   const providerForm = new FormData();

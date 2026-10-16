@@ -1,6 +1,6 @@
 {
   "starter": "smart-site-starter",
-  "starterCommit": "c805d8aa0023144176a9f5a4e331dc19f9e19885",
+  "starterCommit": "7f841b1caf436ca50d7971fcd702b5121113a670",
   "starterDirty": false,
   "adapter": "cloudflare",
   "files": {
@@ -23,8 +23,8 @@
     "worker/growthos-connector.js": "bc37bda779c918989b54ef140a445732ce50d2e3dde9b0d3f3ced70f41e96820",
     "worker/http.js": "71629b5a76de4f406fb1014c88f33f6cb75c271a33715671b28cf4e6c025840e",
     "worker/lead-outbox.js": "c703d41ec6cc82091afabd50661be0754e99c37f42576c3c1e5a1911fb291c8f",
-    "worker/router.js": "0850477e41d899ee30640202ca100e54ba3141ddd3f3ee17012aaa986057d8e4",
-    "worker/voice-proxy.js": "647ea43da648a7cb7a71afeb36ed862ed9592d247aa0b1d349a92471f53fb091",
+    "worker/router.js": "62c523c1fbb61ef664949fb4fdd17e4bab4899cd4a2c3afc46378f90b0731877",
+    "worker/voice-proxy.js": "a7121a57823b112032a43e54a9ec56f74a602f6645abdc8bcce25e41e9382e35",
     "adapters/cloudflare/worker-entry.template.js": "f2991c401e0bce99fd225071c7c830c3fc0dad145266f9fcb28611ab9b938e94",
     "adapters/cloudflare/wrangler.template.jsonc": "fd6a3bd5b3d7da5f97533dc1652ee69ee536d756d00d871ae588adc4ce924a34",
     ".gitattributes": "51cf8a1e09fe10e4c4e2d118763cbbbcdb6ec7f668f26a9cd762cdd741270ab6"

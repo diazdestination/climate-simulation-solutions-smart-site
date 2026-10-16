@@ -2,7 +2,7 @@
 // Runtime-neutral: uses only Web Request/Response/fetch/crypto. Host adapters
 // (adapters/cloudflare, adapters/openai-sites) wire env bindings (DB, ASSETS) and cron.
 import { botProtectionUnavailable, normalizeEnv, resolveSecretBindings } from "./env.js";
-import { BodyTooLargeError, json, readBoundedText } from "./http.js";
+import { BodyTooLargeError, isCrossSite, json, readBoundedText } from "./http.js";
 import {
   createGrowthOSConnector,
   growthOSOwnsLeadAutomations,
@@ -68,6 +68,8 @@ export async function guardLeadSubmission(request, env, fetchImpl, maxBytes = LE
 export async function guardVoiceSession(request, env, config, fetchImpl) {
   const pathname = new URL(request.url).pathname;
   if (pathname === VOICE_PATHS.status) return null;
+  // Session minting and uploads spend provider money: same-site browsers only.
+  if (isCrossSite(request)) return json({ ready: false, code: "cross_site_request_rejected" }, 403);
   if (botProtectionUnavailable(env)) return json({ ready: false, code: "bot_protection_unavailable" }, 503);
   const limit = await checkRateLimit(request, env, pathname === VOICE_PATHS.files ? "files" : "voice");
   if (!limit.allowed) return tooManyRequests(limit.retryAfterSeconds);
@@ -164,6 +166,7 @@ export function createSmartSiteWorker(config, options = {}) {
     }
     if (pathname === WEATHER_EVIDENCE_PATH) {
       if (!weatherEnabled) return json({ ready: false, code: "module_disabled" }, 404);
+      if (isCrossSite(request)) return json({ ready: false, code: "cross_site_request_rejected" }, 403);
       const limit = await checkRateLimit(request, env, "weather");
       if (!limit.allowed) return tooManyRequests(limit.retryAfterSeconds);
       return handleWeatherEvidenceRequest(request, outboundFetch);
