@@ -83,9 +83,9 @@ export function HeroVisual() {
         <SnowflakeIcon />
       </div>
       <div className="visual-caption">
-        <span className="caption-line" /> COMFORT IN MOTION <span>•</span> NORTH GEORGIA
+        <span className="caption-line" /> COMFORT IN MOTION <span>•</span> LOCAL TEAM
       </div>
-      <div className="visual-coordinate">34° NORTH / BUILT FOR HERE</div>
+      <div className="visual-coordinate">LOCAL / BUILT FOR HERE</div>
     </div>
   );
 }

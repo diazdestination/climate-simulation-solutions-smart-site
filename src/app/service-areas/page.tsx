@@ -7,11 +7,11 @@ export default function ServiceAreas() {
     <>
       <section className="inner-hero">
         <div className="container">
-          <p className="eyebrow">NORTH GEORGIA / LOCAL SERVICE</p>
+          <p className="eyebrow">TRI-COUNTY / LOCAL SERVICE</p>
           <h1>Close to home.</h1>
           <p>
-            We serve communities across North Georgia. If you are unsure whether your location is
-            covered, send a request and the office can confirm.
+            We serve communities across the Tri-County area. If you are unsure whether your location
+            is covered, send a request and the office can confirm.
           </p>
         </div>
       </section>

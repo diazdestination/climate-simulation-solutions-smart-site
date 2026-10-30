@@ -45,9 +45,9 @@ export default async function ServiceDetail({ params }: Props) {
           </div>
           <aside className="info-panel">
             <p className="eyebrow">LOCAL SERVICE</p>
-            <h3>North Georgia focused.</h3>
+            <h3>Tri-County focused.</h3>
             <p>
-              Serving Dawsonville, Cumming, Gainesville, Lake Lanier communities, and surrounding
+              Serving Riverton, Eastbrook, Mason County, Lakeside communities, and surrounding
               areas.
             </p>
             <Link className="text-link" href="/service-areas">

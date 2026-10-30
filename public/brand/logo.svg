@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="Demo HVAC brand mark">
+  <defs>
+    <linearGradient id="warm" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffb21f"/><stop offset="1" stop-color="#ff6a13"/></linearGradient>
+    <linearGradient id="cool" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#9fdcff"/><stop offset="1" stop-color="#1f8fe5"/></linearGradient>
+  </defs>
+  <circle cx="64" cy="64" r="60" fill="#0a1a3a"/>
+  <path d="M64 24a40 40 0 0 0 0 80Z" fill="url(#warm)"/>
+  <path d="M64 24a40 40 0 0 1 0 80Z" fill="url(#cool)"/>
+  <circle cx="64" cy="64" r="26" fill="#0a1a3a"/>
+  <circle cx="64" cy="64" r="22" fill="none" stroke="#f3f8ff" stroke-width="3"/>
+  <g fill="#f3f8ff" transform="translate(64 64)">
+    <path id="b" d="M0 -4c8 -10 18 -12 22 -8c-6 4 -12 12 -16 16z"/>
+    <use href="#b" transform="rotate(72)"/><use href="#b" transform="rotate(144)"/><use href="#b" transform="rotate(216)"/><use href="#b" transform="rotate(288)"/>
+    <circle r="4"/>
+  </g>
+</svg>

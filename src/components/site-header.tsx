@@ -7,7 +7,7 @@ export function SiteHeader() {
     <header className="site-header">
       <div className="topline">
         <div className="container topline-inner">
-          <span>Serving North Georgia homes & businesses</span>
+          <span>Serving Tri-County homes & businesses</span>
           {site.phone ? (
             <a href={phoneHref(site.phone)}>Call {site.phone}</a>
           ) : (
@@ -20,15 +20,15 @@ export function SiteHeader() {
           <Link className="brand" href="/" aria-label={`${site.shortName} home`}>
             <Image
               className="brand-logo"
-              src="/brand/css-logo-160.png"
+              src="/brand/logo-160.png"
               alt=""
               width={46}
               height={46}
               priority
             />
             <span className="brand-copy">
-              <strong>CLIMATE</strong>
-              <small>SIMULATION SOLUTIONS</small>
+              <strong>NORTHLINE</strong>
+              <small>HEATING &amp; AIR</small>
             </span>
           </Link>
           <nav className="desktop-nav" aria-label="Main navigation">

@@ -9,7 +9,7 @@ export default function About() {
           <p className="eyebrow">LOCAL / FAMILY-OWNED</p>
           <h1>Built around the people we serve.</h1>
           <p>
-            Climate Simulation Solutions is a local, family-owned business serving North Georgia
+            Northline Heating & Air is a local, family-owned business serving the Tri-County area
             homeowners and businesses with HVAC and refrigeration service.
           </p>
         </div>
@@ -29,10 +29,8 @@ export default function About() {
           </div>
           <aside className="info-panel">
             <p className="eyebrow">OUR SERVICE AREA</p>
-            <h3>North Georgia is home.</h3>
-            <p>
-              Dawsonville, Cumming, Gainesville, Lake Lanier communities, and surrounding areas.
-            </p>
+            <h3>The Tri-County area is home.</h3>
+            <p>Riverton, Eastbrook, Mason County, Lakeside communities, and surrounding areas.</p>
             <Link className="text-link" href="/service-areas">
               Explore service areas ↗
             </Link>

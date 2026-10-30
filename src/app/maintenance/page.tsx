@@ -9,8 +9,8 @@ export default function Maintenance() {
           <p className="eyebrow">MAINTENANCE / STAY READY</p>
           <h1>Care for the long run.</h1>
           <p>
-            Climate Simulation Solutions offers an existing maintenance membership and service
-            agreement. Ask the office about current coverage and enrollment.
+            Northline Heating & Air offers an existing maintenance membership and service agreement.
+            Ask the office about current coverage and enrollment.
           </p>
           <Link className="button button-primary" href="/book-service?intent=maintenance">
             Ask About Maintenance ↗

@@ -1,17 +1,15 @@
-# Climate Simulation Solutions Smart Site
+# HVAC Smart Site Front End
 
-A Next.js App Router scaffold for Climate Simulation Solutions LLC, a local, family-owned HVAC and refrigeration business serving North Georgia. The design follows the [MogulForge discovery brief](https://docs.google.com/document/d/1h5EMSFodXCg0ldqBTyoyP6ajXY5P1lCR8AsFcPWVjJ4/edit): build trust quickly, then make **Book Service** effortless.
+A ready-to-remix Next.js front end for HVAC smart sites. Dark premium design, a live WebGL hero that shows warm air pulled through a fan and leaving cool, scroll-in reveals, office-reviewed request forms, and a fail-closed GrowthOS intake boundary. The checked-in brand ("Northline Heating & Air") is a demo; follow [REMIX.md](REMIX.md) to fit a real client in about an hour.
 
-## Current scope
+## What is in the box
 
-- Dark premium, responsive home page with clear service, emergency, maintenance, financing, and local area paths.
-- Brand visuals built around the Climate Simulation Solutions logo: a live WebGL airflow scene in the hero (warm air in, through a fan, cool air out) using the logo's flame-orange and sky-blue palette, North Georgia ridgelines, service icons, and scroll-in reveals. Reduced-motion, no-WebGL, and no-JavaScript visitors get the original CSS visual.
-- Office-reviewed booking, estimate, maintenance, and emergency request forms.
-- Server-side GrowthOS webhook boundary with validation and fail-closed delivery.
-- Testimonial support that displays only approved real quotes. The list is intentionally empty.
-- Search indexing disabled until launch approval and content review.
-
-This is a working application scaffold, **not a launched site or live GrowthOS integration**. The forms remain disabled until the approved webhook URL and token are configured. A request is never described as a confirmed appointment.
+- Home page with hero airflow visual (React Three Fiber + custom shaders), ridgeline accent, service icons with a thermal hover, a gradient connector on the three steps, a pulsing emergency band, and GSAP scroll reveals.
+- Interior routes: services and service detail, emergency service, maintenance, financing, service areas, about, reviews, book service.
+- Progressive enhancement: reduced-motion, no-WebGL, and no-JavaScript visitors get a CSS visual and a fully static page. All copy is server-rendered.
+- Request API that validates input, rejects cross-origin posts, and returns 503 until a webhook is configured.
+- Testimonials render only from an approved list that ships empty.
+- `noindex` until launch approval.
 
 ## Local setup
 
@@ -23,7 +21,7 @@ cp .env.example .env.local
 npm run dev
 ```
 
-On Windows PowerShell, use `Copy-Item .env.example .env.local`. Open `http://localhost:3000`. Leave the env values blank for a safe preview; form delivery will be disabled.
+Open `http://localhost:3000`. Leave env values blank for a safe preview; form delivery stays disabled.
 
 ## Checks
 
@@ -41,20 +39,19 @@ npm run format:check
 | `GROWTHOS_LEAD_WEBHOOK_URL` | Approved HTTPS GrowthOS intake endpoint. |
 | `GROWTHOS_LEAD_WEBHOOK_TOKEN` | Private bearer token for server-side delivery. |
 
-Never commit `.env.local` or real credentials. See [GrowthOS integration](docs/GROWTHOS_INTEGRATION.md) for the draft event contract and required provider verification.
+Never commit `.env.local` or real credentials.
 
 ## Project layout
 
-- `src/app/`: Site routes and the request API handler.
-- `src/components/`: Shared navigation, footer, and intake form.
-- `src/components/visuals/`: Hero airflow scene (React Three Fiber), shaders, brand icons, and ridgeline.
-- `src/components/motion/`: GSAP setup, scroll reveals, and motion-preference detection.
-- `public/brand/`: Approved logo assets.
-- `src/lib/site.ts`: Approved public facts, services, areas, and testimonials.
-- `src/lib/growthos.ts`: Server-side GrowthOS delivery boundary.
-- `docs/`: Discovery summary and integration contract.
-- `PROJECT_STATE.md`, `DECISIONS.md`, `NEXT_ACTIONS.md`, `RUNBOOK.md`: Durable project state.
+- `src/app/`: Routes and the request API handler.
+- `src/components/`: Header, footer, intake form.
+- `src/components/visuals/`: Hero airflow scene, shaders, brand icons, ridgeline.
+- `src/components/motion/`: GSAP setup, scroll reveals, motion-preference detection.
+- `src/lib/site.ts`: The single place for client facts.
+- `src/lib/growthos.ts`: Server-side delivery boundary.
+- `public/brand/`: Logo files.
+- `REMIX.md`: Step-by-step brand swap.
 
-## Before launch
+## Before any launch
 
-The business must approve the logo, photos, service copy, phone number, hours, emergency response language, real testimonials, financing terms, maintenance terms, privacy policy, and deployment domain. Confirm the GrowthOS endpoint and office workflow, add abuse controls at the edge, test request delivery and office acknowledgement, complete accessibility and mobile review, then remove the temporary `noindex` metadata only with public launch approval.
+The client must approve logo, photos, copy, phone, hours, emergency wording, testimonials, financing and maintenance terms, privacy policy, and domain. Confirm the GrowthOS endpoint and office workflow, test request delivery, complete accessibility and mobile review, then remove `noindex` only with launch approval.

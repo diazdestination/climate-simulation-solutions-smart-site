@@ -17,7 +17,7 @@ const instrumentSerif = Instrument_Serif({
 
 export const metadata: Metadata = {
   title: {
-    default: `${site.shortName} | North Georgia HVAC Service`,
+    default: `${site.shortName} | Local HVAC Service`,
     template: `%s | ${site.shortName}`,
   },
   description: site.description,

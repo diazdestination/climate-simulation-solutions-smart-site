@@ -11,7 +11,7 @@ export default function Home() {
         <div className="container hero-layout">
           <div className="hero-content">
             <p className="eyebrow">
-              <span className="signal-dot" /> NORTH GEORGIA HVAC & REFRIGERATION
+              <span className="signal-dot" /> TRI-COUNTY HVAC & REFRIGERATION
             </p>
             <h1>
               Comfort,
@@ -46,7 +46,7 @@ export default function Home() {
         <div className="container trust-inner">
           <span>LOCAL & FAMILY-OWNED</span>
           <span>RESIDENTIAL + COMMERCIAL</span>
-          <span>NORTH GEORGIA FOCUSED</span>
+          <span>TRI-COUNTY FOCUSED</span>
           <span>OFFICE-REVIEWED REQUESTS</span>
         </div>
       </section>
@@ -229,15 +229,15 @@ export default function Home() {
       <section className="area-section">
         <div className="container area-layout">
           <div data-reveal>
-            <p className="eyebrow">ROOTED IN NORTH GEORGIA</p>
+            <p className="eyebrow">ROOTED IN THE TRI-COUNTY AREA</p>
             <h2>
               Close to home.
               <br />
               Ready to help.
             </h2>
             <p>
-              Serving Dawsonville, Cumming, Gainesville, Lake Lanier communities, and surrounding
-              North Georgia areas.
+              Serving Riverton, Eastbrook, Mason County, Lakeside communities, and surrounding
+              Tri-County areas.
             </p>
             <Link className="text-link" href="/service-areas">
               Explore service areas <span aria-hidden="true">↗</span>

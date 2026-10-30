@@ -1,3 +1,5 @@
+/* BRAND TOKENS: start a remix here (see REMIX.md). Shader palette lives in
+   src/components/visuals/airflow-shaders.ts (brandGlsl). */
 :root {
   --ink: #e9f0f6;
   --muted: #9aaeb9;

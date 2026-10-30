@@ -93,7 +93,7 @@ export function ServiceIcon({ slug, className }: { slug: string; className?: str
   return <Icon className={className} />;
 }
 
-/** North Georgia ridgeline, echoing the twin peaks in the logo. Sized to span its container. */
+/** Mountain ridgeline accent (swap or remove per brand). Sized to span its container. */
 export function Ridgeline({ className }: IconProps) {
   return (
     <svg className={className} viewBox="0 0 1440 260" preserveAspectRatio="none" aria-hidden="true">

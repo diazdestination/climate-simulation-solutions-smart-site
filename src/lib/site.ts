@@ -1,15 +1,15 @@
+// DEMO BRAND. Every fact here is a placeholder for the next client. See REMIX.md.
 export const site = {
-  name: "Climate Simulation Solutions LLC",
-  shortName: "Climate Simulation Solutions",
+  name: "Northline Heating & Air LLC",
+  shortName: "Northline Heating & Air",
   description:
-    "Heating, cooling, refrigeration, and indoor air quality service for North Georgia homes and businesses.",
+    "Heating, cooling, refrigeration, and indoor air quality service for Tri-County homes and businesses.",
   phone: process.env.NEXT_PUBLIC_BUSINESS_PHONE?.trim() || null,
   serviceAreas: [
-    "Dawsonville & Dawson County",
-    "Cumming & Forsyth County",
-    "Gainesville & Hall County",
-    "Lake Lanier communities",
-    "North Georgia",
+    "Riverton & Mason County",
+    "Eastbrook & Hale County",
+    "Lakeside communities",
+    "Greater Tri-County area",
   ],
   services: [
     {

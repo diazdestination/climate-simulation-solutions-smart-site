@@ -14,4 +14,4 @@ The form reports failure without claiming the request was received. Check endpoi
 
 ## Release
 
-Keep the repository private and the site unindexed until `NEXT_ACTIONS.md` is complete and Adam authorizes public launch. Review the target account, repository, deployment, and domain before each external write.
+Keep each client site private and unindexed until the client approves public launch. Review the target account, repository, deployment, and domain before each external write.
