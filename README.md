@@ -5,6 +5,7 @@ A Next.js App Router scaffold for Climate Simulation Solutions LLC, a local, fam
 ## Current scope
 
 - Dark premium, responsive home page with clear service, emergency, maintenance, financing, and local area paths.
+- Brand visuals built around the Climate Simulation Solutions logo: a live WebGL airflow scene in the hero (warm air in, through a fan, cool air out) using the logo's flame-orange and sky-blue palette, North Georgia ridgelines, service icons, and scroll-in reveals. Reduced-motion, no-WebGL, and no-JavaScript visitors get the original CSS visual.
 - Office-reviewed booking, estimate, maintenance, and emergency request forms.
 - Server-side GrowthOS webhook boundary with validation and fail-closed delivery.
 - Testimonial support that displays only approved real quotes. The list is intentionally empty.
@@ -46,6 +47,9 @@ Never commit `.env.local` or real credentials. See [GrowthOS integration](docs/G
 
 - `src/app/`: Site routes and the request API handler.
 - `src/components/`: Shared navigation, footer, and intake form.
+- `src/components/visuals/`: Hero airflow scene (React Three Fiber), shaders, brand icons, and ridgeline.
+- `src/components/motion/`: GSAP setup, scroll reveals, and motion-preference detection.
+- `public/brand/`: Approved logo assets.
 - `src/lib/site.ts`: Approved public facts, services, areas, and testimonials.
 - `src/lib/growthos.ts`: Server-side GrowthOS delivery boundary.
 - `docs/`: Discovery summary and integration contract.

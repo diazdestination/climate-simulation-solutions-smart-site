@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { HeroVisual } from "@/components/visuals/hero-visual";
+import { Ridgeline, ServiceIcon } from "@/components/visuals/brand-icons";
 import { approvedTestimonials, site, phoneHref } from "@/lib/site";
 
 export default function Home() {
@@ -36,18 +38,9 @@ export default function Home() {
               <span>03 / CLEAR NEXT STEPS</span>
             </div>
           </div>
-          <div className="hero-visual" aria-hidden="true">
-            <div className="visual-ring ring-one" />
-            <div className="visual-ring ring-two" />
-            <div className="visual-core">
-              <div className="core-shine" />
-            </div>
-            <div className="visual-caption">
-              <span className="caption-line" /> COMFORT IN MOTION <span>•</span> NORTH GEORGIA
-            </div>
-            <div className="visual-coordinate">34° NORTH / BUILT FOR HERE</div>
-          </div>
+          <HeroVisual />
         </div>
+        <Ridgeline className="hero-ridge" />
       </section>
       <section className="trust-strip">
         <div className="container trust-inner">
@@ -59,7 +52,7 @@ export default function Home() {
       </section>
       <section className="section" id="services">
         <div className="container">
-          <div className="section-heading">
+          <div className="section-heading" data-reveal>
             <div>
               <p className="eyebrow">01 / WHAT WE DO</p>
               <h2>One team. Every season.</h2>
@@ -69,12 +62,15 @@ export default function Home() {
               service request.
             </p>
           </div>
-          <div className="service-grid">
+          <div className="service-grid" data-reveal-group>
             {site.services.map((service) => (
               <Link className="service-card" href={`/services/${service.slug}`} key={service.slug}>
                 <span className="card-number">{service.number} / SERVICE</span>
                 <span className="card-arrow" aria-hidden="true">
                   ↗
+                </span>
+                <span className="service-icon" aria-hidden="true">
+                  <ServiceIcon slug={service.slug} />
                 </span>
                 <h3>{service.title}</h3>
                 <p>{service.detail}</p>
@@ -90,7 +86,7 @@ export default function Home() {
       </section>
       <section className="emergency-band">
         <div className="container emergency-layout">
-          <div>
+          <div data-reveal>
             <p className="eyebrow">02 / PRIORITY ROUTING</p>
             <h2>When comfort can’t wait.</h2>
             <p>
@@ -120,7 +116,7 @@ export default function Home() {
       </section>
       <section className="section">
         <div className="container">
-          <div className="section-heading">
+          <div className="section-heading" data-reveal>
             <div>
               <p className="eyebrow">03 / HOW IT WORKS</p>
               <h2>
@@ -134,7 +130,29 @@ export default function Home() {
               explain what happens next.
             </p>
           </div>
-          <div className="steps">
+          <div className="steps" data-reveal-group>
+            <svg
+              className="steps-line"
+              viewBox="0 0 1200 2"
+              preserveAspectRatio="none"
+              aria-hidden="true"
+            >
+              <defs>
+                <linearGradient
+                  id="steps-gradient"
+                  gradientUnits="userSpaceOnUse"
+                  x1="0"
+                  x2="1200"
+                  y1="0"
+                  y2="0"
+                >
+                  <stop offset="0" stopColor="#ff6a13" />
+                  <stop offset="0.5" stopColor="#ffb21f" />
+                  <stop offset="1" stopColor="#1f8fe5" />
+                </linearGradient>
+              </defs>
+              <path d="M0 1 H1200" data-draw pathLength="1" />
+            </svg>
             <div>
               <span>01</span>
               <h3>Tell us what you need</h3>
@@ -157,7 +175,7 @@ export default function Home() {
         </div>
       </section>
       <section className="split-section">
-        <div className="container split-grid">
+        <div className="container split-grid" data-reveal-group>
           <div className="split-panel plan-panel">
             <p className="eyebrow">04 / STAY READY</p>
             <h2>Care that goes beyond the repair.</h2>
@@ -185,7 +203,7 @@ export default function Home() {
       {approvedTestimonials.length > 0 && (
         <section className="section">
           <div className="container">
-            <div className="section-heading">
+            <div className="section-heading" data-reveal>
               <div>
                 <p className="eyebrow">06 / REAL STORIES</p>
                 <h2>Words from our customers.</h2>
@@ -194,7 +212,7 @@ export default function Home() {
                 See reviews <span aria-hidden="true">↗</span>
               </Link>
             </div>
-            <div className="testimonial-grid">
+            <div className="testimonial-grid" data-reveal-group>
               {approvedTestimonials.map((item) => (
                 <blockquote key={`${item.name}-${item.quote}`}>
                   <p>“{item.quote}”</p>
@@ -210,7 +228,7 @@ export default function Home() {
       )}
       <section className="area-section">
         <div className="container area-layout">
-          <div>
+          <div data-reveal>
             <p className="eyebrow">ROOTED IN NORTH GEORGIA</p>
             <h2>
               Close to home.
@@ -225,7 +243,7 @@ export default function Home() {
               Explore service areas <span aria-hidden="true">↗</span>
             </Link>
           </div>
-          <div className="area-list">
+          <div className="area-list" data-reveal-group>
             {site.serviceAreas.map((area, index) => (
               <div key={area}>
                 <span>0{index + 1}</span>
@@ -236,7 +254,7 @@ export default function Home() {
         </div>
       </section>
       <section className="final-cta">
-        <div className="container">
+        <div className="container" data-reveal>
           <p className="eyebrow">LET’S GET YOU COMFORTABLE</p>
           <h2>Start with a service request.</h2>
           <p>
