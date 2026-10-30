@@ -5,6 +5,7 @@ A Next.js App Router scaffold for Climate Simulation Solutions LLC, a local, fam
 ## Current scope
 
 - Dark premium, responsive home page with clear service, emergency, maintenance, financing, and local area paths.
+- Cinematic scroll-driven home page intro: a WebGL scene (React Three Fiber) scrubbed by scroll through cooling, heating, and every-season chapters, with smooth scrolling (Lenis) and GSAP ScrollTrigger reveals. Users who prefer reduced motion, lack WebGL, or have JavaScript disabled get the same content as static sections over a CSS visual.
 - Office-reviewed booking, estimate, maintenance, and emergency request forms.
 - Server-side GrowthOS webhook boundary with validation and fail-closed delivery.
 - Testimonial support that displays only approved real quotes. The list is intentionally empty.
@@ -46,6 +47,8 @@ Never commit `.env.local` or real credentials. See [GrowthOS integration](docs/G
 
 - `src/app/`: Site routes and the request API handler.
 - `src/components/`: Shared navigation, footer, and intake form.
+- `src/components/cinematic/`: Cinematic stage, WebGL scene and shaders, smooth scroll, scroll reveals, and motion-preference detection.
+- `src/lib/cinematic-state.ts`: Shared scroll state bridging ScrollTrigger and the scene.
 - `src/lib/site.ts`: Approved public facts, services, areas, and testimonials.
 - `src/lib/growthos.ts`: Server-side GrowthOS delivery boundary.
 - `docs/`: Discovery summary and integration contract.

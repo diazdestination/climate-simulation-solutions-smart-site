@@ -1,28 +1,63 @@
 import Link from "next/link";
+import { CinematicStage, type Chapter } from "@/components/cinematic/cinematic-stage";
 import { approvedTestimonials, site, phoneHref } from "@/lib/site";
+
+const chapters: Chapter[] = [
+  {
+    number: "01",
+    eyebrow: "COOLING",
+    title: "When cooling falls behind.",
+    body: "AC repair and cooling system service for homes and businesses across North Georgia. Describe what you are seeing and we take it from there.",
+    href: "/services/ac-repair",
+    linkLabel: "AC repair",
+  },
+  {
+    number: "02",
+    eyebrow: "HEATING",
+    title: "When the heat has to hold.",
+    body: "Furnace and heating system service for the colder months, from a team that works in these hills year-round.",
+    href: "/services/heating-repair",
+    linkLabel: "Heating repair",
+  },
+  {
+    number: "03",
+    eyebrow: "EVERY SEASON",
+    title: "Balanced, all year.",
+    body: "Maintenance, refrigeration, and indoor air quality. Start with a service request and our office will follow up with the next step.",
+    href: "/book-service",
+    linkLabel: "Book Service",
+    primary: true,
+  },
+];
 
 export default function Home() {
   return (
     <>
-      <section className="hero">
-        <div className="hero-grid" aria-hidden="true" />
-        <div className="container hero-layout">
+      <CinematicStage
+        chapters={chapters}
+        hero={
           <div className="hero-content">
-            <p className="eyebrow">
+            <p className="eyebrow cine-intro">
               <span className="signal-dot" /> NORTH GEORGIA HVAC & REFRIGERATION
             </p>
             <h1>
-              Comfort,
-              <br />
-              <em>engineered</em>
-              <br />
-              for real life.
+              <span className="hero-line">
+                <span>Comfort,</span>
+              </span>
+              <span className="hero-line">
+                <span>
+                  <em>engineered</em>
+                </span>
+              </span>
+              <span className="hero-line">
+                <span>for real life.</span>
+              </span>
             </h1>
-            <p className="hero-description">
+            <p className="hero-description cine-intro">
               Heating, cooling, and refrigeration help from a local, family-owned team. Tell us what
               is happening, and our office will help you find the next step.
             </p>
-            <div className="hero-actions">
+            <div className="hero-actions cine-intro">
               <Link className="button button-primary button-large" href="/book-service">
                 Book Service <span aria-hidden="true">↗</span>
               </Link>
@@ -30,25 +65,14 @@ export default function Home() {
                 Need urgent help?
               </Link>
             </div>
-            <div className="hero-meta">
+            <div className="hero-meta cine-intro">
               <span>01 / A SIMPLE REQUEST</span>
               <span>02 / OFFICE REVIEW</span>
               <span>03 / CLEAR NEXT STEPS</span>
             </div>
           </div>
-          <div className="hero-visual" aria-hidden="true">
-            <div className="visual-ring ring-one" />
-            <div className="visual-ring ring-two" />
-            <div className="visual-core">
-              <div className="core-shine" />
-            </div>
-            <div className="visual-caption">
-              <span className="caption-line" /> COMFORT IN MOTION <span>•</span> NORTH GEORGIA
-            </div>
-            <div className="visual-coordinate">34° NORTH / BUILT FOR HERE</div>
-          </div>
-        </div>
-      </section>
+        }
+      />
       <section className="trust-strip">
         <div className="container trust-inner">
           <span>LOCAL & FAMILY-OWNED</span>
@@ -59,7 +83,7 @@ export default function Home() {
       </section>
       <section className="section" id="services">
         <div className="container">
-          <div className="section-heading">
+          <div className="section-heading" data-reveal>
             <div>
               <p className="eyebrow">01 / WHAT WE DO</p>
               <h2>One team. Every season.</h2>
@@ -69,7 +93,7 @@ export default function Home() {
               service request.
             </p>
           </div>
-          <div className="service-grid">
+          <div className="service-grid" data-reveal-group>
             {site.services.map((service) => (
               <Link className="service-card" href={`/services/${service.slug}`} key={service.slug}>
                 <span className="card-number">{service.number} / SERVICE</span>
@@ -90,7 +114,7 @@ export default function Home() {
       </section>
       <section className="emergency-band">
         <div className="container emergency-layout">
-          <div>
+          <div data-reveal>
             <p className="eyebrow">02 / PRIORITY ROUTING</p>
             <h2>When comfort can’t wait.</h2>
             <p>
@@ -120,7 +144,7 @@ export default function Home() {
       </section>
       <section className="section">
         <div className="container">
-          <div className="section-heading">
+          <div className="section-heading" data-reveal>
             <div>
               <p className="eyebrow">03 / HOW IT WORKS</p>
               <h2>
@@ -134,7 +158,7 @@ export default function Home() {
               explain what happens next.
             </p>
           </div>
-          <div className="steps">
+          <div className="steps" data-reveal-group>
             <div>
               <span>01</span>
               <h3>Tell us what you need</h3>
@@ -157,7 +181,7 @@ export default function Home() {
         </div>
       </section>
       <section className="split-section">
-        <div className="container split-grid">
+        <div className="container split-grid" data-reveal-group>
           <div className="split-panel plan-panel">
             <p className="eyebrow">04 / STAY READY</p>
             <h2>Care that goes beyond the repair.</h2>
@@ -185,7 +209,7 @@ export default function Home() {
       {approvedTestimonials.length > 0 && (
         <section className="section">
           <div className="container">
-            <div className="section-heading">
+            <div className="section-heading" data-reveal>
               <div>
                 <p className="eyebrow">06 / REAL STORIES</p>
                 <h2>Words from our customers.</h2>
@@ -194,7 +218,7 @@ export default function Home() {
                 See reviews <span aria-hidden="true">↗</span>
               </Link>
             </div>
-            <div className="testimonial-grid">
+            <div className="testimonial-grid" data-reveal-group>
               {approvedTestimonials.map((item) => (
                 <blockquote key={`${item.name}-${item.quote}`}>
                   <p>“{item.quote}”</p>
@@ -210,7 +234,7 @@ export default function Home() {
       )}
       <section className="area-section">
         <div className="container area-layout">
-          <div>
+          <div data-reveal>
             <p className="eyebrow">ROOTED IN NORTH GEORGIA</p>
             <h2>
               Close to home.
@@ -225,7 +249,7 @@ export default function Home() {
               Explore service areas <span aria-hidden="true">↗</span>
             </Link>
           </div>
-          <div className="area-list">
+          <div className="area-list" data-reveal-group>
             {site.serviceAreas.map((area, index) => (
               <div key={area}>
                 <span>0{index + 1}</span>
@@ -236,7 +260,7 @@ export default function Home() {
         </div>
       </section>
       <section className="final-cta">
-        <div className="container">
+        <div className="container" data-reveal>
           <p className="eyebrow">LET’S GET YOU COMFORTABLE</p>
           <h2>Start with a service request.</h2>
           <p>
