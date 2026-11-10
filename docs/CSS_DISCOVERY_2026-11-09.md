@@ -115,3 +115,22 @@ Only the frontend assets and discovery/verification files were replaced.
 GitHub main remains b5867bb and PR8 remains an open draft, unmerged. This is a
 verified publication of the scoped frontend assets with the prior server module,
 not a release of all backend commits from the React source branch.
+
+
+## Google verification and sitemap accepted, November 10
+
+After Adam explicitly approved clicking Verify, Search Console confirmed ownership
+of https://csshvac.com/ for diazdestination@gmail.com using the published HTML
+file. The existing same-origin extension-removal redirect was accepted. Preserve
+the verification file to maintain ownership.
+
+Submitted https://csshvac.com/sitemap.xml once. The submitted sitemap row shows
+Status: Success, Discovered pages: 12, Discovered videos: 0, with submitted and
+last-read dates November 10, 2026. This supersedes the pending Google approval
+and submission statuses above. These results establish ownership and discovery,
+not indexing, ranking, search impressions or customer traffic.
+
+Evidence: google-search-console-receipt.json, google-ownership-verified.png,
+google-sitemap-state.txt and google-sitemap-success-12.png in the existing
+C:/Forge/artifacts/css-discovery-20261109 directory. No production code or
+provider configuration changes were required in this verification step.
