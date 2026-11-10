@@ -4,3 +4,5 @@ import { App } from "./App.jsx";
 export { ROUTES, routeFor } from "./routes.js";
 
 export const render = (pathname) => renderToString(<App pathname={pathname} />);
+
+export { HOME_FAQ } from "./content/home-faqs.js";

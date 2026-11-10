@@ -13,6 +13,7 @@ import process from "node:process";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { build } from "vite";
 import { evaluateRelease, previewNoindex } from "./release-gate.mjs";
+import { graphFor, llmsText } from "./discovery.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const dist = path.join(root, "dist");
@@ -40,18 +41,6 @@ const previewHost = previewNoindex(origin);
 const blocked = !gate.publishable || previewHost;
 
 const esc = (v) => String(v).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;");
-const businessSchema = {
-  "@context": "https://schema.org",
-  "@type": "HVACBusiness",
-  "@id": `${origin}/#business`,
-  name: brand,
-  url: `${origin}/`,
-  telephone: siteConfig.contact.mainPhone.value,
-  logo: `${origin}/assets/css-logo-transparent.png`,
-  address: { "@type": "PostalAddress", addressLocality: siteConfig.site.location.city, addressRegion: siteConfig.site.location.state, addressCountry: "US" },
-  areaServed: [{ "@type": "City", name: "Dawsonville, GA" }],
-  // No openingHours (unconfirmed), ratings, reviews, prices or licensing claims.
-};
 
 const template = readFileSync(path.join(dist, "index.html"), "utf8");
 for (const route of server.ROUTES) {
@@ -64,7 +53,13 @@ for (const route of server.ROUTES) {
     `<meta property="og:title" content="${esc(route.title)}">`,
     `<meta property="og:description" content="${esc(route.description)}">`,
     `<meta property="og:url" content="${esc(origin + route.path)}">`,
-    `<script type="application/ld+json">${JSON.stringify(businessSchema).replaceAll("<", "\\u003c")}</script>`,
+    `<meta property="og:image" content="${origin}/assets/css-logo-transparent.png">`,
+    `<meta property="og:image:alt" content="${esc(brand)} logo">`,
+    `<meta name="twitter:card" content="summary">`,
+    `<meta name="twitter:title" content="${esc(route.title)}">`,
+    `<meta name="twitter:description" content="${esc(route.description)}">`,
+    `<meta name="twitter:image" content="${origin}/assets/css-logo-transparent.png">`,
+    `<script type="application/ld+json">${JSON.stringify(graphFor(route, siteConfig, server.HOME_FAQ)).replaceAll("<", "\\u003c")}</script>`,
   ].join("\n    ");
   const html = template
     .replace(/<title>.*?<\/title>/s, `<title>${esc(route.title)}</title>`)
@@ -79,11 +74,13 @@ for (const route of server.ROUTES) {
 if (blocked) {
   writeFileSync(path.join(dist, "robots.txt"), `# ${previewHost && gate.publishable ? "Preview host" : "Local build: owner facts unconfirmed"}. Not for indexing.\nUser-agent: *\nDisallow: /\n`, "utf8");
   rmSync(path.join(dist, "sitemap.xml"), { force: true });
+  rmSync(path.join(dist, "llms.txt"), { force: true });
 } else {
   const urls = server.ROUTES.filter((r) => !r.noindex).map((r) => `  <url><loc>${esc(origin + r.path)}</loc></url>`).join("\n");
   writeFileSync(path.join(dist, "sitemap.xml"), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`, "utf8");
-  writeFileSync(path.join(dist, "robots.txt"), `User-agent: *\nAllow: /\n\nSitemap: ${origin}/sitemap.xml\n`, "utf8");
+  writeFileSync(path.join(dist, "robots.txt"), `User-agent: *\nAllow: /\nDisallow: /api/\n\nSitemap: ${origin}/sitemap.xml\n`, "utf8");
 }
+if (!blocked) writeFileSync(path.join(dist, "llms.txt"), llmsText(server.ROUTES, siteConfig), "utf8");
 // Release status lives OUTSIDE dist/ so internal notes are never served.
 writeFileSync(
   path.join(root, ".release-status.json"),
@@ -96,5 +93,5 @@ if (gate.publishable && previewHost)
   process.stdout.write(`Preview build for ${origin}: publishable, but every page is noindex and robots.txt disallows crawling.\n`);
 else if (blocked)
   process.stderr.write(
-    `LOCAL BUILD ONLY — not publishable: ${gate.items.length} unconfirmed item(s) (${gate.items.map((i) => i.path).join(", ")}). Pages are noindex; npm run release:check will refuse.\n`,
+    `LOCAL BUILD ONLY â€” not publishable: ${gate.items.length} unconfirmed item(s) (${gate.items.map((i) => i.path).join(", ")}). Pages are noindex; npm run release:check will refuse.\n`,
   );

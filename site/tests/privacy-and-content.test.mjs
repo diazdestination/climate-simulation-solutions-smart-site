@@ -47,7 +47,7 @@ test("built output: every route prerendered, indexable on csshvac.com, privacy c
     assert.match(html, expected, `${route.path} robots`);
     assert.match(html, /<div id="root">(<link [^>]+>)*<div class="site">/, `${route.path} prerendered`);
   }
-  assert.match(read("dist", "robots.txt"), /Allow: \/\n\nSitemap: https:\/\/csshvac\.com\/sitemap\.xml/);
+  assert.match(read("dist", "robots.txt"), /Allow: \/\nDisallow: \/api\/\n\nSitemap: https:\/\/csshvac\.com\/sitemap\.xml/);
   const sitemap = read("dist", "sitemap.xml");
   assert.doesNotMatch(sitemap, /privacy/, "the draft policy is not in the sitemap");
   const privacy = read("dist", "privacy", "index.html");
