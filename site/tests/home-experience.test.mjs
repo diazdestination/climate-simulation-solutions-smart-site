@@ -156,4 +156,5 @@ test("built homepage: living hero, triage, reviews, license, new number and both
   assert.match(html, /class="closing__phone" href="tel:\+17065020877"/);
   assert.doesNotMatch(html, /Insured|Locally owned|family.owned/i, "no unconfirmed trust wording");
   assert.doesNotMatch(html, /Manrope/, "the retired display face is not referenced");
+  assert.doesNotMatch(html, /p\.m\.\./, "no doubled period after the hours");
 });
