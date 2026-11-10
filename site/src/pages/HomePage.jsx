@@ -1,7 +1,8 @@
+import { HOME_FAQ as FAQ } from "../content/home-faqs.js";
 import { FaArrowRightLong, FaCalendarCheck, FaFileInvoiceDollar, FaRobot, FaTriangleExclamation, FaWrench } from "react-icons/fa6";
 import { HoursLine, openAssistant } from "../components/Layout.jsx";
 import { AVAILABILITY_CHECK_COMMUNITIES, SERVICE_PAGES, servicePath } from "../content/pages.js";
-import { PHONE_DISPLAY, PHONE_LINK, HOURS_CONFIRMED, HOURS_TEXT } from "../lib/siteFacts.js";
+import { PHONE_DISPLAY, PHONE_LINK } from "../lib/siteFacts.js";
 
 const PATHS = [
   { href: "/urgent/", icon: FaTriangleExclamation, warm: true, title: "No heat, no AC or a water leak", body: "Safety steps first, then the fastest way to reach the office.", cta: "Get urgent help" },
@@ -10,13 +11,6 @@ const PATHS = [
   { href: "/estimate-follow-up/", icon: FaFileInvoiceDollar, warm: true, title: "Questions about an estimate", body: "Received an estimate and want to talk it through? Send the office your question.", cta: "Ask about my estimate" },
 ];
 
-const FAQ = [
-  ["Can I book an appointment online?", "You can request a service call and share preferred times. The office then contacts you to confirm the actual appointment — the website never books a confirmed time."],
-  ["What if my heat or AC is out right now?", "Use the urgent help page or call. If you smell gas or a carbon monoxide alarm is sounding, leave the home and call 911 or your gas utility first."],
-  ["What are your office hours?", `${HOURS_CONFIRMED ? HOURS_TEXT : "Please call the office for current hours"}. Outside normal office hours, urgent calls are handled as emergency-hours requests; response depends on availability and location.`],
-  ["Do you work with commercial properties?", "Yes. Services include commercial HVAC maintenance and refrigeration service inquiries. Share the facility and equipment details so the office can confirm fit."],
-  ["How do I know if you cover my address?", "The business is based in Dawsonville and serves surrounding communities. Share the service address and the type of work to confirm availability before scheduling."],
-];
 
 export function HomePage() {
   return (
