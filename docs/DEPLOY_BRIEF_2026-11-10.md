@@ -14,14 +14,14 @@ Adam's go-ahead in your session is required before step 5. This file is not that
 |---|---|
 | Repository | `diazdestination/climate-simulation-solutions-smart-site` |
 | Branch | `claude/css-living-hero-20261110` (draft PR #9, base `codex/css-discovery-20261109`) |
-| Frontend source commit | `3e19e3db02ce7a7f300bf7bd5dcbdbabe1ef76b4` |
+| Frontend source commit | `75eef1993fb4fa70328ba6e9ca3a53264ff5ce41` |
 | Worker | `climate-simulation-solutions-site` (serves `csshvac.com` and `www.csshvac.com`) |
 | Live version before this release | `441f7e88-ff6c-4866-9d1c-1ec2377638da`, deployment `a3cecad8-3e9d-44a0-a6c5-e267d3b08cfd` (per `docs/CSS_DISCOVERY_2026-11-09.md`; confirm, do not assume) |
 | Server module that must stay | SHA-256 `16a4a615dde5f3762843bb41bcddb3645988a607c7af18fd81c69f75a30e267b` |
 
 Later commits on the branch that only touch `docs/` (this brief included) do not change the
 built assets. If the branch head has moved past the commit above, list the changed paths
-(`git diff --stat 3e19e3d..HEAD`) and stop if anything outside `docs/` or the root `*.md` files
+(`git diff --stat 75eef19..HEAD`) and stop if anything outside `docs/` or the root `*.md` files
 changed, unless Adam tells you to include it.
 
 What visitors will see change: the homepage (moving-air hero with a thermostat, symptom
@@ -78,7 +78,7 @@ Run in `site/`:
 
 ```
 git fetch origin claude/css-living-hero-20261110
-git checkout --detach 3e19e3db02ce7a7f300bf7bd5dcbdbabe1ef76b4
+git checkout --detach 75eef1993fb4fa70328ba6e9ca3a53264ff5ce41
 npm ci
 $env:SITE_PUBLIC_ORIGIN = "https://csshvac.com"   # PowerShell; in cmd use: set SITE_PUBLIC_ORIGIN=https://csshvac.com
 npm run build
@@ -95,8 +95,8 @@ Expected results:
   unchanged from the last release).
 - Discovery check: 12 pages pass; assistant and privacy stay noindex.
 
-On Linux this commit produced `assets/index-3tdbkwRR.js`, `assets/index-CTFp3Wq0.css` and
-`assets/VoiceDesk-lCM8NJVU.js`. Matching names on Windows are a good sign. Different names are
+On Linux this commit produced `assets/index-BoL2NOmU.js`, `assets/index-CTFp3Wq0.css` and
+`assets/VoiceDesk-D6J5QatQ.js`. Matching names on Windows are a good sign. Different names are
 not a failure on their own (line endings can change hashes), but note them in your report.
 
 `npm ci` installs one new package, `@fontsource-variable/archivo`, and no longer installs
