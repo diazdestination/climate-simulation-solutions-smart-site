@@ -60,7 +60,7 @@ test("HVAC agent payload (dry render): private, authenticated, 3 tools, hard bou
     assert.match(prompt, rule);
   const all = JSON.stringify({ agentPayload, knowledgeDocuments });
   assert.doesNotMatch(all, /CONFIRM|\{\{/);
-  assert.match(all, /Monday–Friday, 7 a.m. to 5 p.m./, "confirmed hours reach the agent");
+  assert.match(all, /Monday–Friday, 9 a\.m\. to 5 p\.m\.; Saturday and Sunday, 8 a\.m\. to 6 p\.m\./, "confirmed hours reach the agent");
   assert.match(agentPayload.conversation_config.agent.first_message, /I'm an AI, not a person/);
   assert.doesNotMatch(all, /painless|roof|adjuster|storm|hail/i);
 });

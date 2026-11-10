@@ -50,7 +50,7 @@ test("no owner direct contacts or invented claims in config", () => {
   const text = JSON.stringify(config);
   assert.doesNotMatch(text, /@(?!example)[a-z0-9-]+\.[a-z]/i, "no email addresses");
   const phones = text.match(/\+1\d{10}/g) ?? [];
-  assert.deepEqual([...new Set(phones)], ["+17068095076"], "only the public business line");
+  assert.deepEqual([...new Set(phones)], ["+17065020877"], "only the public business line");
   assert.equal(config.site.maintenancePlans.pricing, null, "plan pricing not approved");
 });
 

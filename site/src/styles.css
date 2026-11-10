@@ -170,7 +170,6 @@ h1 em { display: block; margin-top: .07em; color: var(--cyan); font-style: norma
 .footer-links a { color: var(--muted); font-size: .88rem; text-decoration: none; }
 .footer-links a:hover { color: var(--white); }
 .copyright { grid-column: 1 / -1; margin: 2rem 0 0; padding-top: 1.5rem; border-top: 1px solid var(--line); color: #74889a; font-size: .75rem; }
-.mobile-call { display: none; }
 
 
 @media (max-width: 880px) {
@@ -231,9 +230,6 @@ h1 em { display: block; margin-top: .07em; color: var(--cyan); font-style: norma
   .closing-cta { padding: 5rem 1rem 7rem; }
   .site-footer { grid-template-columns: 1fr; gap: 2rem; padding: 3rem 1rem 7rem; }
   .copyright { grid-column: auto; }
-  .mobile-call { position: fixed; z-index: 20; left: .65rem; right: .65rem; bottom: .65rem; display: flex; justify-content: space-between; align-items: center; gap: .5rem; padding: .75rem 1rem; border: 1px solid var(--amber); border-radius: .7rem; background: linear-gradient(115deg, var(--amber), #ff9d19); box-shadow: 0 10px 35px rgba(0,0,0,.35); color: var(--brand-navy); text-decoration: none; }
-  .mobile-call span { max-width: 50%; font-size: .875rem; font-weight: 800; letter-spacing: .025em; line-height: 1.2; text-transform: uppercase; }
-  .mobile-call strong { font: 800 .9rem Manrope, sans-serif; white-space: nowrap; }
 }
 
 @media (max-width: 380px) {

@@ -53,9 +53,11 @@ test("built output: every route prerendered, indexable on csshvac.com, privacy c
   const privacy = read("dist", "privacy", "index.html");
   assert.match(privacy, /Draft — pending attorney review/);
   assert.match(privacy, /<meta name="robots" content="noindex">/);
-  assert.match(read("dist", "index.html"), /Monday–Friday, 7 a.m. to 5 p.m./, "confirmed hours are published");
-  assert.doesNotMatch(read("dist", "index.html"), /9 a.m.|9–5|CONFIRM/);
-  assert.doesNotMatch(read("dist", "index.html"), /9am|9:00|7am|7:00|Mon–Fri, 9|seven to five/i, "no guessed hours");
+  assert.match(read("dist", "index.html"), /Monday–Friday, 9 a\.m\. to 5 p\.m\.; Saturday and Sunday, 8 a\.m\. to 6 p\.m\./, "confirmed hours are published");
+  assert.doesNotMatch(read("dist", "index.html"), /7 a\.m\.|7–5|CONFIRM/);
+  assert.doesNotMatch(read("dist", "index.html"), /9am|9:00|7am|7:00|Mon–Fri, 9|seven to five/i, "no superseded or loosely written hours");
+  assert.match(read("dist", "index.html"), /\(706\) 502-0877/, "the owner's chosen number is published");
+  assert.doesNotMatch(read("dist", "index.html"), /809-5076|8095076/, "the superseded number is gone");
 });
 
 test("a preview host stays noindex even though the release gate passes", () => {

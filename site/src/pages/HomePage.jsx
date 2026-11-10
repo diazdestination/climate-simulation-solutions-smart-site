@@ -1,55 +1,49 @@
 import { HOME_FAQ as FAQ } from "../content/home-faqs.js";
-import { FaArrowRightLong, FaCalendarCheck, FaFileInvoiceDollar, FaRobot, FaTriangleExclamation, FaWrench } from "react-icons/fa6";
-import { HoursLine, openAssistant } from "../components/Layout.jsx";
+import { FaArrowRightLong, FaRobot } from "react-icons/fa6";
+import { ClimateHero, SeasonNote } from "../components/ClimateHero.jsx";
+import { openAssistant } from "../components/Layout.jsx";
 import { AVAILABILITY_CHECK_COMMUNITIES, SERVICE_PAGES, servicePath } from "../content/pages.js";
-import { PHONE_DISPLAY, PHONE_LINK } from "../lib/siteFacts.js";
+import { GOOGLE_PROFILE_URL, GOOGLE_WRITE_REVIEW_URL, REVIEWS } from "../content/reviews.js";
+import { LICENSE_NUMBER, LOCATION, PHONE_DISPLAY, PHONE_LINK } from "../lib/siteFacts.js";
 
-const PATHS = [
-  { href: "/urgent/", icon: FaTriangleExclamation, warm: true, title: "No heat, no AC or a water leak", body: "Safety steps first, then the fastest way to reach the office.", cta: "Get urgent help" },
-  { href: "/book-service/", icon: FaWrench, title: "Book a service call", body: "Tell us what the system is doing and when works for you. The office confirms the time.", cta: "Request service" },
-  { href: "/maintenance-plans/", icon: FaCalendarCheck, title: "Maintenance plans", body: "Residential visits every six months, commercial visits quarterly, billed annually.", cta: "See plans" },
-  { href: "/estimate-follow-up/", icon: FaFileInvoiceDollar, warm: true, title: "Questions about an estimate", body: "Received an estimate and want to talk it through? Send the office your question.", cta: "Ask about my estimate" },
-];
-
+function Reviews() {
+  const lead = REVIEWS.find((r) => r.lead);
+  const rest = REVIEWS.filter((r) => !r.lead);
+  return (
+    <section className="reviews" aria-labelledby="reviews-title">
+      <div className="reviews__head">
+        <h2 id="reviews-title">What customers wrote on Google.</h2>
+        <ul className="reviews__facts">
+          {LICENSE_NUMBER && <li>{`License no. ${LICENSE_NUMBER}`}</li>}
+          <li>Insured</li>
+          <li>{`Locally owned in ${LOCATION.city}`}</li>
+        </ul>
+      </div>
+      <figure className="review review--lead">
+        <blockquote>{lead.text}</blockquote>
+        <figcaption>{`${lead.author}, ${lead.source} review`}</figcaption>
+      </figure>
+      <div className="reviews__list">
+        {rest.map((r) => (
+          <figure className="review" key={r.author}>
+            <blockquote>{r.text}</blockquote>
+            <figcaption>{`${r.author}, ${r.source} review`}</figcaption>
+          </figure>
+        ))}
+      </div>
+      <p className="reviews__more">
+        These are excerpts, quoted as written. <a href={GOOGLE_PROFILE_URL} rel="noopener">Read every review on Google</a> or <a href={GOOGLE_WRITE_REVIEW_URL} rel="noopener">write your own</a>.
+      </p>
+    </section>
+  );
+}
 
 export function HomePage() {
   return (
     <>
-      <section className="hero" id="top">
-        <img className="hero-image" src="/assets/climate-precision-hero.webp" width="1935" height="812" alt="Outdoor HVAC system beside a North Georgia home at dusk (illustrative image)" fetchpriority="high" />
-        <div className="hero-shade" />
-        <div className="hero-content">
-          <div className="eyebrow"><span className="status-dot" /><HoursLine /></div>
-          <h1>Your Indoor <em>Weather Experts</em></h1>
-          <p className="hero-lede">Heating, cooling and refrigeration help for North Georgia homes and businesses — from urgent repairs to long-term system care.</p>
-          <div className="hero-actions">
-            <a className="button button-primary" href="/book-service/" data-acquisition-event="project_form_opened" data-surface="hero">Book service <FaArrowRightLong aria-hidden="true" /></a>
-            <a className="button button-quiet" href={PHONE_LINK} data-surface="hero">Call {PHONE_DISPLAY}</a>
-            <a className="button button-urgent" href="/urgent/" data-acquisition-event="project_form_opened" data-surface="hero-urgent">No heat / No AC / Leak</a>
-          </div>
-        </div>
-        <div className="hero-trust" aria-label="Service highlights">
-          <span>Residential</span><i /><span>Commercial</span><i /><span>Emergency hours</span>
-        </div>
-      </section>
-
-      <section className="paths" aria-labelledby="paths-title">
-        <div className="section-intro">
-          <p className="kicker">Start here</p>
-          <h2 id="paths-title">What does your space need?</h2>
-          <p>Choose the closest match. Every path ends with a real person at the office confirming the next step.</p>
-        </div>
-        <div className="path-grid">
-          {PATHS.map(({ href, icon: Icon, warm, title, body, cta }) => (
-            <a key={href} className={`path-card${warm ? " path-card--warm" : ""}`} href={href}>
-              <span className="path-icon" aria-hidden="true"><Icon /></span>
-              <strong>{title}</strong>
-              <span>{body}</span>
-              <em>{cta} <FaArrowRightLong aria-hidden="true" /></em>
-            </a>
-          ))}
-        </div>
-      </section>
+      <ClimateHero />
+      <SeasonNote />
+      <Reviews />
 
       <section className="services" id="services" aria-labelledby="services-title">
         <div className="services-heading">

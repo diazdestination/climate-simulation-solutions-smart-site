@@ -4,6 +4,7 @@ import siteConfig from "./site.config.mjs";
 import { assertSiteConfig } from "./core/config/schema.mjs";
 import { createSmartSiteWorker } from "./core/worker/router.js";
 import { toPublicConfig } from "./src/lib/publicConfig.js";
+import { isOutdoorRequest, outdoorResponse } from "./worker/outdoor.js";
 
 // Local preview bridge: /api/* on the Vite dev/preview server goes through the same core
 // worker the Cloudflare entry uses. Env comes ONLY from the process environment (never from
@@ -33,7 +34,7 @@ function smartSiteApi() {
       headers: req.headers,
       body: chunks.length ? Buffer.concat(chunks) : undefined,
     });
-    const response = await worker.fetch(request, env);
+    const response = isOutdoorRequest(request) ? await outdoorResponse() : await worker.fetch(request, env);
     res.statusCode = response.status;
     response.headers.forEach((value, name) => res.setHeader(name, value));
     res.end(Buffer.from(await response.arrayBuffer()));

@@ -11,6 +11,7 @@ import "@fontsource/dm-sans/600.css";
 import "@fontsource/dm-sans/700.css";
 import "./styles.css";
 import "./smart-site.css";
+import "./home.css";
 
 // Prerendered HTML (scripts/build.mjs) is replaced by the live app; content is identical.
 createRoot(document.getElementById("root")).render(

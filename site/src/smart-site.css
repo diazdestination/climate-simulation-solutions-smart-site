@@ -21,17 +21,6 @@ body.modal-open { overflow: hidden; }
 .icon-button { display: grid; place-items: center; width: 2.6rem; height: 2.6rem; flex: 0 0 auto; border: 1px solid var(--line); border-radius: .6rem; background: rgba(255,255,255,.04); color: var(--white); cursor: pointer; }
 .page-hero a:not(.button), .request-aside a, .consent-check a, .ai-disclosure a, .measurement-banner a, .content-section a { color: var(--cyan); }
 
-/* Paths (home) */
-.paths { position: relative; max-width: var(--max); margin: auto; padding: 7rem 1.5rem; background: radial-gradient(ellipse at 12% 49%, rgba(8,156,232,.13), transparent 42%), radial-gradient(ellipse at 86% 65%, rgba(255,121,0,.075), transparent 38%); }
-.path-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 1rem; margin-top: 3.5rem; }
-.path-card { --card-light: 86,209,250; position: relative; isolation: isolate; min-height: 250px; display: flex; flex-direction: column; gap: .65rem; overflow: hidden; padding: 1.4rem; border: 1px solid rgba(151,204,234,.25); border-radius: 1.15rem; background: linear-gradient(145deg, rgba(45,78,117,.48), rgba(12,30,59,.64) 55%, rgba(18,43,75,.57)); box-shadow: inset 0 1px 0 rgba(255,255,255,.21), 0 18px 38px rgba(0,9,28,.2); color: var(--white); text-decoration: none; transition: transform .3s cubic-bezier(.2,.8,.2,1), border-color .3s ease; }
-.path-card::after { content: ""; position: absolute; z-index: -1; width: 70%; aspect-ratio: 1; right: -30%; top: -48%; border-radius: 50%; background: rgba(var(--card-light),.24); filter: blur(42px); opacity: .5; }
-.path-card:hover, .path-card:focus-visible { transform: translateY(-5px); border-color: rgba(var(--card-light),.7); }
-.path-card--warm { --card-light: 255,195,41; }
-.path-icon { width: 2.6rem; height: 2.6rem; display: grid; place-items: center; margin-bottom: auto; border: 1px solid rgba(255,255,255,.15); border-radius: .85rem; background: rgba(var(--card-light),.12); color: rgb(var(--card-light)); font-size: 1.15rem; }
-.path-card strong { font: 700 1.1rem/1.3 Manrope, sans-serif; letter-spacing: -.02em; }
-.path-card > span:not(.path-icon) { color: var(--muted); font-size: .9rem; line-height: 1.5; }
-.path-card em { display: inline-flex; align-items: center; gap: .4rem; margin-top: .4rem; color: rgb(var(--card-light)); font-style: normal; font-weight: 800; font-size: .9rem; }
 
 .assistant-teaser { max-width: var(--max); display: grid; grid-template-columns: auto 1fr auto; gap: 2rem; align-items: center; margin: 0 auto 7rem; padding: 2rem 1.5rem; border: 1px solid rgba(86,209,250,.28); border-radius: 1.15rem; background: linear-gradient(120deg, rgba(8,156,232,.14), rgba(12,30,59,.6)); }
 .assistant-teaser > svg { font-size: 2.4rem; color: var(--cyan); }
@@ -231,15 +220,13 @@ body.modal-open { overflow: hidden; }
   .site-nav { position: absolute; top: 100%; left: 1rem; right: 1rem; display: none; flex-direction: column; align-items: stretch; gap: 0; padding: .6rem; border: 1px solid var(--line); border-radius: .9rem; background: #0a1d3d; box-shadow: 0 20px 40px rgba(0,0,0,.4); }
   .site-nav.is-open { display: flex; }
   .site-nav a, .nav-assistant { padding: .85rem .8rem; border: 0; border-radius: .5rem; font-size: 1rem; text-align: left; }
-  .path-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
   .request-layout { grid-template-columns: 1fr; }
   .request-aside { position: static; }
   .assistant-teaser { grid-template-columns: 1fr; margin-inline: 1.5rem; }
 }
 @media (max-width: 560px) {
   .header-call span { display: none; }
-  .path-grid, .plan-grid, .plan-choice, .voice-start-grid { grid-template-columns: 1fr; }
-  .paths { padding: 5rem 1rem; }
+  .plan-grid, .plan-choice, .voice-start-grid { grid-template-columns: 1fr; }
   .field-grid { grid-template-columns: 1fr; }
   .request-layout { padding: 1rem 1rem 6rem; }
   .request-form { padding: 1.2rem; }
@@ -259,5 +246,4 @@ body.modal-open { overflow: hidden; }
   .voice-desk { min-height: 100vh; max-height: 100vh; border-radius: 0; }
   .ai-disclosure, .voice-tabs { margin-inline: 1rem; }
   .voice-desk__header, .voice-desk__body { padding-inline: 1rem; }
-  .mobile-call span { display: inline-flex; gap: .4rem; align-items: center; }
 }

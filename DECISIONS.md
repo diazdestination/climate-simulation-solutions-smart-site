@@ -1,5 +1,33 @@
 # Decisions
 
+## 2026-11-10 — Phone, hours, license and the living homepage (Adam, in Claude chat)
+
+- **Phone: (706) 502-0877.** The CSS owner gave Adam this number for the site "until they say
+  otherwise". It replaces (706) 809-5076 everywhere the site publishes a number (config, schema,
+  llms.txt, privacy page). Open question for the owner: what happens to 809-5076 on the Google
+  and Facebook listings, since mismatched numbers hurt local search.
+- **Hours: Monday–Friday 9 a.m.–5 p.m., Saturday and Sunday 8 a.m.–6 p.m.**, as published on
+  the old csshvacga.com site. Adam chose these over the Mon–Fri 7–5 recorded on 2026-10-14.
+  `site.hoursSchedule` is now a list of day blocks so the open/closed badge covers weekends.
+- **License no. 23196912** (from the owner via Adam). The owner did not say which board issued it
+  or what class it is, and Georgia conditioned-air contractor numbers normally start with CN or
+  CR, so the site prints "License no. 23196912" and names neither. Confirm the type before
+  adding words such as "Georgia" or "conditioned air" next to it.
+- **Reviews.** The homepage quotes five Google reviews word for word, copied from the old site
+  (`site/src/content/reviews.js`), and links to the Google profile. No rating number or review
+  count is published and no rating markup is emitted. Facebook and unattributed reviews from the
+  old site are left out. The owner has not yet been asked to approve showing them.
+- **"Insured" and "Locally owned"** appear beside the license number because the old site
+  published both. Neither has been re-confirmed with the owner.
+- **Homepage hero.** The illustrative dusk photo is replaced by a canvas of moving air and a
+  thermostat visitors can turn. It is labeled on the page as a demonstration. Symptom-first
+  triage links replace the four path cards. The mobile bar now offers Call and Book service.
+- **Outdoor temperature.** `/api/outdoor` (in `site/worker/`) returns the National Weather
+  Service hourly forecast temperature for Dawsonville, cached 15 minutes. The worker makes the
+  request, so no visitor data reaches weather.gov and the privacy policy needs no new
+  processor. Production currently runs an older server module that has no such route; until
+  the worker is redeployed the hero shows a season line instead of a temperature.
+
 ## 2026-10-14 — Launch decisions "1c, 2 yes" (Adam, relayed in Claude chat)
 
 - **Pre-GrowthOS email fallback (1c).** Until the CSS GrowthOS site record exists, web leads are
