@@ -93,5 +93,5 @@ if (gate.publishable && previewHost)
   process.stdout.write(`Preview build for ${origin}: publishable, but every page is noindex and robots.txt disallows crawling.\n`);
 else if (blocked)
   process.stderr.write(
-    `LOCAL BUILD ONLY â€” not publishable: ${gate.items.length} unconfirmed item(s) (${gate.items.map((i) => i.path).join(", ")}). Pages are noindex; npm run release:check will refuse.\n`,
+    `LOCAL BUILD ONLY — not publishable: ${gate.items.length} unconfirmed item(s) (${gate.items.map((i) => i.path).join(", ")}). Pages are noindex; npm run release:check will refuse.\n`,
   );
