@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { FaArrowRightLong, FaPhone } from "react-icons/fa6";
+import { FaPhone } from "react-icons/fa6";
 import { Airflow } from "./Airflow.jsx";
 import { Thermostat } from "./Thermostat.jsx";
 import { HoursLine } from "./Layout.jsx";
@@ -68,7 +68,7 @@ export function ClimateHero() {
           <h1 id="hero-title">Your Indoor Weather Experts</h1>
           <p className="climate-hero__lede">Heating, cooling and refrigeration service for homes and businesses around {LOCATION.city}. Tell us what the system is doing and the office takes it from there.</p>
           <div className="climate-hero__actions">
-            <a className="button button-primary" href="/book-service/" data-acquisition-event="project_form_opened" data-surface="hero">Book service <FaArrowRightLong aria-hidden="true" /></a>
+            <a className="button button-primary" href="/book-service/" data-acquisition-event="project_form_opened" data-surface="hero">Book service</a>
             <a className="button button-quiet" href={PHONE_LINK} data-surface="hero"><FaPhone aria-hidden="true" /> Call {PHONE_DISPLAY}</a>
           </div>
         </div>

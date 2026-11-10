@@ -17,11 +17,23 @@
   (`site/src/content/reviews.js`), and links to the Google profile. No rating number or review
   count is published and no rating markup is emitted. Facebook and unattributed reviews from the
   old site are left out. The owner has not yet been asked to approve showing them.
-- **"Insured" and "Locally owned"** appear beside the license number because the old site
-  published both. Neither has been re-confirmed with the owner.
+- **"Insured" and "Locally owned" are not shown.** The old site published both, but neither
+  has been confirmed with the owner and `site/src/content/pages.js` lists licensing and
+  insurance wording as held until approved. Add them back only after the owner confirms.
 - **Homepage hero.** The illustrative dusk photo is replaced by a canvas of moving air and a
   thermostat visitors can turn. It is labeled on the page as a demonstration. Symptom-first
   triage links replace the four path cards. The mobile bar now offers Call and Book service.
+- **Design pass (same day).** Adam asked for the page to be reviewed against generic,
+  template-looking patterns. Changed as a result: display type is Archivo set slightly wide in
+  place of Manrope (one variable, `--display` in `site/src/styles.css`, plus one import in
+  `main.jsx` to switch back); all-caps tracked labels above headings are gone or sentence case;
+  services are a plain index without 01–05 numbers (they are not a sequence); the three request
+  steps keep their numbers (they are); the orbit-ring logo panel is removed; the decorative
+  radar is replaced by a true map (`site/src/content/area-map.js`: real bearings and distances,
+  10/20/30-mile rings, the first eight approved call-to-check towns); the closing section sets
+  the phone number as the largest type on the page; decorative arrows on buttons are removed.
+  Rule for future work on this page: amber means warm air and blue means cool air, the hero is
+  the only thing that moves, and every graphic shows something true.
 - **Outdoor temperature.** `/api/outdoor` (in `site/worker/`) returns the National Weather
   Service hourly forecast temperature for Dawsonville, cached 15 minutes. The worker makes the
   request, so no visitor data reaches weather.gov and the privacy policy needs no new

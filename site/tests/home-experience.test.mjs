@@ -6,6 +6,8 @@ import { routeFor } from "../src/routes.js";
 import { SERVICE_ISSUES } from "../src/lib/hvacRequest.js";
 import { SEASONS, TARGET_MAX, TARGET_MIN, clampTarget, modeFor, seasonFor, triageFor } from "../src/lib/season.js";
 import { GOOGLE_PROFILE_URL, GOOGLE_WRITE_REVIEW_URL, REVIEWS } from "../src/content/reviews.js";
+import { HOME_BASE, MAP_TOWNS, RING_MILES, milesFromBase, offsetMiles } from "../src/content/area-map.js";
+import { AVAILABILITY_CHECK_COMMUNITIES } from "../src/content/pages.js";
 import { currentPeriod, isOutdoorRequest, outdoorResponse } from "../worker/outdoor.js";
 
 const escapeHtml = (text) => text.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#x27;");
@@ -113,6 +115,22 @@ test("reviews: Google only, attributed, linked to the public profile, no rating 
   assert.match(GOOGLE_WRITE_REVIEW_URL, /^https:\/\/search\.google\.com\/local\/writereview\?placeid=/);
 });
 
+test("service-area map: the approved call-to-check towns, at believable distances and bearings", () => {
+  assert.deepEqual(MAP_TOWNS.map((t) => t.name), AVAILABILITY_CHECK_COMMUNITIES.slice(0, MAP_TOWNS.length), "the map shows the first towns of the approved list, in order");
+  assert.equal(HOME_BASE.name, config.site.location.city);
+  for (const town of MAP_TOWNS) {
+    const miles = milesFromBase(town);
+    assert.ok(miles > 5 && miles < Math.max(...RING_MILES), `${town.name} is ${miles.toFixed(1)} mi out, inside the outer ring`);
+    assert.ok(["left", "right"].includes(town.label));
+  }
+  // Spot checks against the real map: Dahlonega is northeast, Alpharetta south-southwest, Jasper west.
+  const by = Object.fromEntries(MAP_TOWNS.map((t) => [t.name, offsetMiles(t)]));
+  assert.ok(by.Dahlonega.east > 0 && by.Dahlonega.north > 0);
+  assert.ok(by.Alpharetta.east < 0 && by.Alpharetta.north < -20);
+  assert.ok(by.Jasper.east < -15 && Math.abs(by.Jasper.north) < 6);
+  assert.ok(Math.abs(milesFromBase(MAP_TOWNS.find((t) => t.name === "Cumming")) - 14.7) < 1.5, "Cumming is about 15 miles south");
+});
+
 test("built homepage: living hero, triage, reviews, license, new number and both mobile actions", () => {
   ensureBuilt();
   const html = read("dist", "index.html");
@@ -134,4 +152,8 @@ test("built homepage: living hero, triage, reviews, license, new number and both
   assert.match(html, /class="mobile-bar__book" href="\/book-service\/"/);
   assert.doesNotMatch(html, /aggregateRating|reviewRating|ratingValue|out of 5|\d(\.\d)? stars?\b|five.star/i, "no rating figures are published");
   assert.doesNotMatch(html, /climate-precision-hero/, "the illustrative stock-style photo is no longer the hero");
+  assert.match(html, /<svg[^>]*role="img"[^>]*aria-label="Map centered on Dawsonville with rings at 10, 20, 30 miles\./);
+  assert.match(html, /class="closing__phone" href="tel:\+17065020877"/);
+  assert.doesNotMatch(html, /Insured|Locally owned|family.owned/i, "no unconfirmed trust wording");
+  assert.doesNotMatch(html, /Manrope/, "the retired display face is not referenced");
 });
