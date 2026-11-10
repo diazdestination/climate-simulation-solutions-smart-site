@@ -1,10 +1,10 @@
 # CSS search and AI discovery preparation
 
 The existing public site is https://csshvac.com/. Its homepage references
-`index-CEj1Hzm8.js` and `index-Cbrzl4ut.css`. A release build of commit
+`index-CEj1Hzm8.js` and `index-Cbrzl4ut.css`. A frontend release build of commit
 `5b18e3ed367df7e303532a8d6776d1d3d5a182c7` reproduced
 both bundle filenames; the older Next.js scaffold and owner-private Sites v8
-are not the deployed source. Work is isolated on `codex/css-discovery-20261109`.
+are not the deployed frontend source. Work is isolated on `codex/css-discovery-20261109`.
 
 ## Prepared changes
 
@@ -68,3 +68,50 @@ submission remain separate checks. No search indexing is confirmed.
 
 Evidence: `C:\Forge\artifacts\css-discovery-20261109` (local checks, test log,
 production body comparison and Schema.org screenshots/state).
+
+
+## November 10 publication (supersedes the pending deployment status above)
+
+Adam signed into Cloudflare. Verified active identity: diazdestination@gmail.com,
+account 4d9480db003a5c1e601c5dfac0d66505. Both csshvac.com and www.csshvac.com map
+to Worker climate-simulation-solutions-site.
+
+Frontend bundle equality did not establish backend equality: the deployed server
+predated some Git source hardening. Therefore this publication used the exact
+server module downloaded through the authenticated Cloudflare API, without
+rebundling it. Its SHA-256 stayed
+16a4a615dde5f3762843bb41bcddb3645988a607c7af18fd81c69f75a30e267b.
+Only the frontend assets and discovery/verification files were replaced.
+
+- Frontend source: commit 6b5bfbf on codex/css-discovery-20261109; subsequent
+  documentation commits do not change the deployed application assets.
+- Current Worker version: 441f7e88-ff6c-4866-9d1c-1ec2377638da at 100% traffic.
+- Deployment: a3cecad8-3e9d-44a0-a6c5-e267d3b08cfd.
+- Original rollback version: 721cc888-4b14-4690-9a20-2d1231536fe8. Initial
+  discovery-only version d9c2a0ef-e021-4bb4-8738-b6ae54ff3a54 is also retained.
+- Staged version validation confirmed identical server etag, all 16 bindings,
+  and runtime/asset routing. Post-deploy checks confirmed identical server
+  module, binding fingerprints, schedules, subdomain settings and domains.
+- Wrangler's documented API keep_bindings metadata preserves plain variables,
+  encrypted secrets and Secrets Store references without reading secret values.
+  The local release overlay passes that metadata through Wrangler's experimental
+  unsafe.metadata field; it does not reduce security settings or change scopes.
+  The overlay and downloaded server snapshot are under the evidence directory,
+  not a replacement production config in Git. Do not deploy the repository's
+  older bare Wrangler config: it omits the live Secrets Store references.
+- Production HTTP/content checker: all 12 canonical public pages pass. GET/HEAD
+  robots.txt, sitemap.xml and llms.txt return 200; assistant/privacy stay noindex.
+- Published maintenance service schema fetched by Schema.org: zero errors and
+  zero warnings for the complete linked graph.
+- GET /api/lead: ready:true, code:email_ready; confirmations remain off. No test
+  lead, customer message, billing, secret-value or database mutation occurred.
+- IndexNow accepted one notification for 12 canonical public URLs with HTTP202.
+  Ownership validation and indexing remain pending; do not repeatedly resubmit.
+- Added Google's provided ownership file to public assets. Its exact content is
+  readable through the host's same-origin extension-removal redirect. Search
+  Console under diazdestination@gmail.com is awaiting explicit owner approval
+  to verify ownership and submit the sitemap. No Google submission is claimed.
+
+GitHub main remains b5867bb and PR8 remains an open draft, unmerged. This is a
+verified publication of the scoped frontend assets with the prior server module,
+not a release of all backend commits from the React source branch.
