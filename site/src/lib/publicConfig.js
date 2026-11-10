@@ -24,6 +24,7 @@ export function toPublicConfig(cfg) {
     phone: { e164: cfg.contact.mainPhone.value, display: cfg.contact.mainPhone.display },
     hours: { confirmed: hoursConfirmed, text: publicFactText(cfg.hours.summary), schedule: hoursConfirmed ? cfg.site.hoursSchedule ?? null : null },
     serviceArea: publicFactText(cfg.serviceArea.summary),
+    license: cfg.site.license?.number ?? null,
     location: cfg.site.location,
     timezone: cfg.site.timezone,
     origin: cfg.site.origin,

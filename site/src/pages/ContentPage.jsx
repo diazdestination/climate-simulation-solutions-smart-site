@@ -1,5 +1,4 @@
 // Service and service-area pages (adapted from the reference OrganicPage pattern).
-import { FaArrowRightLong } from "react-icons/fa6";
 import { AREA_PAGES, AVAILABILITY_CHECK_COMMUNITIES, SERVICE_PAGES, areaPath, servicePath } from "../content/pages.js";
 import { PHONE_DISPLAY, PHONE_LINK } from "../lib/siteFacts.js";
 import { ClosingCta } from "./HomePage.jsx";
@@ -15,14 +14,13 @@ export function ContentPage({ page }) {
         <h1>{page.headline}</h1>
         <p className="page-hero__lede">{page.lede}</p>
         <div className="hero-actions">
-          <a className="button button-primary" href={page.primaryAction.href}>{page.primaryAction.label} <FaArrowRightLong aria-hidden="true" /></a>
+          <a className="button button-primary" href={page.primaryAction.href}>{page.primaryAction.label}</a>
           <a className="button button-quiet" href={PHONE_LINK} data-surface="content">Call {PHONE_DISPLAY}</a>
         </div>
       </section>
       <div className="content-sections">
         {page.sections.map((section, i) => (
           <section key={section.title} className="content-section">
-            <p className="kicker">{String(i + 1).padStart(2, "0")} / What to know</p>
             <h2>{section.title}</h2>
             {section.body.map((p) => <p key={p.slice(0, 40)}>{p}</p>)}
           </section>
@@ -30,7 +28,7 @@ export function ContentPage({ page }) {
       </div>
       {page.questions?.length > 0 && (
         <section className="answers answers--compact" aria-label="Questions">
-          <div className="answers-heading"><p className="kicker">Straight answers</p><h2>Before you reach out.</h2></div>
+          <div className="answers-heading"><h2>Before you reach out.</h2></div>
           <div className="faq-list">
             {page.questions.map(([q, a]) => (
               <details key={q}><summary>{q}<span aria-hidden="true">+</span></summary><p>{a}</p></details>
@@ -42,7 +40,7 @@ export function ContentPage({ page }) {
         <p className="kicker">Other services</p>
         <div className="related-grid">
           {SERVICE_PAGES.filter((p) => p.slug !== page.slug).map((p) => (
-            <a key={p.slug} href={servicePath(p.slug)} className="related-card"><small>Service</small><strong>{p.eyebrow}</strong><span>Explore <FaArrowRightLong aria-hidden="true" /></span></a>
+            <a key={p.slug} href={servicePath(p.slug)} className="related-card"><strong>{p.eyebrow}</strong></a>
           ))}
         </div>
       </section>
@@ -72,7 +70,7 @@ export function AreasPage() {
         <p className="kicker">Area pages</p>
         <div className="related-grid">
           {AREA_PAGES.map((p) => (
-            <a key={p.slug} href={areaPath(p.slug)} className="related-card"><small>Area</small><strong>{p.eyebrow}</strong><span>Explore <FaArrowRightLong aria-hidden="true" /></span></a>
+            <a key={p.slug} href={areaPath(p.slug)} className="related-card"><strong>{p.eyebrow}</strong></a>
           ))}
         </div>
       </section>

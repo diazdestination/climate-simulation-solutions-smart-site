@@ -23,24 +23,29 @@ const gateCli = (env) =>
     env: { PATH: process.env.PATH, SystemRoot: process.env.SystemRoot, ...env },
   });
 
-test("hours are confirmed as Mon–Fri 7 a.m.–5 p.m. (CSS owners via Adam, 2026-10-14)", () => {
-  assert.equal(config.hours.summary.value, "Monday–Friday, 7 a.m. to 5 p.m.");
-  assert.equal(config.hours.summary.approvedOn, "2026-10-14");
-  assert.deepEqual(config.site.hoursSchedule, { days: ["Mon", "Tue", "Wed", "Thu", "Fri"], open: "07:00", close: "17:00" });
+test("hours follow the old CSS site: Mon–Fri 9–5, Sat–Sun 8–6 (Adam, 2026-11-10)", () => {
+  assert.equal(config.hours.summary.value, "Monday–Friday, 9 a.m. to 5 p.m.; Saturday and Sunday, 8 a.m. to 6 p.m.");
+  assert.equal(config.hours.summary.approvedOn, "2026-11-10");
+  assert.deepEqual(config.site.hoursSchedule, [
+    { days: ["Mon", "Tue", "Wed", "Thu", "Fri"], open: "09:00", close: "17:00" },
+    { days: ["Sat", "Sun"], open: "08:00", close: "18:00" },
+  ]);
   assert.equal(config.site.releaseGates.find((g) => g.id === "hours").status, "approved");
 });
 
 test("the site shows the confirmed hours and an accurate open/closed state", () => {
   assert.equal(HOURS_CONFIRMED, true);
-  assert.equal(pub.hours.text, "Monday–Friday, 7 a.m. to 5 p.m.");
-  assert.equal(publicFactText(config.hours.summary), "Monday–Friday, 7 a.m. to 5 p.m.");
-  assert.doesNotMatch(JSON.stringify(pub.hours), /CONFIRM|9 a\.m/);
+  assert.equal(pub.hours.text, "Monday–Friday, 9 a.m. to 5 p.m.; Saturday and Sunday, 8 a.m. to 6 p.m.");
+  assert.equal(publicFactText(config.hours.summary), "Monday–Friday, 9 a.m. to 5 p.m.; Saturday and Sunday, 8 a.m. to 6 p.m.");
+  assert.doesNotMatch(JSON.stringify(pub.hours), /CONFIRM|7 a\.m/);
   assert.equal(typeof HOURS_FALLBACK, "string");
   // 2026-10-14 is a Wednesday: 15:00Z = 11:00 EDT (open), 22:30Z = 18:30 EDT (closed); Oct 17 is a Saturday.
   assert.equal(officeStatus(new Date("2026-10-14T15:00:00Z")), "office-open");
-  assert.equal(officeStatus(new Date("2026-10-14T10:30:00Z")), "office-closed", "6:30 a.m. is before opening");
+  assert.equal(officeStatus(new Date("2026-10-14T12:30:00Z")), "office-closed", "8:30 a.m. on a weekday is before opening");
   assert.equal(officeStatus(new Date("2026-10-14T22:30:00Z")), "office-closed");
-  assert.equal(officeStatus(new Date("2026-10-17T15:00:00Z")), "office-closed");
+  assert.equal(officeStatus(new Date("2026-10-17T12:30:00Z")), "office-open", "8:30 a.m. Saturday is inside weekend hours");
+  assert.equal(officeStatus(new Date("2026-10-17T21:30:00Z")), "office-open", "5:30 p.m. Saturday is inside weekend hours");
+  assert.equal(officeStatus(new Date("2026-10-18T22:30:00Z")), "office-closed", "6:30 p.m. Sunday is after closing");
 });
 
 test("public config exposes no approver notes, gates or [CONFIRM] markers", () => {

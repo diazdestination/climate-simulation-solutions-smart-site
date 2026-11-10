@@ -1,9 +1,9 @@
 import { Suspense, lazy, useEffect, useState } from "react";
-import { FaBars, FaPhone, FaXmark } from "react-icons/fa6";
+import { FaBars, FaPhone, FaWrench, FaXmark } from "react-icons/fa6";
 import { MeasurementChoices } from "./MeasurementChoices.jsx";
 // The ElevenLabs SDK is large: load the assistant desk only when a visitor opens it.
 const VoiceDesk = lazy(() => import("./VoiceDesk.jsx").then((m) => ({ default: m.VoiceDesk })));
-import { BRAND_NAME, HOURS_CONFIRMED, HOURS_FALLBACK, HOURS_TEXT, LOCATION, PHONE_DISPLAY, PHONE_LINK, officeStatus } from "../lib/siteFacts.js";
+import { BRAND_NAME, HOURS_CONFIRMED, HOURS_FALLBACK, HOURS_TEXT, LICENSE_NUMBER, LOCATION, PHONE_DISPLAY, PHONE_LINK, officeStatus } from "../lib/siteFacts.js";
 
 const LOGO = "/assets/css-logo-transparent.png";
 const NAV = [
@@ -26,8 +26,11 @@ export function Brand({ footer = false }) {
   );
 }
 
-/** Neutral until hours are confirmed: never shows a guessed schedule. */
-export function HoursLine() {
+/**
+ * Neutral until hours are confirmed: never shows a guessed schedule.
+ * `detail` adds the full hours after "open now" (footer); the hero passes false to stay short.
+ */
+export function HoursLine({ detail = true }) {
   const [status, setStatus] = useState(null);
   useEffect(() => {
     const tick = () => setStatus(officeStatus());
@@ -36,7 +39,8 @@ export function HoursLine() {
     return () => window.clearInterval(id);
   }, []);
   if (!HOURS_CONFIRMED) return <span>{HOURS_FALLBACK}</span>;
-  return <span>{status === "office-open" ? `Office open now · ${HOURS_TEXT}` : `Outside office hours · urgent calls handled as emergency hours`}</span>;
+  if (status === "office-open") return <span>{detail ? `Office open now · ${HOURS_TEXT}` : "Office open now"}</span>;
+  return <span>Outside office hours · urgent calls handled as emergency hours</span>;
 }
 
 export function Layout({ children, currentPath, initialAssistantOpen = false }) {
@@ -83,7 +87,9 @@ export function Layout({ children, currentPath, initialAssistantOpen = false }) 
         <Brand footer />
         <div className="footer-meta">
           <p>{LOCATION.city}, Georgia</p>
-          <p><HoursLine /></p>
+          <p><HoursLine detail={false} /></p>
+          {HOURS_CONFIRMED && <p>{HOURS_TEXT}</p>}
+          {LICENSE_NUMBER && <p>{`License no. ${LICENSE_NUMBER}`}</p>}
           <a href={PHONE_LINK} data-surface="footer">{PHONE_DISPLAY}</a>
         </div>
         <div className="footer-links">
@@ -98,10 +104,11 @@ export function Layout({ children, currentPath, initialAssistantOpen = false }) 
         <p className="copyright">© <span>{year}</span> {BRAND_NAME}. Online requests are not confirmed appointments; the office confirms scheduling directly.</p>
       </footer>
 
-      <a className="mobile-call" href={PHONE_LINK} data-surface="mobile-bar">
-        <span><FaPhone aria-hidden="true" /> Call {BRAND_NAME}</span>
-        <strong>{PHONE_DISPLAY}</strong>
-      </a>
+      {/* The booking page is already the form, so there the bar is the phone number alone. */}
+      <div className={`mobile-bar${currentPath === "/book-service/" ? " mobile-bar--single" : ""}`}>
+        <a className="mobile-bar__call" href={PHONE_LINK} data-surface="mobile-bar"><FaPhone aria-hidden="true" /> Call {PHONE_DISPLAY}</a>
+        {currentPath !== "/book-service/" && <a className="mobile-bar__book" href="/book-service/" data-acquisition-event="project_form_opened" data-surface="mobile-bar"><FaWrench aria-hidden="true" /> Book service</a>}
+      </div>
       <MeasurementChoices />
       {assistantOpen && (
         <Suspense fallback={null}>

@@ -12,6 +12,7 @@
 // (see docs/env-checklist in the starter and .env.example here).
 
 const BRAND_APPROVAL = { approvedBy: "Adam (owner-confirmed brand, BUSINESS-PROOF CSS-P01)", approvedOn: "2026-09-14" };
+const OWNER_NOV10 = { approvedBy: "CSS owner via Adam (Claude chat, 2026-11-10)", approvedOn: "2026-11-10" };
 const DEMO_APPROVAL = { approvedBy: "Adam (shown on the owner-approved CSS v8 demo)", approvedOn: "2026-10-09" };
 
 export default {
@@ -22,26 +23,25 @@ export default {
   },
 
   // ---- Contact facts (E.164) ---------------------------------------------------------
-  // (706) 809-5076 is the existing public business line (BUSINESS-PROOF CSS-P03, all 13 core
-  // pages of the old csshvacga.com site, and the CSS v8 demo). Line ownership/portability is not verified.
-  // No public business email exists in the intake; owners' direct contacts are NOT published.
+  // 2026-11-10 (CSS owner via Adam): publish (706) 502-0877 on the site until the owner says
+  // otherwise. It replaces (706) 809-5076, the line shown on the old csshvacga.com site and the
+  // v8 demo. Whether the old line stays on Google/Facebook listings is an open owner question.
+  // No public business email is published; owners' direct contacts are NOT published.
   contact: {
-    mainPhone: { value: "+17068095076", display: "(706) 809-5076", ...DEMO_APPROVAL },
-    // Same line: the intake names no separate emergency or on-call number.
-    emergencyPhone: { value: "+17068095076", display: "(706) 809-5076", ...DEMO_APPROVAL },
+    mainPhone: { value: "+17065020877", display: "(706) 502-0877", ...OWNER_NOV10 },
+    // Same line: the owner named no separate emergency or on-call number.
+    emergencyPhone: { value: "+17065020877", display: "(706) 502-0877", ...OWNER_NOV10 },
   },
 
-  // ---- Hours: CONFLICT, do not guess -------------------------------------------------
-  // Oct 9 2026 owner interview: Monday-Friday "seven to five".
-  // Older intake (OPERATING-PLAN, BUSINESS-PROOF CSS-P05) and the current site: Mon-Fri 9am-5pm.
+  // ---- Hours -------------------------------------------------------------------------
+  // 2026-11-10 (Adam): use the hours published on the old csshvacga.com site — Mon–Fri 9–5 and
+  // Sat–Sun 8–6. This supersedes the Mon–Fri 7–5 recorded on 2026-10-14 (Oct 9 owner interview).
   hours: {
     summary: {
-      // Confirmed 2026-10-14 (CSS owners via Adam): Mon–Fri 7–5, matching the Oct 9 interview.
-      // The older 9–5 in earlier docs/site is superseded.
-      value: "Monday–Friday, 7 a.m. to 5 p.m.",
-      display: "Monday–Friday, 7 a.m. to 5 p.m.",
-      approvedBy: "CSS owners via Adam (Claude chat, 2026-10-14)",
-      approvedOn: "2026-10-14",
+      value: "Monday–Friday, 9 a.m. to 5 p.m.; Saturday and Sunday, 8 a.m. to 6 p.m.",
+      display: "Monday–Friday, 9 a.m. to 5 p.m.; Saturday and Sunday, 8 a.m. to 6 p.m.",
+      approvedBy: "Adam (Claude chat, 2026-11-10): hours as shown on the old CSS site",
+      approvedOn: "2026-11-10",
     },
   },
 
@@ -165,7 +165,14 @@ export default {
     timezone: "America/New_York",
     // Structured weekday schedule used for the live "open now" badge. Stays null until
     // hours.summary is confirmed; the site then shows only the neutral fallback.
-    hoursSchedule: { days: ["Mon", "Tue", "Wed", "Thu", "Fri"], open: "07:00", close: "17:00" },
+    // One entry per block of days that share opening times.
+    hoursSchedule: [
+      { days: ["Mon", "Tue", "Wed", "Thu", "Fri"], open: "09:00", close: "17:00" },
+      { days: ["Sat", "Sun"], open: "08:00", close: "18:00" },
+    ],
+    // License number supplied by the CSS owner (via Adam, 2026-11-10). The issuing board and
+    // license class were not stated, so the site shows the number without naming either.
+    license: { number: "23196912", ...OWNER_NOV10 },
     // Maintenance plan facts (Oct 9 owner interview). Prices/inclusions are NOT approved.
     maintenancePlans: {
       residential: { cadence: "One visit every six months", approvedBy: "Owner interview (Heather/Nathaniel via Adam)", approvedOn: "2026-10-09" },
@@ -175,7 +182,7 @@ export default {
     },
     // Release gates that are not single facts. status "approved" requires approvedBy/approvedOn.
     releaseGates: [
-      { id: "hours", status: "approved", approvedBy: "CSS owners via Adam (Claude chat, 2026-10-14)", approvedOn: "2026-10-14", note: "Mon–Fri 7 a.m.–5 p.m. confirmed; older 9–5 superseded." },
+      { id: "hours", status: "approved", approvedBy: "Adam (Claude chat, 2026-11-10)", approvedOn: "2026-11-10", note: "Mon–Fri 9 a.m.–5 p.m. and Sat–Sun 8 a.m.–6 p.m., as published on the old CSS site; the 7–5 recorded 2026-10-14 is superseded." },
       { id: "consent-text", status: "approved", approvedBy: "Adam (Claude chat, 2026-10-14)", approvedOn: "2026-10-14", note: "Consent wording for all four forms approved as drafted (policy versions css-*-v1)." },
       // Owner decision 2026-10-14 ("2 yes"): launch with the draft clearly labeled and the policy page
       // noindex. Not an attorney approval: set status "approved" only after review.

@@ -1,3 +1,24 @@
+# Project state — 2026-11-10
+
+## Living homepage candidate (branch `claude/css-living-hero-20261110`)
+
+Built on `codex/css-discovery-20261109` (the source of the live frontend). Not merged and not
+deployed: csshvac.com is unchanged. See the 2026-11-10 entry in `DECISIONS.md` for what changed
+and why. Verified locally in `site/`: `npm test` 56 passed, 1 skipped, 0 failed;
+`SITE_PUBLIC_ORIGIN=https://csshvac.com npm run build` 13 routes; `npm run release:check`
+publishable with the labeled draft privacy policy; `python scripts/check-discovery.py
+--directory dist` 12 pages pass. Viewed in Chrome at 360, 390, 820, 1280 and 1440 px wide with
+no console errors and no sideways scroll.
+
+Publishing notes for whoever deploys: the frontend alone can be published the same way as the
+November 10 discovery release (keep the live server module and bindings). The hero then shows
+the season line. The outdoor temperature needs the worker from this branch, which is a
+separate, larger release because the live server module predates the repository's worker.
+
+Still needed from the owner: real photos, the license type, approval to show the reviews, and
+whether "Insured" may be stated. The AI assistant's knowledge base must be re-provisioned when
+this is published, or it will keep giving the old phone number and hours.
+
 # Project state — 2026-10-09
 
 ## Cloudflare website consolidation candidate

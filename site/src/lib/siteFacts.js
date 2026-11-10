@@ -10,6 +10,7 @@ export const SERVICE_AREA = pub.serviceArea;
 export const HOURS_CONFIRMED = pub.hours.confirmed;
 export const HOURS_TEXT = pub.hours.text;
 export const HOURS_FALLBACK = "Call for current office hours";
+export const LICENSE_NUMBER = pub.license;
 export const LOCATION = pub.location;
 export const TIMEZONE = pub.timezone;
 export const SITE_ORIGIN = pub.origin;
@@ -24,7 +25,7 @@ export const consentTextFor = (formId) => FORMS[formId]?.consentText ?? "";
 /**
  * Live "office open now" status. Only available once hours are confirmed AND a structured
  * schedule exists; otherwise null so the UI shows the neutral fallback.
- * schedule: { days: ["Mon", ...], open: "HH:MM", close: "HH:MM" }
+ * schedule: one { days: ["Mon", ...], open: "HH:MM", close: "HH:MM" } block, or an array of them.
  */
 export function officeStatus(now = new Date(), schedule = pub.hours.schedule, confirmed = HOURS_CONFIRMED) {
   if (!confirmed || !schedule) return null;
@@ -35,6 +36,6 @@ export function officeStatus(now = new Date(), schedule = pub.hours.schedule, co
   );
   const minutes = Number(parts.hour) * 60 + Number(parts.minute);
   const toMinutes = (hhmm) => Number(hhmm.slice(0, 2)) * 60 + Number(hhmm.slice(3, 5));
-  const open = schedule.days.includes(parts.weekday) && minutes >= toMinutes(schedule.open) && minutes < toMinutes(schedule.close);
+  const open = [schedule].flat().some((b) => b.days.includes(parts.weekday) && minutes >= toMinutes(b.open) && minutes < toMinutes(b.close));
   return open ? "office-open" : "office-closed";
 }
