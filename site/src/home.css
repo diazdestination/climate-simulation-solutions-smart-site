@@ -108,13 +108,16 @@
 .request-steps__assistant h3 { margin: 0; font: 700 1.25rem/1.25 var(--display); letter-spacing: -.01em; }
 .request-steps__assistant p { max-width: 44rem; margin: .45rem 0 0; color: var(--muted); }
 
-/* Service area: a true map. North is up; rings are miles from Dawsonville. */
+/* Service area: a true map. North is up; rings are miles from Dawsonville. Town pages and the
+   service-area index reuse it (areas.css). */
 .area { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); gap: 2.5rem 4.5rem; align-items: center; padding: 5.5rem var(--gutter); background: var(--ink-2); border-block: 1px solid var(--line); }
 .area-map { margin: 0; }
 .area-map svg { display: block; width: 100%; height: auto; overflow: visible; }
-.area-map__rings circle { fill: rgba(86,209,250,.035); stroke: rgba(255,255,255,.26); stroke-width: 1; stroke-dasharray: 1.5 7; stroke-linecap: round; }
-.area-map__rings rect { fill: var(--ink-2); }
-.area-map__rings text, .area-map__north text { fill: #8fa6bb; font: 600 12px "DM Sans", system-ui, sans-serif; }
+.area-map__rings circle { fill: none; stroke: rgba(255,255,255,.26); stroke-width: 1; stroke-dasharray: 1.5 7; stroke-linecap: round; }
+/* Only the innermost ring is tinted: the outer rings run past the frame. */
+.area-map__rings circle:first-child { fill: rgba(86,209,250,.05); }
+.area-map__ring-labels rect { fill: var(--ink-2); }
+.area-map__ring-labels text, .area-map__north text { fill: #8fa6bb; font: 600 12px "DM Sans", system-ui, sans-serif; }
 .area-map__spokes line { stroke: rgba(86,209,250,.2); stroke-width: 1; }
 .area-map__towns circle { fill: var(--cyan); }
 .area-map__towns text { fill: #e6eef5; font: 600 16px "DM Sans", system-ui, sans-serif; }
@@ -124,7 +127,6 @@
 .area-map__north path { fill: #8fa6bb; }
 .area-map figcaption { max-width: 34rem; margin-top: 1rem; color: #8fa6bb; font-size: .84rem; }
 .area__copy p { max-width: 34rem; margin: 1.4rem 0 0; color: var(--muted); font-size: 1.05rem; }
-.area__copy .area__towns { color: #dbe7f1; font-size: 1rem; font-weight: 600; }
 .area__actions { display: flex; flex-wrap: wrap; gap: .85rem; margin-top: 2rem; }
 
 /* Closing: the phone number is the design. */
@@ -180,8 +182,8 @@
   /* The map shrinks to phone width, so its labels are drawn larger to stay readable. */
   .area-map__towns text { font-size: 23px; }
   .area-map__base text { font-size: 26px; }
-  .area-map__rings text, .area-map__north text { font-size: 18px; }
-  .area-map__rings rect { transform: scaleX(1.35); transform-box: fill-box; transform-origin: center; }
+  .area-map__ring-labels text, .area-map__north text { font-size: 18px; }
+  .area-map__ring-labels rect { transform: scaleX(1.35); transform-box: fill-box; transform-origin: center; }
   .answers { padding: 4.5rem 1rem; }
   .closing { padding: 4.5rem 1rem 7.5rem; }
   .closing__row .button { width: 100%; }

@@ -4,8 +4,8 @@
 //   intake/DESIGN-DIRECTION.md, evidence/BUSINESS-PROOF.csv (what may not be claimed)
 //   C:\Forge\CSS_OWNER_INTAKE_2026-10-09.md (plan cadence, owner-requested area pages)
 // Deliberately omitted until approved: reviews/ratings, licensing/insurance, years in business,
-// brands, warranties, prices, financing, "free estimate" wording, response or arrival times,
-// and any city page other than the Dawsonville base.
+// brands, warranties, prices, financing, "free estimate" wording, and response or arrival times.
+import { HOME_BASE, MAP_TOWNS, milesFromBase, whereFromBase } from "./area-map.js";
 
 export const SERVICE_PAGES = [
   {
@@ -124,40 +124,56 @@ export const SERVICE_PAGES = [
   },
 ];
 
-// Nearby communities from SERVICE-AREA-PLAN.md's first-review list (shown on the CSS v8 demo as
-// "call to check availability") plus the four cities the owners asked about on Oct 9. None of
-// these is a coverage promise. "Forsyth" is omitted: county vs city is unconfirmed.
-export const AVAILABILITY_CHECK_COMMUNITIES = ["Dahlonega", "Cumming", "Gainesville", "Jasper", "Ball Ground", "Canton", "Buford", "Alpharetta", "Cleveland", "Roswell", "Johns Creek", "Atlanta"];
+// ---- Service areas -----------------------------------------------------------------------
+// 2026-11-11 (Adam): CSS serves all twelve towns below, and each gets its own page. The town
+// data (name, county, position) lives in area-map.js; the pages are generated here so every
+// town page says the same true things in the same order and none can drift.
+// Still not claimed on any area page: response or arrival times, 24-hour availability, prices,
+// or coverage of a whole county.
+export const SERVED_COMMUNITIES = MAP_TOWNS.map((town) => town.name);
 
-// Owner-requested city pages, held until coverage, boundaries and local facts are approved.
-export const HELD_AREA_PAGES = [
-  { city: "Forsyth", reason: "[CONFIRM] county or city; coverage and dispatch availability" },
-  { city: "Roswell", reason: "[CONFIRM] coverage and dispatch availability; local facts" },
-  { city: "Cleveland", reason: "[CONFIRM] coverage and dispatch availability; local facts" },
-  { city: "Johns Creek", reason: "[CONFIRM] coverage and dispatch availability; local facts" },
-  { city: "Atlanta (incl. inner-city)", reason: "[CONFIRM] coverage and dispatch availability; local facts" },
-];
+// "Forsyth" from the owners' Oct 9 list stays held: county vs city was never confirmed. Cumming
+// (the Forsyth County seat) has a page.
+export const HELD_AREA_PAGES = [{ city: "Forsyth", reason: "[CONFIRM] county or city" }];
+
+const AFTER_HOURS_ANSWER = "Call the office or use the urgent help page. Outside normal office hours, urgent calls are handled as emergency-hours requests. Response depends on availability and location, and no arrival time is promised online.";
+
+function townPage(town) {
+  const miles = Math.round(milesFromBase(town));
+  return {
+    slug: town.slug,
+    town,
+    title: `HVAC Service in ${town.name}, GA | Climate Simulation Solutions`,
+    metaDescription: `Heating, cooling and refrigeration service for homes and businesses in ${town.name}, Georgia. Based in Dawsonville, about ${miles} miles away. Book a service call.`,
+    eyebrow: `${town.name}, Georgia`,
+    headline: `Heating and cooling service in ${town.name}.`,
+    lede: `Climate Simulation Solutions serves homes and businesses in ${town.name}, ${whereFromBase(town)}.`,
+    primaryAction: { href: "/book-service/", label: "Book a service call" },
+    questions: [
+      [`Do you serve ${town.name}?`, `Yes. Climate Simulation Solutions serves homes and businesses in ${town.name}. The office confirms each appointment directly.`],
+      [`How far is ${town.name} from your base?`, `${town.name} is ${whereFromBase(town)}, measured in a straight line.`],
+      [`What if my heat or AC goes out in ${town.name} after hours?`, AFTER_HOURS_ANSWER],
+    ],
+  };
+}
 
 export const AREA_PAGES = [
   {
-    slug: "dawsonville-ga",
+    slug: HOME_BASE.slug,
+    town: HOME_BASE,
+    isBase: true,
     title: "HVAC Service in Dawsonville, GA | Climate Simulation Solutions",
     metaDescription: "Heating, cooling and refrigeration service from a Dawsonville, Georgia HVAC company for homes and businesses in Dawsonville and surrounding communities.",
     eyebrow: "Dawsonville, Georgia",
     headline: "Heating and cooling service based in Dawsonville.",
-    lede: "Climate Simulation Solutions is based in Dawsonville and serves surrounding North Georgia communities. Call with your service address to confirm availability.",
+    lede: "Climate Simulation Solutions is based in Dawsonville and serves homes and businesses here and in the communities around it.",
     primaryAction: { href: "/book-service/", label: "Book a service call" },
-    sections: [
-      {
-        title: "Services from the Dawsonville team",
-        body: [
-          "Emergency HVAC repair, residential installation and replacement, HVAC maintenance, commercial maintenance, and commercial refrigeration service inquiries.",
-          "Availability depends on the address, the equipment, timing and the type of work, so the office confirms each request directly.",
-        ],
-      },
+    questions: [
+      ["Where are you based?", "In Dawsonville, Georgia. The team serves Dawsonville and the surrounding communities listed on the service area page."],
+      ["What if my heat or AC goes out in Dawsonville after hours?", AFTER_HOURS_ANSWER],
     ],
-    questions: [["How do I know if you cover my address?", "Share the service address and the type of work needed. The office confirms availability before scheduling."]],
   },
+  ...MAP_TOWNS.map(townPage),
 ];
 
 export const servicePath = (slug) => `/services/${slug}/`;

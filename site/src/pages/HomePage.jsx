@@ -3,7 +3,7 @@ import { ClimateHero, SeasonNote } from "../components/ClimateHero.jsx";
 import { AreaMap } from "../components/AreaMap.jsx";
 import { HoursLine, openAssistant } from "../components/Layout.jsx";
 import { MAP_TOWNS } from "../content/area-map.js";
-import { SERVICE_PAGES, servicePath } from "../content/pages.js";
+import { SERVICE_PAGES, areaPath, servicePath } from "../content/pages.js";
 import { GOOGLE_PROFILE_URL, GOOGLE_WRITE_REVIEW_URL, REVIEWS } from "../content/reviews.js";
 import { LICENSE_NUMBER, LOCATION, PHONE_DISPLAY, PHONE_LINK } from "../lib/siteFacts.js";
 
@@ -81,12 +81,14 @@ export function HomePage() {
       <section className="area" id="coverage" aria-labelledby="coverage-title">
         <AreaMap />
         <div className="area__copy">
-          <h2 id="coverage-title">Based in Dawsonville. Building a wider reach.</h2>
-          <p>Climate Simulation Solutions serves Dawsonville and surrounding communities. Call with your service address so the team can confirm availability for your location and type of work.</p>
-          <p className="area__towns">Call to check availability in {MAP_TOWNS.map((t) => t.name).join(", ")} and nearby.</p>
+          <h2 id="coverage-title">Based in Dawsonville. Serving North Georgia and metro Atlanta.</h2>
+          <p>Climate Simulation Solutions serves homes and businesses in Dawsonville and the communities around it.</p>
+          <ul className="area__towns">
+            {MAP_TOWNS.map((t) => <li key={t.slug}><a href={areaPath(t.slug)}>{t.name}</a></li>)}
+          </ul>
           <div className="area__actions">
             <a className="button button-primary" href={PHONE_LINK} data-surface="coverage">Call {PHONE_DISPLAY}</a>
-            <a className="button button-quiet" href="/service-areas/">Service area details</a>
+            <a className="button button-quiet" href="/service-areas/">All service areas</a>
           </div>
         </div>
       </section>

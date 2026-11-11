@@ -1,5 +1,33 @@
 # Decisions
 
+## 2026-11-11 — Twelve communities are served, each with its own page (Adam, in Claude chat)
+
+- **Coverage is now stated, not hedged.** Adam confirmed CSS serves Dahlonega, Cumming,
+  Gainesville, Jasper, Ball Ground, Canton, Buford, Alpharetta, Cleveland, Roswell, Johns Creek
+  and Atlanta "for sure". The site no longer says "communities you can call to check" or "not a
+  promise of service". `serviceArea.summary` in `site/site.config.mjs` names all twelve.
+- **One page per town** at `/service-areas/<town>-ga/`, plus the existing Dawsonville page on
+  the same template. Town data lives in `site/src/content/area-map.js`; the pages are generated
+  in `site/src/content/pages.js`, so adding or removing a town is a one-line change.
+- **What a town page says:** that the town is served, its county, a one-line description of
+  where it is, its straight-line distance from Dawsonville (computed, rounded to the mile), the
+  five services, how to request a visit, and the nearest other towns. Each page shows the
+  service-area map with that town picked out.
+- **What a town page does not say:** response or arrival times, 24-hour availability, prices, or
+  coverage of a whole county. The after-hours wording is the already-approved "emergency-hours
+  requests; response depends on availability and location".
+- **"Forsyth" stays held.** The owners' October list did not say county or city. Cumming, the
+  Forsyth County seat, has a page.
+- **Map.** Rings are now 10, 25 and 50 miles and the frame is taller, because Atlanta is about
+  49 miles south of Dawsonville.
+- **Structured data.** The business lists all thirteen cities as `areaServed`, and each town
+  page carries a `Service` entry for that town. The sitemap grows from 12 to 24 URLs, and
+  `scripts/check-discovery.py` now expects 24.
+- **Assistant not yet updated.** The live AI assistant still describes the service area as
+  "surrounding North Georgia communities; call with the service address to confirm
+  availability". Re-provisioning it from this branch brings it in line; that needs Adam's
+  approval because it changes a live assistant.
+
 ## 2026-11-10 — Phone, hours, license and the living homepage (Adam, in Claude chat)
 
 - **Phone: (706) 502-0877.** The CSS owner gave Adam this number for the site "until they say
