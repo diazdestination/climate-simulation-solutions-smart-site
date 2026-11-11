@@ -1,11 +1,13 @@
 import { useState } from "react";
-import { FaFire, FaPhone, FaPlugCircleXmark, FaSnowflake, FaDroplet, FaVolumeHigh, FaCircleQuestion, FaTriangleExclamation } from "react-icons/fa6";
+import { FaFire, FaLock, FaPhone, FaPlugCircleXmark, FaSnowflake, FaDroplet, FaVolumeHigh, FaCircleQuestion, FaTriangleExclamation } from "react-icons/fa6";
 import { RequestForm } from "../components/RequestForm.jsx";
 import { URGENT_ISSUES } from "../lib/hvacRequest.js";
 import { PHONE_DISPLAY, PHONE_LINK } from "../lib/siteFacts.js";
 import { trackAcquisition } from "../lib/acquisition.js";
 
 const ICONS = { "no-heat": FaFire, "no-cooling": FaSnowflake, "water-leak": FaDroplet, "noise-and-failure": FaVolumeHigh, "other-urgent": FaCircleQuestion };
+// The same colours as the homepage tiles: amber heat, blue cooling, water. The rest stay plain.
+const TONES = { "no-heat": "warm", "no-cooling": "cool", "water-leak": "water" };
 
 // Safety screen first. Any "yes" stops the request flow and shows life-safety steps.
 const SAFETY_QUESTIONS = [
@@ -61,7 +63,8 @@ export function UrgentPage() {
         <p className="kicker">No heat · No AC · Water leak</p>
         <h1>Urgent heating or cooling problem?</h1>
         <p className="page-hero__lede">The fastest way to reach a person is to call. If no one answers, you can also send an urgent request below so the office has your details and can call you back.</p>
-        <a className="button button-primary button-large" href={PHONE_LINK} data-surface="urgent">
+        {/* On a phone this is the amber key docked to the bottom of the screen. */}
+        <a className="button button-primary button-large in-mobile-bar" href={PHONE_LINK} data-surface="urgent">
           <FaPhone aria-hidden="true" /> Call {PHONE_DISPLAY}
         </a>
         <p className="page-hero__note">We can’t promise an arrival time online. Timing depends on technician availability, your location and the problem.</p>
@@ -80,8 +83,9 @@ export function UrgentPage() {
                     [true, "Yes"],
                     [false, "No"],
                   ].map(([value, label]) => (
-                    <label key={label} className={`yes-no__option${answers[q.id] === value ? " is-selected" : ""}`}>
+                    <label key={label} className={`toggle-key${answers[q.id] === value ? " is-on" : ""}`}>
                       <input type="radio" name={`safety-${q.id}`} checked={answers[q.id] === value} onChange={() => setAnswers((a) => ({ ...a, [q.id]: value }))} />
+                      <span className="toggle-key__mark" aria-hidden="true" />
                       {label}
                     </label>
                   ))}
@@ -96,23 +100,26 @@ export function UrgentPage() {
         </div>
 
         {!hazard && (
-          <div className={`triage-step${screened ? "" : " is-locked"}`} aria-disabled={!screened}>
+          <div className="triage-step">
             <span className="triage-step__number">2</span>
             <div>
               <h2>What’s happening?</h2>
-              {!screened && <p className="triage-lock">Answer both safety questions to continue.</p>}
-              <div className="issue-grid" role="list">
+              {!screened && <p className="triage-lock"><FaLock aria-hidden="true" /> Answer both safety questions to continue.</p>}
+              <ul className="issue-grid">
                 {URGENT_ISSUES.map((item) => {
                   const Icon = ICONS[item.id];
+                  const tone = TONES[item.id];
                   return (
-                    <button key={item.id} type="button" role="listitem" className={`issue-card${issue === item.id ? " is-active" : ""}`} aria-pressed={issue === item.id} disabled={!screened} onClick={() => choose(item.id)}>
-                      <Icon aria-hidden="true" />
-                      <strong>{item.label}</strong>
-                      <span>{item.detail}</span>
-                    </button>
+                    <li key={item.id}>
+                      <button type="button" className={`issue-card${tone ? ` tone-${tone}` : ""}${issue === item.id ? " is-active" : ""}`} aria-pressed={issue === item.id} disabled={!screened} onClick={() => choose(item.id)}>
+                        <Icon aria-hidden="true" />
+                        <strong>{item.label}</strong>
+                        <span>{item.detail}</span>
+                      </button>
+                    </li>
                   );
                 })}
-              </div>
+              </ul>
               {issue === "water-leak" && screened && (
                 <p className="inline-hint">
                   <FaTriangleExclamation aria-hidden="true" /> Keep water away from outlets and electrical equipment. If it’s safe, turn the system off at the thermostat and place towels or a container to catch water. Don’t touch wet electrical parts.
@@ -128,7 +135,7 @@ export function UrgentPage() {
             <div>
               <h2>Call now — or send an urgent request</h2>
               <div className="call-first">
-                <a className="button button-primary button-large" href={PHONE_LINK} data-surface="urgent">
+                <a className="button button-primary button-large in-mobile-bar" href={PHONE_LINK} data-surface="urgent">
                   <FaPhone aria-hidden="true" /> Call {PHONE_DISPLAY}
                 </a>
                 <p>Calling is fastest. If you reach voicemail, leave your name, address and a callback number — and you can also send the request below.</p>

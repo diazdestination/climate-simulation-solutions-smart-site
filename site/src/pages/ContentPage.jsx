@@ -4,6 +4,9 @@ import { PHONE_DISPLAY, PHONE_LINK } from "../lib/siteFacts.js";
 import { ClosingCta } from "./HomePage.jsx";
 
 export function ContentPage({ page }) {
+  // On a phone the docked bar already offers Call and Book service, so the hero keeps only an
+  // action the bar does not have (a prefilled request, the urgent path, the plans page).
+  const inBar = page.primaryAction.href === "/book-service/";
   return (
     <div className="page content-page">
       <nav className="breadcrumbs" aria-label="Breadcrumb">
@@ -13,9 +16,9 @@ export function ContentPage({ page }) {
         <p className="kicker">{page.eyebrow}</p>
         <h1>{page.headline}</h1>
         <p className="page-hero__lede">{page.lede}</p>
-        <div className="hero-actions">
+        <div className={`hero-actions${inBar ? " in-mobile-bar" : ""}`}>
           <a className="button button-primary" href={page.primaryAction.href}>{page.primaryAction.label}</a>
-          <a className="button button-quiet" href={PHONE_LINK} data-surface="content">Call {PHONE_DISPLAY}</a>
+          <a className="button button-quiet in-mobile-bar" href={PHONE_LINK} data-surface="content">Call {PHONE_DISPLAY}</a>
         </div>
       </section>
       <div className="content-sections">
@@ -36,13 +39,13 @@ export function ContentPage({ page }) {
           </div>
         </section>
       )}
-      <section className="related" aria-label="Other services">
-        <p className="kicker">Other services</p>
-        <div className="related-grid">
+      <section className="related" aria-labelledby="related-title">
+        <h2 className="related__title" id="related-title">Other services</h2>
+        <ul className="link-rows link-rows--columns">
           {SERVICE_PAGES.filter((p) => p.slug !== page.slug).map((p) => (
-            <a key={p.slug} href={servicePath(p.slug)} className="related-card"><strong>{p.eyebrow}</strong></a>
+            <li key={p.slug}><a href={servicePath(p.slug)}>{p.eyebrow}</a></li>
           ))}
-        </div>
+        </ul>
       </section>
       <ClosingCta />
     </div>

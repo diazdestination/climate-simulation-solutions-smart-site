@@ -177,7 +177,7 @@ test("built homepage: living hero, triage, reviews, license, new number and both
   assert.match(html, /<canvas class="airflow" aria-hidden="true">/);
   assert.match(html, /This room is a demonstration, not your thermostat\./);
   assert.match(html, /What is your system doing\?/);
-  assert.match(html, /href="\/urgent\/"[^>]*>No heat</);
+  assert.match(html, /<a class="triage-tile tone-warm" href="\/urgent\/"[^>]*><svg[^>]*>.*?<\/svg><span>No heat<\/span><\/a>/);
   assert.match(html, /href="\/book-service\/\?issue=maintenance"/);
   for (const review of REVIEWS) {
     assert.ok(html.includes(escapeHtml(review.text)), `${review.author}'s review is quoted as written`);

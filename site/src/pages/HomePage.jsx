@@ -87,7 +87,7 @@ export function HomePage() {
             {MAP_TOWNS.map((t) => <li key={t.slug}><a href={areaPath(t.slug)}>{t.name}</a></li>)}
           </ul>
           <div className="area__actions">
-            <a className="button button-primary" href={PHONE_LINK} data-surface="coverage">Call {PHONE_DISPLAY}</a>
+            <a className="button button-primary in-mobile-bar" href={PHONE_LINK} data-surface="coverage">Call {PHONE_DISPLAY}</a>
             <a className="button button-quiet" href="/service-areas/">All service areas</a>
           </div>
         </div>
@@ -120,7 +120,7 @@ export function ClosingCta() {
       <a className="closing__phone" href={PHONE_LINK} data-surface="closing" aria-label={`Call ${PHONE_DISPLAY}`}>{PHONE_DISPLAY}</a>
       <div className="closing__row">
         <p><HoursLine detail={false} />. Have the service address, a callback number and a short description of the issue ready.</p>
-        <a className="button button-primary" href="/book-service/">Book service</a>
+        <a className="button button-primary in-mobile-bar" href="/book-service/">Book service</a>
       </div>
     </section>
   );

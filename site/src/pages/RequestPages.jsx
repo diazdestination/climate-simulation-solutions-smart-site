@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { FaBuilding, FaCalendarCheck, FaEnvelope, FaHouse, FaPhone } from "react-icons/fa6";
+import { FaCalendarCheck, FaEnvelope, FaPhone } from "react-icons/fa6";
 import { RequestForm } from "../components/RequestForm.jsx";
 import { SERVICE_ISSUES } from "../lib/hvacRequest.js";
-import { MAINTENANCE, PHONE_DISPLAY, PHONE_LINK } from "../lib/siteFacts.js";
+import { MAINTENANCE, PHONE_DISPLAY, PHONE_LINK, visitsAYear } from "../lib/siteFacts.js";
 import { openAssistant } from "../components/Layout.jsx";
 
 /** Reads a whitelisted query parameter after mount (prerendered HTML stays generic). */
@@ -49,32 +49,35 @@ export function BookServicePage() {
   );
 }
 
+/** One plan: its name, the figure that sets it apart, the approved cadence wording, the terms. */
+function PlanCard({ tone, name, cadence, children }) {
+  const visits = visitsAYear(cadence);
+  return (
+    <article className={`plan-card tone-${tone}`}>
+      <h2>{name}</h2>
+      {visits && <p className="plan-card__figure"><b>{visits}</b> <span>visits a year</span></p>}
+      <p className="plan-card__cadence">{cadence}</p>
+      <ul>{children}</ul>
+    </article>
+  );
+}
+
 export function MaintenancePage() {
   const plan = useQueryChoice("plan", ["residential", "commercial"], "residential");
   return (
     <div className="page">
       <PageHero kicker="Maintenance plans" title="Regular care, on a schedule." lede="Maintenance plans keep your heating and cooling equipment on a regular visit schedule. Plans are billed annually; the office explains what’s included and current pricing." />
       <section className="plan-grid" aria-label="Plan types">
-        <article className="plan-card">
-          <FaHouse aria-hidden="true" />
-          <p className="kicker">Residential</p>
-          <h2>{MAINTENANCE.residential}</h2>
-          <ul>
-            <li>{MAINTENANCE.billing}</li>
-            <li>If your system had major service between visits, the office may adjust when the next visit is due.</li>
-            <li>Pricing provided by the office.</li>
-          </ul>
-        </article>
-        <article className="plan-card">
-          <FaBuilding aria-hidden="true" />
-          <p className="kicker">Commercial</p>
-          <h2>{MAINTENANCE.commercial}</h2>
-          <ul>
-            <li>{MAINTENANCE.billing}</li>
-            <li>Share the facility and how many systems you have so the office can confirm fit.</li>
-            <li>Pricing provided by the office.</li>
-          </ul>
-        </article>
+        <PlanCard tone="warm" name="Residential" cadence={MAINTENANCE.residential}>
+          <li>{MAINTENANCE.billing}</li>
+          <li>If your system had major service between visits, the office may adjust when the next visit is due.</li>
+          <li>Pricing provided by the office.</li>
+        </PlanCard>
+        <PlanCard tone="cool" name="Commercial" cadence={MAINTENANCE.commercial}>
+          <li>{MAINTENANCE.billing}</li>
+          <li>Share the facility and how many systems you have so the office can confirm fit.</li>
+          <li>Pricing provided by the office.</li>
+        </PlanCard>
       </section>
       <section className="request-layout">
         <RequestForm kind="maintenance" key={plan} defaults={{ propertyType: plan }} heading="Ask to join a maintenance plan" intro="Sending this is a request, not an enrollment or a charge. The office contacts you to explain the plan, pricing and the first visit." />
@@ -100,7 +103,7 @@ export function EstimatePage() {
           <li><strong>Ask anything, any time.</strong> Call the office or send a question below. Sending a question does not accept, decline or change the estimate.</li>
         </ol>
         <div className="estimate-contact">
-          <a className="button button-primary" href={PHONE_LINK} data-surface="estimate"><FaPhone aria-hidden="true" /> Call {PHONE_DISPLAY}</a>
+          <a className="button button-primary in-mobile-bar" href={PHONE_LINK} data-surface="estimate"><FaPhone aria-hidden="true" /> Call {PHONE_DISPLAY}</a>
           <p><FaEnvelope aria-hidden="true" /> Follow-ups come from the office. This website never sends messages on its own.</p>
         </div>
       </section>
@@ -121,7 +124,7 @@ export function AssistantPage() {
       <PageHero kicker="AI website assistant · private preview" title="Talk through your heating or cooling question." lede="The assistant helps organize what’s happening and points you to the right request. It can’t diagnose, quote prices, book or dispatch — and it doesn’t submit anything for you.">
         <div className="hero-actions">
           <button className="button button-primary" type="button" onClick={openAssistant}>Open the assistant</button>
-          <a className="button button-quiet" href={PHONE_LINK}>Call {PHONE_DISPLAY}</a>
+          <a className="button button-quiet in-mobile-bar" href={PHONE_LINK}>Call {PHONE_DISPLAY}</a>
         </div>
       </PageHero>
     </div>

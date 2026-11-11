@@ -1,5 +1,63 @@
 # Decisions
 
+## 2026-11-11 — Buttons, cards and forms rebuilt as one system (Adam, in Claude chat)
+
+- **Request.** Adam sent a phone screenshot of the homepage buttons and triage chips and asked
+  for the site's cards and "generic interactive buttons" to be improved. He was shown three
+  before-and-after mock-ups and approved building the direction across the site.
+- **Keys.** Every pressable control is the same object: a solid plate on a darker lower edge
+  that it drops onto when pressed. No gradients, glass or glow. The amber key is a page's main
+  action. This covers buttons, the phone action bar, triage tiles, urgent issue keys, yes/no
+  and preferred-time toggles, the thermostat's plus and minus, the menu and close buttons and
+  the assistant's start button. One CSS rule in `site/src/styles.css` gives all of them the
+  press. `main.jsx` registers an empty touch listener because iOS Safari only shows a pressed
+  state when the page has one.
+- **One set of actions per phone screen.** On phones, Call and Book service are docked to the
+  bottom of the screen as a solid bar. Any button in the page that would repeat them carries
+  the class `in-mobile-bar` and is left out at phone width, so the homepage no longer shows the
+  same two buttons twice. Desktop and tablet keep every button. On the booking page the bar is
+  Call alone (the page is the form). On the urgent page the bar is Call alone in amber, and
+  "Book service" is not offered there. A service page keeps its own action when the bar does
+  not have it (for example "Get urgent help").
+- **Triage in two tiers.** The seven identical chips are now three keys for what cannot wait
+  (no heat, no AC, water leaking), each with an icon and a coloured cap, and four plain rows
+  for what can be planned. Same links, same order by season (`triageFor` in
+  `site/src/lib/season.js`).
+- **Shape.** Three radii and no others, down from thirteen: 10 px for anything pressed or typed
+  in (`--r-control`), 14 px for panels that hold controls (`--r-surface`), and fully round.
+- **Depth.** Three steps: a well (inputs) is level with the page, a surface (forms, dialogs,
+  plan cards) sits above it, a key sits above that. One drop shadow (`--float`), used only on
+  things that float over the page: the assistant, the open menu and the privacy notices.
+- **Colour.** A coloured cap or icon on a tile means warm air (amber), cool air (blue) or water,
+  on the homepage tiles and the urgent issue keys alike. The two plan cards borrow amber and
+  blue only to tell the plans apart; that is not a claim about heating or cooling. Cyan marks a
+  choice that is switched on, with a ring and a filled check so it never depends on colour.
+- **Fewer boxes.** Service-page sections, the "What happens next" notes beside forms and the
+  license line in the reviews section are plain text with a rule, not outlined boxes. "Other
+  services" and "Nearby communities" are rows with a chevron in place of empty cards. The form
+  is the one surface on its page.
+- **Plan cards** lead with one figure, visits in a year (2 and 4), worked out from the approved
+  cadence wording by `visitsAYear` in `site/src/lib/siteFacts.js`. The approved wording ("One
+  visit every six months", "Quarterly visits") is still printed under it. A cadence the table
+  does not know shows no figure, and a test fails so the table is updated instead of guessed.
+- **Urgent page.** Issue keys locked behind the safety questions are flat outlines at full
+  reading contrast with a lock line above them; they used to be the real cards at 50% opacity.
+  They are now real buttons in a list (they had `role="listitem"`, which hid the button role
+  from screen readers).
+- **Forms.** Sentence-case group headings with a rule between groups, inputs as wells, the
+  site's own arrow on selects, toggle keys over the real radios and checkboxes (still reachable
+  and operable by keyboard), no arrow on the submit button, and the form runs edge to edge on
+  phones. Field names, required fields, consent wording and what is sent to the office are
+  unchanged.
+- **Not changed:** any stated fact, any route, the hero's thermostat and airflow, the request
+  payload, the assistant's behaviour.
+- **Rule for future work:** a new control is a key, a new panel is a surface, and a new radius,
+  gradient-filled control or second drop shadow fails `site/tests/ui-system.test.mjs`.
+- **Checked** in Chrome at 390, 820 and 1440 px on every page type, with the assistant and the
+  menu open: no console errors, no sideways scroll, each kind of key drops when pressed, yes/no
+  keys work from the keyboard, and the thermostat scroll test from the entry below still
+  passes. Not checked on a physical phone from here.
+
 ## 2026-11-11 — Homepage thermostat no longer traps scrolling on phones
 
 - **Report (Adam):** on a phone the page "seems to freeze on the down scroll" at the thermostat.

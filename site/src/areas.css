@@ -25,7 +25,6 @@
 .area-request h3 { margin: 0; font: 700 1.25rem/1.25 var(--display); letter-spacing: -.01em; }
 .area-request p { max-width: 32rem; margin: .6rem 0 1rem; color: var(--muted); }
 .area-request a { color: var(--cyan); font-weight: 700; text-underline-offset: .2em; }
-.related h2.kicker { margin: 0; font-family: inherit; letter-spacing: 0; line-height: 1.5; }
 
 /* The index: map on one side, a plain directory on the other. Each whole row is the link. */
 .area--directory { align-items: start; border-bottom: 0; }

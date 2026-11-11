@@ -2,12 +2,13 @@
 
 Built on `codex/css-text-assistant-activation-20261110`. Not merged and not deployed: the live
 site still shows "Communities you can call to check" and has one area page. This branch states
-that the twelve listed communities are served and adds a page for each (see the 2026-11-11
-entry in `DECISIONS.md`). Verified locally in `site/`: 25 prerendered routes; `npm test` 64
-passed, 1 skipped, 0 failed; release gate publishable with the labeled draft privacy policy;
-`python scripts/check-discovery.py --directory dist` 24 pages pass. Town pages, the index and
-the homepage were viewed in Chrome at 390 and 1440 px with no console errors or sideways
-scroll. Publishing steps: `docs/DEPLOY_BRIEF_SERVICE_AREAS_2026-11-11.md`.
+that the twelve listed communities are served and adds a page for each, fixes the homepage
+thermostat trapping scroll on phones, and rebuilds the site's buttons, cards and forms as one
+system (three 2026-11-11 entries in `DECISIONS.md`). Verified locally in `site/`: 25
+prerendered routes; `npm test` 75 passed, 1 skipped, 0 failed; release gate publishable with
+the labeled draft privacy policy; `python scripts/check-discovery.py --directory dist` 24
+pages pass. Every page type was viewed in Chrome at 390, 820 and 1440 px with no console
+errors or sideways scroll. Publishing steps: `docs/DEPLOY_BRIEF_SERVICE_AREAS_2026-11-11.md`.
 
 # Current live state — 2026-11-10 (Codex follow-up)
 

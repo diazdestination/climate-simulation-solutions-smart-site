@@ -65,11 +65,15 @@ export function modeFor(room, target) {
   return "holding";
 }
 
-/** Symptom-first choices. Each one lands on the page that already handles that request. */
+/**
+ * Symptom-first choices. Each one lands on the page that already handles that request.
+ * The urgent ones come first and carry a tone (warm, cool or water) for their tile; the rest are
+ * things a visitor plans, and the homepage lists them as plain rows.
+ */
 export function triageFor(season) {
-  const noHeat = { id: "no-heat", label: "No heat", href: "/urgent/", urgent: true };
-  const noCooling = { id: "no-cooling", label: "No AC", href: "/urgent/", urgent: true };
-  const leak = { id: "water-leak", label: "Water leaking", href: "/urgent/", urgent: true };
+  const noHeat = { id: "no-heat", label: "No heat", href: "/urgent/", urgent: true, tone: "warm" };
+  const noCooling = { id: "no-cooling", label: "No AC", href: "/urgent/", urgent: true, tone: "cool" };
+  const leak = { id: "water-leak", label: "Water leaking", href: "/urgent/", urgent: true, tone: "water" };
   const rest = [
     { id: "maintenance", label: "Tune-up visit", href: "/book-service/?issue=maintenance" },
     { id: "replacement", label: "New system", href: "/book-service/?issue=replacement" },

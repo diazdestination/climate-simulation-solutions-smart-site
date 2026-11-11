@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { FaArrowRightLong, FaCircleCheck, FaClock, FaPhone, FaTriangleExclamation } from "react-icons/fa6";
+import { FaCircleCheck, FaClock, FaPhone, FaTriangleExclamation } from "react-icons/fa6";
 import { getLeadDeliveryStatus, isLoopbackPreview, submitLead } from "../lib/leadCapture.js";
 import { getAcquisitionContext, trackAcquisition } from "../lib/acquisition.js";
 import {
@@ -51,9 +51,11 @@ const blank = (kind, defaults) => ({
 const Select = ({ label, value, options, onChange, disabled, id }) => (
   <label>
     <span className="field-label">{label}</span>
-    <select id={id} value={value} disabled={disabled} onChange={(e) => onChange(e.target.value)}>
-      {options.map(([v, l]) => <option key={v || "blank"} value={v}>{l}</option>)}
-    </select>
+    <span className="select-well">
+      <select id={id} value={value} disabled={disabled} onChange={(e) => onChange(e.target.value)}>
+        {options.map(([v, l]) => <option key={v || "blank"} value={v}>{l}</option>)}
+      </select>
+    </span>
   </label>
 );
 
@@ -206,10 +208,13 @@ export function RequestForm({ kind, defaults = {}, heading, intro }) {
               ["residential", "Residential", "One visit every six months"],
               ["commercial", "Commercial", "Quarterly visits"],
             ].map(([id, title, cadence]) => (
-              <label key={id} className={`plan-choice__option${form.propertyType === id ? " is-selected" : ""}`}>
+              <label key={id} className={`toggle-key${form.propertyType === id ? " is-on" : ""}`}>
                 <input type="radio" name={`${formId}-plan`} value={id} checked={form.propertyType === id} disabled={busy} onChange={() => update("propertyType", id)} />
-                <strong>{title}</strong>
-                <span>{cadence} · billed annually</span>
+                <span className="toggle-key__mark" aria-hidden="true" />
+                <span className="plan-choice__text">
+                  <strong>{title}</strong>
+                  <span>{`${cadence}, billed annually`}</span>
+                </span>
               </label>
             ))}
           </div>
@@ -236,8 +241,9 @@ export function RequestForm({ kind, defaults = {}, heading, intro }) {
           <legend>Preferred times <small>(a request — the office confirms the actual appointment)</small></legend>
           <div className="window-chips">
             {PREFERRED_WINDOWS.map(([id, label]) => (
-              <label key={id} className={`chip-check${form.preferredWindows.includes(id) ? " is-checked" : ""}`}>
+              <label key={id} className={`toggle-key${form.preferredWindows.includes(id) ? " is-on" : ""}`}>
                 <input type="checkbox" checked={form.preferredWindows.includes(id)} disabled={busy} onChange={() => toggleWindow(id)} />
+                <span className="toggle-key__mark" aria-hidden="true" />
                 {label}
               </label>
             ))}
@@ -294,7 +300,7 @@ export function RequestForm({ kind, defaults = {}, heading, intro }) {
       <div className="request-actions">
         <a className="text-link" href={PHONE_LINK} data-surface={SURFACE[kind]}>Prefer to call? {PHONE_DISPLAY}</a>
         <button className="button button-primary" type="submit" disabled={busy || !requestId}>
-          {busy ? "Sending…" : SUBMIT_LABEL[kind]} <FaArrowRightLong aria-hidden="true" />
+          {busy ? "Sending…" : SUBMIT_LABEL[kind]}
         </button>
       </div>
     </form>

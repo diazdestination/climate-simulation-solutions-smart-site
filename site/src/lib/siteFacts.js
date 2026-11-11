@@ -19,6 +19,13 @@ export const SOURCE_KEY = pub.sourceKey;
 export const FORMS = pub.forms;
 export const MAINTENANCE = pub.maintenance;
 
+// The plan cards lead with one figure: visits in a year. It is worked out from the approved
+// cadence wording, so a cadence this table does not know simply shows no figure (and a test
+// fails, so the table gets updated rather than guessed).
+const VISITS_A_YEAR = { "One visit every six months": 2, "Quarterly visits": 4 };
+/** Visits in a year for an approved plan cadence, or null when it is not a known cadence. */
+export const visitsAYear = (cadence) => VISITS_A_YEAR[cadence] ?? null;
+
 /** Consent text exactly as configured for a form (what the worker records the policy for). */
 export const consentTextFor = (formId) => FORMS[formId]?.consentText ?? "";
 

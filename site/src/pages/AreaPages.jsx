@@ -22,9 +22,9 @@ export function AreaPage({ page }) {
           <p className="kicker">{page.eyebrow}</p>
           <h1>{page.headline}</h1>
           <p className="area-hero__lede">{page.lede}</p>
-          <div className="hero-actions">
+          <div className={`hero-actions${page.primaryAction.href === "/book-service/" ? " in-mobile-bar" : ""}`}>
             <a className="button button-primary" href={page.primaryAction.href} data-acquisition-event="project_form_opened" data-surface={`area-${town.slug}`}>{page.primaryAction.label}</a>
-            <a className="button button-quiet" href={PHONE_LINK} data-surface={`area-${town.slug}`}>Call {PHONE_DISPLAY}</a>
+            <a className="button button-quiet in-mobile-bar" href={PHONE_LINK} data-surface={`area-${town.slug}`}>Call {PHONE_DISPLAY}</a>
           </div>
           <dl className="area-facts">
             <dt>County</dt><dd>{town.county}</dd>
@@ -78,14 +78,14 @@ export function AreaPage({ page }) {
       </section>
 
       <section className="related" aria-labelledby="area-nearby-title">
-        <h2 className="kicker" id="area-nearby-title">Nearby communities we serve</h2>
-        <div className="related-grid">
+        <h2 className="related__title" id="area-nearby-title">Nearby communities we serve</h2>
+        <ul className="link-rows link-rows--columns">
           {nearby.map((other) => (
-            <a key={other.slug} href={areaPath(other.slug)} className="related-card"><strong>{other.name}</strong></a>
+            <li key={other.slug}><a href={areaPath(other.slug)}>{other.name}</a></li>
           ))}
-          {!isBase && <a href={areaPath(HOME_BASE.slug)} className="related-card"><strong>{HOME_BASE.name}</strong></a>}
-          <a href="/service-areas/" className="related-card"><strong>All service areas</strong></a>
-        </div>
+          {!isBase && <li><a href={areaPath(HOME_BASE.slug)}>{HOME_BASE.name}</a></li>}
+          <li><a href="/service-areas/">All service areas</a></li>
+        </ul>
       </section>
       <ClosingCta />
     </div>
@@ -100,7 +100,7 @@ export function AreasPage() {
         <p className="kicker">Service area</p>
         <h1>Serving North Georgia from Dawsonville.</h1>
         <p className="page-hero__lede">Climate Simulation Solutions serves homes and businesses in Dawsonville and the communities around it, from Dahlonega and Cleveland in the mountains to Atlanta.</p>
-        <div className="hero-actions">
+        <div className="hero-actions in-mobile-bar">
           <a className="button button-primary" href="/book-service/" data-acquisition-event="project_form_opened" data-surface="areas">Book a service call</a>
           <a className="button button-quiet" href={PHONE_LINK} data-surface="areas">Call {PHONE_DISPLAY}</a>
         </div>

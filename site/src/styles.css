@@ -12,7 +12,6 @@
   --brand-red: #ff351b;
   --ink: #07172f;
   --ink-2: #0c2449;
-  --panel: #102e56;
   --white: #f8fbff;
   --muted: #a9b8c8;
   --line: rgba(255,255,255,.14);
@@ -23,15 +22,39 @@
   --display: "Archivo Variable", "Archivo", system-ui, sans-serif;
   /* The left and right edge every full-width section shares with the header. */
   --gutter: max(1.5rem, calc((100% - var(--max)) / 2 + 1.5rem));
+
+  /* Shape (2026-11-11). Three radii and no others: a control is anything you press or type in,
+     a surface is a panel that holds controls, and round things are fully round (50%). */
+  --r-control: 10px;
+  --r-surface: 14px;
+  /* What a coloured edge or icon means on a tile or card: warm air, cool air, water. */
+  --warm: #ff8a1f;
+  --cool: var(--cyan);
+  --water: #8fb6ff;
+  /* Depth, in three steps. A well (something you type in) sits level with the page, a surface
+     sits above it, and a key (something you press) sits above that, on a darker lower edge
+     that it drops onto when pressed. */
+  --well: var(--ink);
+  --surface: var(--ink-2);
+  --key: #153864;
+  --key-lit: #1c4579;
+  --key-ring: inset 0 0 0 1px rgba(255,255,255,.14);
+  --key-edge: inset 0 -3px 0 rgba(0,0,0,.36);
+  --key-edge-amber: inset 0 -3px 0 rgba(120,70,0,.4);
+  /* The one drop shadow, kept for things that float over the page: dialogs and the open menu. */
+  --float: 0 18px 48px rgba(0,0,0,.5);
 }
 
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
-html { scroll-behavior: smooth; }
+html { scroll-behavior: smooth; color-scheme: dark; }
 body { margin: 0; background: var(--ink); color: var(--white); font: 16px/1.6 "DM Sans", system-ui, sans-serif; }
-button, a { -webkit-tap-highlight-color: transparent; }
+button, a, label { -webkit-tap-highlight-color: transparent; }
 a { color: inherit; }
-.skip-link { position: fixed; left: 1rem; top: -5rem; z-index: 100; padding: .75rem 1rem; background: var(--white); color: var(--ink); border-radius: .5rem; }
+.tone-warm { --tone: var(--warm); }
+.tone-cool { --tone: var(--cool); }
+.tone-water { --tone: var(--water); }
+.skip-link { position: fixed; left: 1rem; top: -5rem; z-index: 100; padding: .75rem 1rem; background: var(--white); color: var(--ink); border-radius: var(--r-control); }
 .skip-link:focus { top: 1rem; }
 
 .site-header { position: absolute; z-index: 5; top: 0; left: 0; right: 0; display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; max-width: var(--max); margin: auto; padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--line); }
@@ -48,23 +71,36 @@ a { color: inherit; }
 h1, h2 { margin: 0; font-family: var(--display); font-stretch: 112%; letter-spacing: -.028em; line-height: 1.04; }
 h1 { max-width: 660px; font-size: clamp(4rem, 7vw, 6.9rem); font-weight: 700; line-height: 1.08; }
 .hero-actions { display: flex; flex-wrap: wrap; gap: .85rem; margin-top: 2.1rem; }
-.button { min-height: 3.5rem; display: inline-flex; align-items: center; justify-content: center; gap: 1.5rem; padding: .8rem 1.35rem; border: 1px solid var(--line); border-radius: .55rem; font-weight: 700; text-decoration: none; }
-.button-primary { border-color: var(--amber); background: linear-gradient(115deg, var(--amber), #ff9d19); color: var(--brand-navy); box-shadow: 0 12px 35px rgba(255,121,0,.2); }
-.button-primary:hover { background: linear-gradient(115deg, var(--brand-yellow), var(--amber)); }
-.button:focus-visible, summary:focus-visible, a:focus-visible { outline: 3px solid var(--cyan); outline-offset: 5px; }
-.button-quiet { background: rgba(7,17,31,.35); backdrop-filter: blur(14px); }
-.button-quiet:hover { border-color: rgba(255,255,255,.4); }
+
+/* Keys. Every pressable control on the site is the same object: a solid plate on a darker lower
+   edge. Pressing it moves it down onto that edge. No gradients and no glow. The amber key is
+   the main action of the section it sits in. */
+.button { min-height: 3.4rem; display: inline-flex; align-items: center; justify-content: center; gap: .65rem; padding: .8rem 1.35rem calc(.8rem + 3px); border: 0; border-radius: var(--r-control); background: var(--key); color: var(--white); box-shadow: var(--key-ring), var(--key-edge); font: 700 1rem/1.2 var(--display); text-decoration: none; cursor: pointer; transition: transform .08s ease, box-shadow .08s ease, background-color .15s ease; }
+.button svg { flex: 0 0 auto; }
+.button:hover:where(:not(:disabled)) { background: var(--key-lit); }
+.button-primary { background: var(--amber); color: var(--brand-navy); box-shadow: var(--key-edge-amber); }
+.button-primary:hover:where(:not(:disabled)) { background: #ffd357; }
+.button-danger { background: #6f1d16; color: #ffe1db; box-shadow: inset 0 0 0 1px rgba(255,141,122,.45), var(--key-edge); }
+.button-danger:hover:where(:not(:disabled)) { background: #84241b; }
+.button-large { min-height: 4rem; padding: 1rem 1.8rem calc(1rem + 3px); font-size: 1.12rem; }
+.button:disabled { opacity: .5; cursor: not-allowed; }
+.button:focus-visible, summary:focus-visible, a:focus-visible { outline: 3px solid var(--cyan); outline-offset: 3px; }
+/* The press, shared by every key on the site. :where() keeps this rule light enough for a
+   chosen toggle to keep its own ring while it is held down. */
+:where(.button, .mobile-bar a, .triage-tile, .issue-card, .toggle-key, .voice-mode-card, .voice-composer button, .icon-button, .menu-toggle, .nav-assistant, .measurement-trigger, .thermostat-steps button):active:not(:disabled) { transform: translateY(2px); box-shadow: var(--key-ring); }
 
 .kicker { color: var(--cyan); font-size: .95rem; font-weight: 600; }
-@keyframes card-glow { from { transform: translate(0,0); } to { transform: translate(-13%,18%); } }
-.text-link { display: inline-flex; align-items: center; gap: .35rem; color: #086287; font-weight: 800; text-decoration: none; white-space: nowrap; }
-.text-link:hover { color: #009dd6; }
+.text-link { display: inline-flex; align-items: center; gap: .35rem; color: var(--cyan); font-weight: 700; text-underline-offset: .2em; }
+.text-link:hover { color: var(--white); }
 
-
-.answers-heading .kicker { margin: 0 0 1.2rem; }
-
-.city-chips { display: flex; flex-wrap: wrap; gap: .5rem; max-width: 600px; }
-.city-chips span { padding: .42rem .72rem; border: 1px solid var(--line); border-radius: 2rem; color: #b9c8d5; font-size: .76rem; }
+/* A plain list of places to go. The whole row is the link and the chevron says so. */
+.link-rows { margin: 0; padding: 0; list-style: none; border-top: 1px solid rgba(255,255,255,.26); }
+.link-rows li { border-bottom: 1px solid var(--line); }
+.link-rows a { display: flex; align-items: center; justify-content: space-between; gap: 1rem; min-height: 3.4rem; padding: .75rem .1rem; color: #e6eef5; font: 600 1.06rem/1.25 var(--display); text-decoration: none; transition: color .15s ease; }
+.link-rows a::after { content: ""; flex: 0 0 auto; width: .5rem; height: .5rem; margin-right: .35rem; border: solid #7f96ab; border-width: 2px 2px 0 0; transform: rotate(45deg); transition: border-color .15s ease; }
+.link-rows a:hover { color: var(--white); }
+.link-rows a:hover::after { border-color: var(--cyan); }
+.link-rows--columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 3.5rem; }
 
 .answers { max-width: var(--max); display: grid; grid-template-columns: .75fr 1.25fr; gap: 5rem; margin: auto; padding: 7rem 1.5rem; }
 .answers-heading { position: sticky; top: 2rem; align-self: start; }
@@ -102,6 +138,7 @@ h1 { max-width: 660px; font-size: clamp(4rem, 7vw, 6.9rem); font-weight: 700; li
   .header-call strong { font-size: .86rem; }
   h1 { font-size: clamp(3.35rem, 17vw, 4.7rem); }
   .hero-actions { flex-direction: column; align-items: stretch; }
+  .link-rows--columns { grid-template-columns: 1fr; }
   .answers { padding: 5rem 1rem; }
   .site-footer { grid-template-columns: 1fr; gap: 2rem; padding: 3rem 1rem 7rem; }
   .copyright { grid-column: auto; }
