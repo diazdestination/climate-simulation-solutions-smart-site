@@ -46,7 +46,12 @@ metadata retained plain variables, encrypted secrets and Secrets Store reference
 
 No required step6 check failed and no rollback was needed. No test leads were submitted.
 
-## Assistant refresh: prepared, NOT applied
+## Assistant refresh: later activated under separate approval
+
+The following paragraph records the frontend-only release state. The missing agent was later
+created and public text chat verified after Adam's separate approvals. See
+[the text assistant release](RELEASE_TEXT_ASSISTANT_2026-11-10.md) for the active version,
+permissions, compatibility fix, limits, and actual browser evidence.
 
 Step7 dry-run completed locally, with no network calls. Generated prompt/knowledge documents
 contain (706) 502-0877 and Monday-Friday 9 a.m.-5 p.m.; Saturday-Sunday 8 a.m.-6 p.m.

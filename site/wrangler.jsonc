@@ -3,7 +3,7 @@
 // candidate (cloudflare/wrangler.jsonc) so it replaces that worker rather than adding one.
 // Build first (npm run build -> ./dist). NEVER deploy while npm run release:check fails.
 // Safe defaults: no workers.dev, no preview URLs, NO routes (attaching a domain is a
-// launch decision for Adam), voice private, secrets only via `wrangler secret put`.
+// launch decision for Adam), text chat approved, spoken voice off, secrets only in provider stores.
 {
   "$schema": "./node_modules/wrangler/config-schema.json",
   "name": "climate-simulation-solutions-site",
@@ -42,7 +42,7 @@
     "SITE_EMAIL_SENDER_NAME": "MogulForge Lead Alerts",
     "GROWTHOS_API_ORIGIN": "https://app.mogulforge.ai",
     "SITE_OUTBOX_ENABLED": "true",
-    "ELEVENLABS_VOICE_PUBLIC": "false"
+    "ELEVENLABS_VOICE_PUBLIC": "true"
     // Never add SITE_ALLOW_UNCONFIRMED_FACTS here: it is a local-build override only.
   }
   // No "routes" and no account_id: attaching csshvac.com (approved 2026-10-14) is done by Codex at launch.
