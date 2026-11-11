@@ -1,4 +1,4 @@
-# Deploy brief: service-area pages for csshvac.com
+# Deploy brief: service-area pages and thermostat scroll fix for csshvac.com
 
 For the Codex agent. Written by Claude on 2026-11-11 at Adam's request.
 
@@ -15,14 +15,14 @@ Adam's go-ahead in your session is required before step 5. This file is not that
 |---|---|
 | Repository | `diazdestination/climate-simulation-solutions-smart-site` |
 | Branch | `claude/css-service-areas-20261111` (draft PR, base `codex/css-text-assistant-activation-20261110`) |
-| Frontend source commit | `7f51786c5653dbb5b133c36ead25d618d7e461dd` |
+| Frontend source commit | `df3b7a5411a96049c856d800ba966afd9e49724d` |
 | Worker | `climate-simulation-solutions-site` (serves `csshvac.com` and `www.csshvac.com`) |
 | Live version before this release | `33de63cb-72ed-466e-b39a-a375fca81f2c` (per `docs/RELEASE_TEXT_ASSISTANT_2026-11-10.md`; confirm, do not assume) |
 | Server module that must stay | SHA-256 `15f4e6843a6d247ca0fa8036679ecb088f5383921ae3fdbd978314e3898ec5ef` |
 
 Later commits on the branch that only touch `docs/` (this brief included) do not change the
 built assets. If the branch head has moved past the commit above, list the changed paths
-(`git diff --stat 7f51786..HEAD`) and stop if anything outside `docs/` or the root `*.md` files
+(`git diff --stat df3b7a5..HEAD`) and stop if anything outside `docs/` or the root `*.md` files
 changed, unless Adam tells you to include it.
 
 What visitors will see change:
@@ -35,6 +35,10 @@ What visitors will see change:
   the same layout.
 - Homepage service-area section: new heading, a larger map (rings at 10, 25 and 50 miles) and
   links to every town page. The "Do you serve my area?" answer lists the towns.
+- Homepage thermostat on phones: a thumb that lands on the dial now scrolls the page. Before,
+  the dial swallowed the swipe (Adam reported the page "freezes on the down scroll"). A tap or
+  a sideways drag still sets the temperature. The air animation also starts without the short
+  freeze it caused on load.
 
 `DECISIONS.md` (2026-11-11) has the reasons and what the pages deliberately do not claim.
 
@@ -63,7 +67,7 @@ Run in `site/`:
 
 ```
 git fetch origin claude/css-service-areas-20261111
-git checkout --detach 7f51786c5653dbb5b133c36ead25d618d7e461dd
+git checkout --detach df3b7a5411a96049c856d800ba966afd9e49724d
 npm ci
 $env:SITE_PUBLIC_ORIGIN = "https://csshvac.com"   # PowerShell; in cmd use: set SITE_PUBLIC_ORIGIN=https://csshvac.com
 npm run build
@@ -75,14 +79,14 @@ python scripts/check-discovery.py --directory dist
 Expected results:
 
 - Build: "Built 25 prerendered routes + /privacy/."
-- Tests: 65 tests, 0 fail. On Linux one test is skipped (64 pass); on Windows the last release
+- Tests: 67 tests, 0 fail. On Linux one test is skipped (66 pass); on Windows the last release
   ran with none skipped.
 - Release gate: publishable with the labeled draft privacy policy (unchanged).
 - Discovery check: 24 pages pass. The script on this branch expects 24; the older copy
   expects 12 and will fail against this build.
 
-On Linux this commit produced `assets/index-DbyqRgIN.js`, `assets/index-DVrIacZh.css` and
-`assets/VoiceDesk-C3EtUXZ1.js`. Different names on Windows are not a failure on their own, but
+On Linux this commit produced `assets/index-DxcOh89q.js`, `assets/index-SFP_x1GZ.css` and
+`assets/VoiceDesk-CtqIEAly.js`. Different names on Windows are not a failure on their own, but
 note them in your report.
 
 ### 3. Check the build before it goes anywhere
@@ -123,6 +127,10 @@ Send 100% of traffic to the staged version. Record the new deployment ID and tim
   `atlanta-ga` (about 49 miles) and `dahlonega-ga` (about 11 miles) in a browser at desktop
   and phone widths: no console errors, no sideways scroll.
 - The homepage still shows the thermostat hero and (706) 502-0877.
+- On a real phone (ask Adam, or use device emulation with touch): put a thumb on the
+  thermostat's ring and swipe up. The page scrolls and the reading under "Heating to" does not
+  change. Tap the ring: the set temperature changes. This is the fix Adam asked for, so it is
+  the one check that needs a touch screen.
 - `GET /api/lead` still returns `ready:true`. Do not POST.
 - `GET /api/elevenlabs/status` still returns `ready:true` with text on and voice off.
 - Server module hash, binding names, schedules and domains are identical to step 1.
