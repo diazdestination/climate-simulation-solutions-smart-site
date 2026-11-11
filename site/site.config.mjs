@@ -132,7 +132,7 @@ export default {
   // but off (modes.voice false) until CSS approves it; flip to true to demo or enable later.
   voice: {
     enabled: true,
-    public: false,
+    public: true,
     modes: { text: true, voice: false },
     fileUploads: true,
     agent: {

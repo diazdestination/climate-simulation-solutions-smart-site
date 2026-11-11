@@ -39,8 +39,9 @@ test("urgent form vocabulary maps every issue to GrowthOS timing 'urgent'", () =
   for (const issue of ["no-heat", "no-cooling", "water-leak", "noise-and-failure", "other-urgent"]) assert.equal(map[issue], "urgent", issue);
 });
 
-test("voice is private and limited to the three registry tools", () => {
-  assert.equal(config.voice.public, false);
+test("approved assistant is public text-only and limited to the three registry tools", () => {
+  assert.equal(config.voice.public, true);
+  assert.deepEqual(config.voice.modes, {text: true, voice: false});
   assert.deepEqual(config.voice.agent.tools, ["sync_case", "show_call_path", "open_written_request"]);
   assert.equal(config.voice.agent.privacy.recordVoice, false);
   assert.equal(config.modules.weatherHail.enabled, false);
@@ -76,7 +77,7 @@ test("wrangler.jsonc: D1 DB binding (real ID), cron drain, /api/* worker-first, 
   assert.equal(w.vars.SITE_EMAIL_PROVIDER, "resend");
   assert.equal(w.vars.SITE_EMAIL_SENDER_NAME, "MogulForge Lead Alerts");
   for (const secret of ["SITE_EMAIL_SENDER", "SITE_EMAIL_INTERNAL_RECIPIENTS", "RESEND_API_KEY", "MICROSOFT_CLIENT_SECRET"]) assert.equal(w.vars[secret], undefined, secret);
-  assert.equal(w.vars.ELEVENLABS_VOICE_PUBLIC, "false");
+  assert.equal(w.vars.ELEVENLABS_VOICE_PUBLIC, "true");
   assert.equal(w.vars.SITE_ALLOW_UNCONFIRMED_FACTS, undefined);
   for (const secret of ["GROWTHOS_SITE_ID", "GROWTHOS_SITE_SECRET", "ELEVENLABS_API_KEY", "SITE_OUTBOX_ENCRYPTION_KEY"]) assert.equal(w.vars[secret], undefined, secret);
 });

@@ -209,15 +209,16 @@ test("pre-GrowthOS: an email failure is a visible error (phone fallback), never 
   assert.equal(none.status, 503);
 });
 
-test("GET /api/lead never exposes credentials; voice endpoints stay private off loopback", async () => {
+test("GET /api/lead never exposes credentials; public assistant requires bot protection", async () => {
   const worker = createSmartSiteWorker(config, { fetchImpl: async () => new Response("{}") });
   const status = await (await worker.fetch(new Request(`${PUBLIC_ORIGIN}/api/lead`), prodEnv())).json();
   assert.equal(status.ready, true);
   assert.doesNotMatch(JSON.stringify(status), /ss_|eeeeeeee/);
   assert.deepEqual(status.forms["urgent-request"].channels, ["phone", "email"]);
-  // Text chat uses the signed-URL session route; it stays private off loopback.
+  // Public text chat fails closed when Turnstile is missing; it never calls the provider.
   const voice = await worker.fetch(new Request(`${PUBLIC_ORIGIN}/api/elevenlabs/session`), { ELEVENLABS_API_KEY: "test-key", ELEVENLABS_AGENT_ID: "agent_test", ELEVENLABS_VOICE_PUBLIC: "true" });
-  assert.equal(voice.status, 403);
+  assert.equal(voice.status, 503);
+  assert.equal((await voice.json()).code, "bot_protection_not_configured");
   assert.equal((await worker.fetch(new Request(`${PUBLIC_ORIGIN}/api/weather/evidence`), {})).status, 404);
 });
 

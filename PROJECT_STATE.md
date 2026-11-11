@@ -1,4 +1,13 @@
-# Project state — 2026-11-10
+# Current live state — 2026-11-10 (Codex follow-up)
+
+The living frontend is published and CSS text chat is connected. A synthetic public browser
+session returned the approved phone and weekday/weekend hours; voice remains disabled.
+See `docs/RELEASE_TEXT_ASSISTANT_2026-11-10.md` for the active version, limits, and recovery.
+The full Git worker, including the outdoor-temperature endpoint, is still not deployed. The
+source branch is a reviewed follow-up candidate; do not deploy bare Wrangler configuration
+without retaining the existing provider Secret Store bindings.
+
+# Project state — 2026-11-10 (earlier Claude candidate)
 
 ## Living homepage candidate (branch `claude/css-living-hero-20261110`)
 

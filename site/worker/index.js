@@ -6,8 +6,9 @@ import config from "../site.config.mjs";
 import { assertSiteConfig } from "../core/config/schema.mjs";
 import { createSmartSiteWorker } from "../core/worker/router.js";
 import { isOutdoorRequest, outdoorResponse } from "./outdoor.js";
+import { createElevenLabsFetch } from "./elevenlabs-fetch.js";
 
-const worker = createSmartSiteWorker(assertSiteConfig(config));
+const worker = createSmartSiteWorker(assertSiteConfig(config), { fetchImpl: createElevenLabsFetch() });
 
 // The outdoor reading is the same for every visitor, so it is cached at the edge for 15 minutes
 // and weather.gov is asked at most a few times an hour.
