@@ -1,4 +1,10 @@
 // Structured public facts only. The same route/FAQ sources render the visible pages.
+import { HOME_BASE, MAP_TOWNS } from "../src/content/area-map.js";
+
+const city = (name) => ({ "@type": "City", name: `${name}, GA` });
+const SERVED = [HOME_BASE, ...MAP_TOWNS].map((town) => city(town.name));
+const SERVED_NAMES = MAP_TOWNS.map((town) => town.name);
+
 export function graphFor(route, config, homeFaq) {
   const origin = config.site.origin.replace(/\/$/, "");
   const businessId = `${origin}/#business`;
@@ -10,7 +16,7 @@ export function graphFor(route, config, homeFaq) {
     telephone: config.contact.mainPhone.value,
     logo: `${origin}/assets/css-logo-transparent.png`,
     address: { "@type": "PostalAddress", addressLocality: config.site.location.city, addressRegion: config.site.location.state, addressCountry: "US" },
-    areaServed: { "@type": "City", name: "Dawsonville, GA" },
+    areaServed: SERVED,
   };
   const graph = [business, {
     "@type": "WebSite", "@id": websiteId, url: `${origin}/`,
@@ -38,7 +44,17 @@ export function graphFor(route, config, homeFaq) {
     graph.push({ "@type": "Service", "@id": serviceId, url: origin + route.path,
       name: route.content.eyebrow, serviceType: route.content.eyebrow,
       description: route.description, provider: { "@id": businessId },
-      areaServed: { "@type": "City", name: "Dawsonville, GA" },
+      areaServed: SERVED,
+    });
+  }
+  // A town page describes the same service, offered in that one town.
+  if (route.page === "area") {
+    const serviceId = `${origin}${route.path}#service`;
+    graph[2].mainEntity = { "@id": serviceId };
+    graph.push({ "@type": "Service", "@id": serviceId, url: origin + route.path,
+      name: `HVAC service in ${route.content.town.name}, GA`, serviceType: "Heating, cooling and refrigeration service",
+      description: route.description, provider: { "@id": businessId },
+      areaServed: city(route.content.town.name),
     });
   }
   const questions = route.path === "/" ? homeFaq : route.content?.questions;
@@ -55,7 +71,7 @@ export function llmsText(routes, config) {
   const origin = config.site.origin.replace(/\/$/, "");
   return `# ${config.brand.name.value}
 
-> Heating, cooling and refrigeration service based in Dawsonville, Georgia. Call with the service address to confirm availability in surrounding North Georgia communities.
+> Heating, cooling and refrigeration service based in Dawsonville, Georgia, serving ${SERVED_NAMES.slice(0, -1).join(", ")} and ${SERVED_NAMES.at(-1)}.
 
 ## Contact and scheduling
 
@@ -75,6 +91,6 @@ ${routes.filter(r => !r.noindex).map(r => `- [${r.title}](${origin}${r.path}): $
 - [Sitemap](${origin}/sitemap.xml)
 - [Crawler guidance](${origin}/robots.txt)
 
-This optional guide summarizes public pages. It does not provide access to customer requests, private assistant sessions or API endpoints. Coverage is confirmed per address; nearby community names are not a dispatch guarantee.
+This optional guide summarizes public pages. It does not provide access to customer requests, private assistant sessions or API endpoints. The office confirms every appointment; a listed community is not a promised arrival time.
 `;
 }

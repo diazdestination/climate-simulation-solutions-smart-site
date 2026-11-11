@@ -1,9 +1,12 @@
-// Service and service-area pages (adapted from the reference OrganicPage pattern).
-import { AREA_PAGES, AVAILABILITY_CHECK_COMMUNITIES, SERVICE_PAGES, areaPath, servicePath } from "../content/pages.js";
+// Service pages (adapted from the reference OrganicPage pattern). Area pages: AreaPages.jsx.
+import { SERVICE_PAGES, servicePath } from "../content/pages.js";
 import { PHONE_DISPLAY, PHONE_LINK } from "../lib/siteFacts.js";
 import { ClosingCta } from "./HomePage.jsx";
 
 export function ContentPage({ page }) {
+  // On a phone the docked bar already offers Call and Book service, so the hero keeps only an
+  // action the bar does not have (a prefilled request, the urgent path, the plans page).
+  const inBar = page.primaryAction.href === "/book-service/";
   return (
     <div className="page content-page">
       <nav className="breadcrumbs" aria-label="Breadcrumb">
@@ -13,9 +16,9 @@ export function ContentPage({ page }) {
         <p className="kicker">{page.eyebrow}</p>
         <h1>{page.headline}</h1>
         <p className="page-hero__lede">{page.lede}</p>
-        <div className="hero-actions">
+        <div className={`hero-actions${inBar ? " in-mobile-bar" : ""}`}>
           <a className="button button-primary" href={page.primaryAction.href}>{page.primaryAction.label}</a>
-          <a className="button button-quiet" href={PHONE_LINK} data-surface="content">Call {PHONE_DISPLAY}</a>
+          <a className="button button-quiet in-mobile-bar" href={PHONE_LINK} data-surface="content">Call {PHONE_DISPLAY}</a>
         </div>
       </section>
       <div className="content-sections">
@@ -36,43 +39,13 @@ export function ContentPage({ page }) {
           </div>
         </section>
       )}
-      <section className="related" aria-label="Other services">
-        <p className="kicker">Other services</p>
-        <div className="related-grid">
+      <section className="related" aria-labelledby="related-title">
+        <h2 className="related__title" id="related-title">Other services</h2>
+        <ul className="link-rows link-rows--columns">
           {SERVICE_PAGES.filter((p) => p.slug !== page.slug).map((p) => (
-            <a key={p.slug} href={servicePath(p.slug)} className="related-card"><strong>{p.eyebrow}</strong></a>
+            <li key={p.slug}><a href={servicePath(p.slug)}>{p.eyebrow}</a></li>
           ))}
-        </div>
-      </section>
-      <ClosingCta />
-    </div>
-  );
-}
-
-export function AreasPage() {
-  return (
-    <div className="page content-page">
-      <section className="page-hero">
-        <p className="kicker">Service area</p>
-        <h1>Based in Dawsonville, Georgia.</h1>
-        <p className="page-hero__lede">Climate Simulation Solutions is based in Dawsonville and serves surrounding North Georgia communities. Availability depends on the address, the equipment, timing and the type of work, so please call with your service address to confirm.</p>
-        <div className="hero-actions">
-          <a className="button button-primary" href={PHONE_LINK} data-surface="areas">Check your address: {PHONE_DISPLAY}</a>
-          <a className="button button-quiet" href="/book-service/">Book a service call</a>
-        </div>
-      </section>
-      <section className="content-section">
-        <h2>Communities you can call to check</h2>
-        <p>These nearby communities are places where you can call to check availability. Listing a community is not a promise of service at every address or of emergency coverage.</p>
-        <div className="city-chips city-chips--large">{AVAILABILITY_CHECK_COMMUNITIES.map((c) => <span key={c}>{c}</span>)}</div>
-      </section>
-      <section className="related" aria-label="Area pages">
-        <p className="kicker">Area pages</p>
-        <div className="related-grid">
-          {AREA_PAGES.map((p) => (
-            <a key={p.slug} href={areaPath(p.slug)} className="related-card"><strong>{p.eyebrow}</strong></a>
-          ))}
-        </div>
+        </ul>
       </section>
       <ClosingCta />
     </div>

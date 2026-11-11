@@ -45,10 +45,14 @@ export default {
     },
   },
 
+  // 2026-11-11 (Adam): CSS serves every community named here "for sure". Until then the site
+  // said only "surrounding North Georgia communities; call ... to confirm availability".
+  // Keep this list in step with src/content/area-map.js (a test compares them).
   serviceArea: {
     summary: {
-      value: "Dawsonville, Georgia and surrounding North Georgia communities; call with the service address to confirm availability",
-      ...DEMO_APPROVAL,
+      value: "Dawsonville, Georgia and the surrounding communities of Dahlonega, Cumming, Gainesville, Jasper, Ball Ground, Canton, Buford, Alpharetta, Cleveland, Roswell, Johns Creek and Atlanta",
+      approvedBy: "Adam (Claude chat, 2026-11-11): CSS serves all twelve listed communities",
+      approvedOn: "2026-11-11",
     },
   },
 

@@ -14,7 +14,9 @@ test("all public pages carry linked entities and FAQs from their visible source"
     assert.equal(byType("WebPage").url, cfg.site.origin + route.path);
     assert.equal(byType("WebSite").publisher["@id"], byType("HVACBusiness")["@id"]);
     assert.equal(Boolean(byType("BreadcrumbList")), !route.noindex && route.path !== "/");
-    assert.equal(Boolean(byType("Service")), route.path.startsWith("/services/"));
+    assert.equal(Boolean(byType("Service")), route.path.startsWith("/services/") || route.page === "area");
+    assert.equal(byType("HVACBusiness").areaServed.length, 13, "Dawsonville plus the twelve communities served");
+    if (route.page === "area") assert.deepEqual(byType("Service").areaServed, { "@type": "City", name: `${route.content.town.name}, GA` });
     const expected = route.noindex ? undefined : route.path === "/" ? HOME_FAQ : route.content?.questions;
     assert.deepEqual(byType("FAQPage")?.mainEntity.map(q => [q.name, q.acceptedAnswer.text]), expected);
     assert.doesNotMatch(JSON.stringify(graph), /aggregateRating|reviewRating|priceCurrency|streetAddress|openingHours/);

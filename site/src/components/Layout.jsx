@@ -47,6 +47,7 @@ export function Layout({ children, currentPath, initialAssistantOpen = false }) 
   const [menuOpen, setMenuOpen] = useState(false);
   const [assistantOpen, setAssistantOpen] = useState(false);
   const [year, setYear] = useState("");
+  const barIsCallOnly = currentPath === "/book-service/" || currentPath === "/urgent/";
   useEffect(() => setYear(String(new Date().getFullYear())), []);
   useEffect(() => {
     // Opened after mount (never in prerendered HTML), e.g. on the /assistant/ route.
@@ -104,10 +105,12 @@ export function Layout({ children, currentPath, initialAssistantOpen = false }) 
         <p className="copyright">© <span>{year}</span> {BRAND_NAME}. Online requests are not confirmed appointments; the office confirms scheduling directly.</p>
       </footer>
 
-      {/* The booking page is already the form, so there the bar is the phone number alone. */}
-      <div className={`mobile-bar${currentPath === "/book-service/" ? " mobile-bar--single" : ""}`}>
-        <a className="mobile-bar__call" href={PHONE_LINK} data-surface="mobile-bar"><FaPhone aria-hidden="true" /> Call {PHONE_DISPLAY}</a>
-        {currentPath !== "/book-service/" && <a className="mobile-bar__book" href="/book-service/" data-acquisition-event="project_form_opened" data-surface="mobile-bar"><FaWrench aria-hidden="true" /> Book service</a>}
+      {/* Docked to the bottom of the screen on phones. The booking page is already the form and
+          the urgent page is already the urgent path, so on those two the bar is the phone number
+          alone; on the urgent page calling is the main action, so it is the amber key. */}
+      <div className={`mobile-bar${barIsCallOnly ? " mobile-bar--single" : ""}`}>
+        <a className={`mobile-bar__call${currentPath === "/urgent/" ? " mobile-bar__call--main" : ""}`} href={PHONE_LINK} data-surface="mobile-bar"><FaPhone aria-hidden="true" /> Call {PHONE_DISPLAY}</a>
+        {!barIsCallOnly && <a className="mobile-bar__book" href="/book-service/" data-acquisition-event="project_form_opened" data-surface="mobile-bar"><FaWrench aria-hidden="true" /> Book service</a>}
       </div>
       <MeasurementChoices />
       {assistantOpen && (

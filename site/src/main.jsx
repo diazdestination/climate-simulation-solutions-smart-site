@@ -9,6 +9,11 @@ import "@fontsource/dm-sans/700.css";
 import "./styles.css";
 import "./smart-site.css";
 import "./home.css";
+import "./areas.css";
+
+// iOS Safari only shows a control's :active (pressed) state while the page has a touch listener.
+// Every key on the site drops when pressed, so register one empty, passive listener.
+document.addEventListener("touchstart", () => {}, { passive: true });
 
 // Prerendered HTML (scripts/build.mjs) is replaced by the live app; content is identical.
 createRoot(document.getElementById("root")).render(

@@ -1,6 +1,6 @@
 // Route table shared by the browser entry, the prerenderer and tests. Every route is
 // prerendered to dist/<path>/index.html (the Cloudflare adapter serves route-only fallback).
-import { AREA_PAGES, SERVICE_PAGES, areaPath, servicePath } from "./content/pages.js";
+import { AREA_PAGES, SERVED_COMMUNITIES, SERVICE_PAGES, areaPath, servicePath } from "./content/pages.js";
 
 export const ROUTES = [
   {
@@ -43,11 +43,11 @@ export const ROUTES = [
   {
     path: "/service-areas/",
     page: "areas",
-    title: "Service Area | Climate Simulation Solutions, Dawsonville GA",
-    description: "Based in Dawsonville, Georgia and serving surrounding North Georgia communities. Call with your service address to confirm availability.",
+    title: "Service Areas | Climate Simulation Solutions, Dawsonville GA",
+    description: `HVAC service in Dawsonville, ${SERVED_COMMUNITIES.slice(0, -1).join(", ")} and ${SERVED_COMMUNITIES.at(-1)}, Georgia.`,
   },
   ...SERVICE_PAGES.map((p) => ({ path: servicePath(p.slug), page: "content", content: p, title: p.title, description: p.metaDescription })),
-  ...AREA_PAGES.map((p) => ({ path: areaPath(p.slug), page: "content", content: p, title: p.title, description: p.metaDescription })),
+  ...AREA_PAGES.map((p) => ({ path: areaPath(p.slug), page: "area", content: p, title: p.title, description: p.metaDescription })),
 ];
 
 const normalize = (pathname) => {

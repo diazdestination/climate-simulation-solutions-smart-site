@@ -1,5 +1,110 @@
 # Decisions
 
+## 2026-11-11 — Buttons, cards and forms rebuilt as one system (Adam, in Claude chat)
+
+- **Request.** Adam sent a phone screenshot of the homepage buttons and triage chips and asked
+  for the site's cards and "generic interactive buttons" to be improved. He was shown three
+  before-and-after mock-ups and approved building the direction across the site.
+- **Keys.** Every pressable control is the same object: a solid plate on a darker lower edge
+  that it drops onto when pressed. No gradients, glass or glow. The amber key is a page's main
+  action. This covers buttons, the phone action bar, triage tiles, urgent issue keys, yes/no
+  and preferred-time toggles, the thermostat's plus and minus, the menu and close buttons and
+  the assistant's start button. One CSS rule in `site/src/styles.css` gives all of them the
+  press. `main.jsx` registers an empty touch listener because iOS Safari only shows a pressed
+  state when the page has one.
+- **One set of actions per phone screen.** On phones, Call and Book service are docked to the
+  bottom of the screen as a solid bar. Any button in the page that would repeat them carries
+  the class `in-mobile-bar` and is left out at phone width, so the homepage no longer shows the
+  same two buttons twice. Desktop and tablet keep every button. On the booking page the bar is
+  Call alone (the page is the form). On the urgent page the bar is Call alone in amber, and
+  "Book service" is not offered there. A service page keeps its own action when the bar does
+  not have it (for example "Get urgent help").
+- **Triage in two tiers.** The seven identical chips are now three keys for what cannot wait
+  (no heat, no AC, water leaking), each with an icon and a coloured cap, and four plain rows
+  for what can be planned. Same links, same order by season (`triageFor` in
+  `site/src/lib/season.js`).
+- **Shape.** Three radii and no others, down from thirteen: 10 px for anything pressed or typed
+  in (`--r-control`), 14 px for panels that hold controls (`--r-surface`), and fully round.
+- **Depth.** Three steps: a well (inputs) is level with the page, a surface (forms, dialogs,
+  plan cards) sits above it, a key sits above that. One drop shadow (`--float`), used only on
+  things that float over the page: the assistant, the open menu and the privacy notices.
+- **Colour.** A coloured cap or icon on a tile means warm air (amber), cool air (blue) or water,
+  on the homepage tiles and the urgent issue keys alike. The two plan cards borrow amber and
+  blue only to tell the plans apart; that is not a claim about heating or cooling. Cyan marks a
+  choice that is switched on, with a ring and a filled check so it never depends on colour.
+- **Fewer boxes.** Service-page sections, the "What happens next" notes beside forms and the
+  license line in the reviews section are plain text with a rule, not outlined boxes. "Other
+  services" and "Nearby communities" are rows with a chevron in place of empty cards. The form
+  is the one surface on its page.
+- **Plan cards** lead with one figure, visits in a year (2 and 4), worked out from the approved
+  cadence wording by `visitsAYear` in `site/src/lib/siteFacts.js`. The approved wording ("One
+  visit every six months", "Quarterly visits") is still printed under it. A cadence the table
+  does not know shows no figure, and a test fails so the table is updated instead of guessed.
+- **Urgent page.** Issue keys locked behind the safety questions are flat outlines at full
+  reading contrast with a lock line above them; they used to be the real cards at 50% opacity.
+  They are now real buttons in a list (they had `role="listitem"`, which hid the button role
+  from screen readers).
+- **Forms.** Sentence-case group headings with a rule between groups, inputs as wells, the
+  site's own arrow on selects, toggle keys over the real radios and checkboxes (still reachable
+  and operable by keyboard), no arrow on the submit button, and the form runs edge to edge on
+  phones. Field names, required fields, consent wording and what is sent to the office are
+  unchanged.
+- **Not changed:** any stated fact, any route, the hero's thermostat and airflow, the request
+  payload, the assistant's behaviour.
+- **Rule for future work:** a new control is a key, a new panel is a surface, and a new radius,
+  gradient-filled control or second drop shadow fails `site/tests/ui-system.test.mjs`.
+- **Checked** in Chrome at 390, 820 and 1440 px on every page type, with the assistant and the
+  menu open: no console errors, no sideways scroll, each kind of key drops when pressed, yes/no
+  keys work from the keyboard, and the thermostat scroll test from the entry below still
+  passes. Not checked on a physical phone from here.
+
+## 2026-11-11 — Homepage thermostat no longer traps scrolling on phones
+
+- **Report (Adam):** on a phone the page "seems to freeze on the down scroll" at the thermostat.
+- **Cause 1, touch.** The dial's ring had `touch-action: none` and changed the temperature the
+  moment a finger landed on it. On a phone the dial fills the middle of the first screen, so a
+  thumb that landed on the ring to scroll either moved nothing or turned the dial instead.
+- **Fix.** `touch-action: pan-y` on the dial's HTML box (`.thermostat`), never `none`, and never
+  on the SVG shapes, where browsers do not apply it reliably. A touch now does nothing when it
+  lands: a tap sets the temperature, a sideways drag turns the dial, and an up-or-down swipe
+  scrolls the page. Mouse, keyboard and the plus and minus buttons are unchanged.
+- **Cause 2, load.** The airflow canvas pre-drew 90 animation steps in one go on load and again
+  0.6 seconds later, blocking the page for up to about 0.1 s each time on a desktop and several
+  times that on a phone. It now draws one frame per frame and lets the trails build up; the
+  0.6-second pass only re-reads where the thermostat is. The dial's glow is a gradient instead
+  of a filter that was repainted ten times a second.
+- **Tested** in Chrome's iPhone emulation with real touch sequences (swipes starting on six
+  parts of the dial all scroll the page and leave the dial alone; tap and sideways drag still
+  work; no long main-thread tasks during load). Not tested on a physical iPhone from here.
+
+## 2026-11-11 — Twelve communities are served, each with its own page (Adam, in Claude chat)
+
+- **Coverage is now stated, not hedged.** Adam confirmed CSS serves Dahlonega, Cumming,
+  Gainesville, Jasper, Ball Ground, Canton, Buford, Alpharetta, Cleveland, Roswell, Johns Creek
+  and Atlanta "for sure". The site no longer says "communities you can call to check" or "not a
+  promise of service". `serviceArea.summary` in `site/site.config.mjs` names all twelve.
+- **One page per town** at `/service-areas/<town>-ga/`, plus the existing Dawsonville page on
+  the same template. Town data lives in `site/src/content/area-map.js`; the pages are generated
+  in `site/src/content/pages.js`, so adding or removing a town is a one-line change.
+- **What a town page says:** that the town is served, its county, a one-line description of
+  where it is, its straight-line distance from Dawsonville (computed, rounded to the mile), the
+  five services, how to request a visit, and the nearest other towns. Each page shows the
+  service-area map with that town picked out.
+- **What a town page does not say:** response or arrival times, 24-hour availability, prices, or
+  coverage of a whole county. The after-hours wording is the already-approved "emergency-hours
+  requests; response depends on availability and location".
+- **"Forsyth" stays held.** The owners' October list did not say county or city. Cumming, the
+  Forsyth County seat, has a page.
+- **Map.** Rings are now 10, 25 and 50 miles and the frame is taller, because Atlanta is about
+  49 miles south of Dawsonville.
+- **Structured data.** The business lists all thirteen cities as `areaServed`, and each town
+  page carries a `Service` entry for that town. The sitemap grows from 12 to 24 URLs, and
+  `scripts/check-discovery.py` now expects 24.
+- **Assistant not yet updated.** The live AI assistant still describes the service area as
+  "surrounding North Georgia communities; call with the service address to confirm
+  availability". Re-provisioning it from this branch brings it in line; that needs Adam's
+  approval because it changes a live assistant.
+
 ## 2026-11-10 — Phone, hours, license and the living homepage (Adam, in Claude chat)
 
 - **Phone: (706) 502-0877.** The CSS owner gave Adam this number for the site "until they say

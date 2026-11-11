@@ -6,6 +6,10 @@ import { useEffect, useRef } from "react";
 //
 // Decorative only (aria-hidden). It pauses when the hero is off screen or the tab is hidden, and
 // draws one still frame instead of animating for visitors who ask for reduced motion.
+//
+// It must never hold up the page. Nothing here runs more than one frame's worth of drawing in a
+// single task: the trails build up over the first second instead of being pre-drawn, and the
+// reduced-motion still frame is drawn in small batches while the canvas is hidden.
 const ROOM_AIR = [164, 190, 214];
 const WARM_AIR = [255, 158, 44];
 const COOL_AIR = [86, 209, 250];
@@ -53,6 +57,15 @@ export function Airflow({ mode, resting = 0, obstacleRef }) {
       life: 240 + Math.random() * 320,
     });
 
+    // Where the thermostat sits inside the canvas. Cheap, so it can be re-read at any time.
+    const locate = () => {
+      const box = canvas.getBoundingClientRect();
+      const target = obstacleRef?.current?.getBoundingClientRect();
+      disc = target
+        ? { x: target.left - box.left + target.width / 2, y: target.top - box.top + target.height / 2, r: (target.width / 2) * 1.04 }
+        : { x: width * 0.72, y: height * 0.5, r: Math.min(width, height) * 0.2 };
+    };
+
     const measure = () => {
       const box = canvas.getBoundingClientRect();
       width = Math.max(1, Math.round(box.width));
@@ -60,10 +73,7 @@ export function Airflow({ mode, resting = 0, obstacleRef }) {
       canvas.width = Math.round(width * dpr);
       canvas.height = Math.round(height * dpr);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      const target = obstacleRef?.current?.getBoundingClientRect();
-      disc = target
-        ? { x: target.left - box.left + target.width / 2, y: target.top - box.top + target.height / 2, r: (target.width / 2) * 1.04 }
-        : { x: width * 0.72, y: height * 0.5, r: Math.min(width, height) * 0.2 };
+      locate();
       const count = Math.round(Math.min(520, Math.max(140, (width * height) / 3000)));
       particles = Array.from({ length: count }, () => spawn(true));
       ctx.fillStyle = `rgb(${BACKDROP})`;
@@ -122,11 +132,27 @@ export function Airflow({ mode, resting = 0, obstacleRef }) {
     const wake = () => {
       if (!still && !raf && onScreen && !document.hidden) raf = requestAnimationFrame(loop);
     };
+    // Reduced motion: build one still frame, a small batch per animation frame, with the canvas
+    // hidden until it is finished so nothing is seen moving.
+    const STILL_STEPS = 260;
+    const STILL_BATCH = 20;
+    let stillJob = 0;
+    const drawStill = () => {
+      cancelAnimationFrame(stillJob);
+      canvas.style.visibility = "hidden";
+      let done = 0;
+      const batch = () => {
+        for (let i = 0; i < STILL_BATCH; i += 1) step();
+        done += STILL_BATCH;
+        if (done < STILL_STEPS) stillJob = requestAnimationFrame(batch);
+        else canvas.style.visibility = "";
+      };
+      stillJob = requestAnimationFrame(batch);
+    };
     const settle = () => {
       measure();
-      // Enough steps to fill the frame with trails before anyone sees it.
-      for (let i = 0; i < (still ? 260 : 90); i += 1) step();
-      wake();
+      if (still) drawStill();
+      else wake();
     };
 
     settle();
@@ -137,7 +163,8 @@ export function Airflow({ mode, resting = 0, obstacleRef }) {
     });
     resize.observe(canvas);
     // Fonts and layout can move the thermostat after first paint without resizing the canvas.
-    const late = window.setTimeout(settle, 600);
+    // Only its position is re-read: the canvas is not cleared and nothing is redrawn.
+    const late = window.setTimeout(locate, 600);
     const watch = new IntersectionObserver(([entry]) => {
       onScreen = entry.isIntersecting;
       wake();
@@ -150,6 +177,7 @@ export function Airflow({ mode, resting = 0, obstacleRef }) {
 
     return () => {
       cancelAnimationFrame(raf);
+      cancelAnimationFrame(stillJob);
       window.clearTimeout(late);
       resize.disconnect();
       watch.disconnect();

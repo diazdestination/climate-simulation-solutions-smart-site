@@ -9,7 +9,7 @@
 .climate-hero--cooling { --air: var(--cyan); }
 .climate-hero::after { content: ""; position: absolute; z-index: 3; left: 0; right: 0; bottom: 0; height: 4px; background: linear-gradient(90deg, var(--brand-red), var(--brand-orange) 22%, var(--brand-yellow) 40%, var(--cyan) 62%, var(--brand-blue)); }
 .airflow { position: absolute; z-index: 0; inset: 0; width: 100%; height: 100%; display: block; }
-.climate-hero__shade { position: absolute; z-index: 1; inset: 0; pointer-events: none; background: linear-gradient(90deg, rgba(7,23,47,.78) 0%, rgba(7,23,47,.5) 30%, rgba(7,23,47,0) 54%), linear-gradient(0deg, rgba(7,23,47,.8) 0%, rgba(7,23,47,0) 26%), linear-gradient(180deg, rgba(7,23,47,.7) 0%, rgba(7,23,47,0) 16%); }
+.climate-hero__shade { position: absolute; z-index: 1; inset: 0; pointer-events: none; background: linear-gradient(90deg, rgba(7,23,47,.78) 0%, rgba(7,23,47,.5) 30%, rgba(7,23,47,0) 54%), linear-gradient(0deg, rgba(7,23,47,.94) 0%, rgba(7,23,47,.9) 23%, rgba(7,23,47,0) 40%), linear-gradient(180deg, rgba(7,23,47,.7) 0%, rgba(7,23,47,0) 16%); }
 .climate-hero__inner { position: relative; z-index: 2; max-width: var(--max); margin: 0 auto; padding: 10.5rem 1.5rem 3.25rem; display: grid; grid-template-columns: minmax(0, 1.08fr) minmax(0, .92fr); grid-template-areas: "copy dial" "triage triage"; gap: 3.5rem 3rem; align-items: center; }
 .climate-hero__copy { grid-area: copy; }
 .climate-hero__status { display: inline-flex; align-items: center; gap: .6rem; margin: 0 0 1.4rem; color: #d3e2ee; font-size: .92rem; font-weight: 600; }
@@ -18,7 +18,13 @@
 .climate-hero__actions { display: flex; flex-wrap: wrap; gap: .85rem; margin-top: 2rem; }
 
 .climate-hero__dial { grid-area: dial; display: flex; flex-direction: column; align-items: center; text-align: center; }
-.thermostat { position: relative; width: min(400px, 100%); aspect-ratio: 1; filter: drop-shadow(0 0 46px color-mix(in srgb, var(--air) 26%, transparent)); transition: filter .6s ease; }
+/* touch-action is set here, on the HTML box, because browsers do not apply it reliably to shapes
+   inside an SVG. pan-y, never none: a thumb that lands on the dial must still scroll the page
+   up and down, while a sideways drag is left to the dial (see Thermostat.jsx). */
+.thermostat { position: relative; isolation: isolate; width: min(400px, 100%); aspect-ratio: 1; touch-action: pan-y; }
+/* The glow is a gradient behind the dial, not a filter: a filter is repainted every time the
+   reading changes, which is ten times a second while the room is moving. */
+.thermostat::before { content: ""; position: absolute; z-index: -1; inset: -14%; border-radius: 50%; background: radial-gradient(closest-side, color-mix(in srgb, var(--air) 30%, transparent) 62%, transparent 100%); pointer-events: none; }
 .thermostat-dial { display: block; width: 100%; height: 100%; overflow: visible; }
 .thermostat-face { fill: rgba(6, 19, 40, .88); stroke: rgba(255,255,255,.16); stroke-width: 1; }
 .thermostat-ticks line { stroke: rgba(255,255,255,.26); stroke-width: 1.5; stroke-linecap: round; }
@@ -27,17 +33,17 @@
 .thermostat-track, .thermostat-gap, .thermostat-hit { fill: none; stroke-linecap: round; }
 .thermostat-track { stroke: rgba(255,255,255,.13); stroke-width: 8; }
 .thermostat-gap { stroke: var(--air); stroke-width: 8; }
-.thermostat-hit { stroke: transparent; stroke-width: 46; pointer-events: stroke; cursor: grab; touch-action: none; outline: none; }
+.thermostat-hit { stroke: transparent; stroke-width: 46; pointer-events: stroke; cursor: grab; outline: none; }
 .thermostat-hit:active { cursor: grabbing; }
 .thermostat-hit:focus-visible { stroke: rgba(86,209,250,.28); }
-.thermostat-handle { fill: var(--white); stroke: var(--air); stroke-width: 5; pointer-events: none; filter: drop-shadow(0 3px 6px rgba(0,0,0,.45)); transition: stroke .4s ease; }
+.thermostat-handle { fill: var(--white); stroke: var(--air); stroke-width: 5; pointer-events: none; transition: stroke .4s ease; }
 .thermostat-readout { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .1rem; padding-bottom: 6%; pointer-events: none; }
 .thermostat-room { font: 800 clamp(4.2rem, 9vw, 6.2rem)/1 var(--display); font-stretch: 112%; letter-spacing: -.04em; font-variant-numeric: tabular-nums; }
 .thermostat-room sup { font-size: .42em; font-weight: 700; vertical-align: top; position: relative; top: .14em; margin-left: .04em; color: var(--air); transition: color .4s ease; }
 .thermostat-mode { color: var(--air); font: 700 .98rem var(--display); transition: color .4s ease; }
 .thermostat-steps { position: absolute; left: 50%; bottom: 3.5%; display: flex; gap: .9rem; transform: translateX(-50%); }
-.thermostat-steps button { width: 2.75rem; height: 2.75rem; display: grid; place-items: center; border: 1px solid rgba(255,255,255,.24); border-radius: 50%; background: rgba(7,23,47,.9); color: var(--white); font-size: .9rem; cursor: pointer; }
-.thermostat-steps button:hover:not(:disabled) { border-color: var(--air); }
+.thermostat-steps button { width: 2.75rem; height: 2.75rem; display: grid; place-items: center; padding: 0 0 3px; border: 0; border-radius: 50%; background: var(--key); color: var(--white); box-shadow: var(--key-ring), var(--key-edge); font-size: .9rem; cursor: pointer; transition: transform .08s ease, box-shadow .08s ease, background-color .15s ease; }
+.thermostat-steps button:hover:not(:disabled) { background: var(--key-lit); }
 .thermostat-steps button:focus-visible { outline: 3px solid var(--cyan); outline-offset: 3px; }
 .thermostat-steps button:disabled { opacity: .4; cursor: default; }
 .climate-hero__outside { margin: 1.5rem 0 0; color: #d9e6f0; font-size: 1.02rem; font-weight: 600; }
@@ -47,13 +53,19 @@
 .climate-hero__follow a { display: inline-flex; align-items: center; gap: .4rem; color: var(--air); font-weight: 700; text-underline-offset: .2em; transition: color .4s ease; }
 .climate-hero__credit { position: relative; z-index: 2; max-width: var(--max); margin: -1.6rem auto 0; padding: 0 1.5rem 1.3rem; color: #7e93a7; font-size: .74rem; }
 
-.triage-bar { grid-area: triage; display: grid; gap: .9rem; padding-top: 1.6rem; border-top: 1px solid var(--line); }
-.triage-bar h2 { font-size: 1.12rem; letter-spacing: -.02em; line-height: 1.3; }
-.triage-bar ul { display: flex; flex-wrap: wrap; gap: .55rem; margin: 0; padding: 0; list-style: none; }
-.triage-bar a { min-height: 2.75rem; display: inline-flex; align-items: center; padding: .5rem 1.05rem; border: 1px solid rgba(255,255,255,.22); border-radius: 2rem; background: rgba(7,23,47,.72); color: #e6eef5; font-size: .95rem; font-weight: 600; text-decoration: none; }
-.triage-bar a:hover { border-color: var(--cyan); color: var(--white); }
-.triage-bar a.is-urgent { border-color: rgba(255,104,78,.72); background: rgba(92,22,18,.72); color: #ffe1db; }
-.triage-bar a.is-urgent:hover { border-color: #ff8a73; }
+/* Triage, in two tiers. What cannot wait is three keys big enough to hit with a thumb, each
+   capped in its own colour (amber heat, blue cooling, water). What can be planned is a plain
+   list beside them. The two tiers sit under the two columns of the hero. */
+.triage-bar { grid-area: triage; display: grid; grid-template-columns: minmax(0, 1.08fr) minmax(0, .92fr); gap: 1.15rem 3rem; align-items: start; padding-top: 1.6rem; border-top: 1px solid var(--line); }
+.triage-bar h2 { grid-column: 1 / -1; font-size: 1.12rem; letter-spacing: -.02em; line-height: 1.3; }
+.triage-bar__label { margin: 0 0 .65rem; color: #a9bccd; font-size: .92rem; font-weight: 600; }
+.triage-tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .6rem; margin: 0; padding: 0; list-style: none; }
+.triage-tiles li { display: grid; }
+.triage-tile { display: flex; flex-direction: column; align-items: flex-start; gap: .7rem; min-height: 6.4rem; padding: .9rem .85rem 1.05rem; border-top: 3px solid var(--tone); border-radius: var(--r-control); background: var(--key); box-shadow: var(--key-edge); color: var(--white); font: 700 1.02rem/1.15 var(--display); text-decoration: none; transition: transform .08s ease, box-shadow .08s ease, background-color .15s ease; }
+.triage-tile svg { width: 1.35rem; height: 1.35rem; color: var(--tone); }
+.triage-tile span { margin-top: auto; }
+.triage-tile:hover { background: var(--key-lit); }
+.link-rows--pairs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 2rem; }
 
 .season-note { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .75rem 2rem; padding: 1.35rem max(1.5rem, calc((100% - var(--max)) / 2 + 1.5rem)); background: var(--ink-2); border-bottom: 1px solid var(--line); }
 .season-note p { max-width: 46rem; margin: 0; color: #dbe7f1; font-size: 1.02rem; }
@@ -63,8 +75,8 @@
 .reviews { max-width: var(--max); margin: 0 auto; padding: 7rem 1.5rem; display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); gap: 3.5rem 5rem; align-items: start; }
 .reviews__head { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 1.25rem 3rem; }
 .reviews__head h2 { max-width: 14ch; }
-.reviews__facts { display: flex; flex-wrap: wrap; gap: .5rem; margin: 0 0 .4rem; padding: 0; list-style: none; }
-.reviews__facts li { padding: .45rem .85rem; border: 1px solid var(--line); border-radius: 2rem; color: #cfdde9; font-size: .88rem; font-weight: 600; }
+.reviews__facts { display: flex; flex-wrap: wrap; margin: 0 0 .5rem; padding: 0; list-style: none; color: #cfdde9; font-size: .95rem; font-weight: 600; }
+.reviews__facts li + li { margin-left: 1rem; padding-left: 1rem; border-left: 1px solid rgba(255,255,255,.3); }
 .review { margin: 0; }
 .review blockquote { margin: 0; }
 .review figcaption { margin-top: .7rem; color: var(--muted); font-size: .88rem; }
@@ -108,13 +120,16 @@
 .request-steps__assistant h3 { margin: 0; font: 700 1.25rem/1.25 var(--display); letter-spacing: -.01em; }
 .request-steps__assistant p { max-width: 44rem; margin: .45rem 0 0; color: var(--muted); }
 
-/* Service area: a true map. North is up; rings are miles from Dawsonville. */
+/* Service area: a true map. North is up; rings are miles from Dawsonville. Town pages and the
+   service-area index reuse it (areas.css). */
 .area { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); gap: 2.5rem 4.5rem; align-items: center; padding: 5.5rem var(--gutter); background: var(--ink-2); border-block: 1px solid var(--line); }
 .area-map { margin: 0; }
 .area-map svg { display: block; width: 100%; height: auto; overflow: visible; }
-.area-map__rings circle { fill: rgba(86,209,250,.035); stroke: rgba(255,255,255,.26); stroke-width: 1; stroke-dasharray: 1.5 7; stroke-linecap: round; }
-.area-map__rings rect { fill: var(--ink-2); }
-.area-map__rings text, .area-map__north text { fill: #8fa6bb; font: 600 12px "DM Sans", system-ui, sans-serif; }
+.area-map__rings circle { fill: none; stroke: rgba(255,255,255,.26); stroke-width: 1; stroke-dasharray: 1.5 7; stroke-linecap: round; }
+/* Only the innermost ring is tinted: the outer rings run past the frame. */
+.area-map__rings circle:first-child { fill: rgba(86,209,250,.05); }
+.area-map__ring-labels rect { fill: var(--ink-2); }
+.area-map__ring-labels text, .area-map__north text { fill: #8fa6bb; font: 600 12px "DM Sans", system-ui, sans-serif; }
 .area-map__spokes line { stroke: rgba(86,209,250,.2); stroke-width: 1; }
 .area-map__towns circle { fill: var(--cyan); }
 .area-map__towns text { fill: #e6eef5; font: 600 16px "DM Sans", system-ui, sans-serif; }
@@ -124,7 +139,6 @@
 .area-map__north path { fill: #8fa6bb; }
 .area-map figcaption { max-width: 34rem; margin-top: 1rem; color: #8fa6bb; font-size: .84rem; }
 .area__copy p { max-width: 34rem; margin: 1.4rem 0 0; color: var(--muted); font-size: 1.05rem; }
-.area__copy .area__towns { color: #dbe7f1; font-size: 1rem; font-weight: 600; }
 .area__actions { display: flex; flex-wrap: wrap; gap: .85rem; margin-top: 2rem; }
 
 /* Closing: the phone number is the design. */
@@ -146,7 +160,8 @@
   .climate-hero__dial { grid-area: auto; order: 3; margin-top: 2rem; }
   .climate-hero__lede { order: 4; margin-top: 2rem; }
   .climate-hero__actions { order: 5; }
-  .triage-bar { grid-area: auto; order: 6; margin-top: 2.25rem; }
+  .triage-bar { grid-area: auto; order: 6; grid-template-columns: 1fr; gap: 1.1rem; margin-top: 2.25rem; }
+  .triage-bar__group + .triage-bar__group { margin-top: .5rem; }
   .climate-hero__shade { background: linear-gradient(180deg, rgba(7,23,47,.86) 0%, rgba(7,23,47,.2) 34%, rgba(7,23,47,.2) 55%, rgba(7,23,47,.9) 78%); }
   .thermostat { width: min(340px, 86vw); }
   .reviews { grid-template-columns: 1fr; gap: 2.5rem; padding: 5rem 1.5rem; }
@@ -166,11 +181,10 @@
   .climate-hero__status { margin-bottom: 1rem; font-size: .84rem; }
   .climate-hero__dial { margin-top: 1.5rem; }
   .thermostat { width: min(300px, 80vw); }
-  .climate-hero__actions { flex-direction: column; align-items: stretch; }
   .climate-hero__credit { padding-inline: 1rem; }
-  .triage-bar a { justify-content: center; }
-  .triage-bar li { flex: 1 1 calc(50% - .55rem); }
-  .triage-bar li a { width: 100%; text-align: center; }
+  .link-rows--pairs { grid-template-columns: 1fr; }
+  .reviews__facts { flex-direction: column; gap: .15rem; }
+  .reviews__facts li + li { margin-left: 0; padding-left: 0; border-left: 0; }
   .season-note { padding: 1.2rem 1rem; }
   .season-note a { white-space: normal; }
   .reviews { padding: 4.5rem 1rem; }
@@ -180,17 +194,20 @@
   /* The map shrinks to phone width, so its labels are drawn larger to stay readable. */
   .area-map__towns text { font-size: 23px; }
   .area-map__base text { font-size: 26px; }
-  .area-map__rings text, .area-map__north text { font-size: 18px; }
-  .area-map__rings rect { transform: scaleX(1.35); transform-box: fill-box; transform-origin: center; }
+  .area-map__ring-labels text, .area-map__north text { font-size: 18px; }
+  .area-map__ring-labels rect { transform: scaleX(1.35); transform-box: fill-box; transform-origin: center; }
   .answers { padding: 4.5rem 1rem; }
   .closing { padding: 4.5rem 1rem 7.5rem; }
-  .closing__row .button { width: 100%; }
   .review--lead { padding-left: 1.1rem; }
-  .mobile-bar { position: fixed; z-index: 20; left: .65rem; right: .65rem; bottom: .65rem; display: grid; grid-template-columns: 1fr 1fr; gap: .5rem; }
+  /* On a phone, Call and Book service are docked to the bottom of every page. Anything in the
+     page that would repeat them is marked .in-mobile-bar and left out, so a screen never shows
+     the same two buttons twice. !important because this has to beat every layout rule. */
+  .in-mobile-bar { display: none !important; }
+  .mobile-bar { position: fixed; z-index: 20; left: 0; right: 0; bottom: 0; display: grid; grid-template-columns: 1fr 1fr; gap: .5rem; padding: .55rem .65rem calc(.55rem + env(safe-area-inset-bottom, 0px)); border-top: 1px solid var(--line); background: var(--ink); }
   .mobile-bar--single { grid-template-columns: 1fr; }
-  .mobile-bar a { min-height: 3.25rem; display: flex; align-items: center; justify-content: center; gap: .5rem; padding: .6rem .5rem; border-radius: .7rem; font: 800 .92rem var(--display); text-decoration: none; box-shadow: 0 10px 35px rgba(0,0,0,.4); white-space: nowrap; }
-  .mobile-bar__call { border: 1px solid rgba(255,255,255,.3); background: #0c2449; color: var(--white); }
-  .mobile-bar__book { border: 1px solid var(--amber); background: linear-gradient(115deg, var(--amber), #ff9d19); color: var(--brand-navy); }
+  .mobile-bar a { min-height: 3.25rem; display: flex; align-items: center; justify-content: center; gap: .5rem; padding: .6rem .5rem calc(.6rem + 3px); border-radius: var(--r-control); font: 700 .95rem/1.2 var(--display); text-decoration: none; white-space: nowrap; transition: transform .08s ease, box-shadow .08s ease; }
+  .mobile-bar__call { background: var(--key); color: var(--white); box-shadow: var(--key-ring), var(--key-edge); }
+  .mobile-bar__book, .mobile-bar__call--main { background: var(--amber); color: var(--brand-navy); box-shadow: var(--key-edge-amber); }
 }
 
 @media (max-width: 380px) {

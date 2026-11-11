@@ -2,7 +2,8 @@ import { Layout } from "./components/Layout.jsx";
 import { HomePage } from "./pages/HomePage.jsx";
 import { UrgentPage } from "./pages/UrgentPage.jsx";
 import { AssistantPage, BookServicePage, EstimatePage, MaintenancePage } from "./pages/RequestPages.jsx";
-import { AreasPage, ContentPage } from "./pages/ContentPage.jsx";
+import { ContentPage } from "./pages/ContentPage.jsx";
+import { AreaPage, AreasPage } from "./pages/AreaPages.jsx";
 import { routeFor } from "./routes.js";
 
 const PAGES = {
@@ -14,6 +15,7 @@ const PAGES = {
   assistant: () => <AssistantPage />,
   areas: () => <AreasPage />,
   content: (route) => <ContentPage page={route.content} />,
+  area: (route) => <AreaPage page={route.content} />,
 };
 
 export function NotFound() {

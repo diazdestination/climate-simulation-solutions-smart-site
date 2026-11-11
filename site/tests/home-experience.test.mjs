@@ -4,10 +4,10 @@ import config from "../site.config.mjs";
 import { ensureBuilt, read } from "./helpers.mjs";
 import { routeFor } from "../src/routes.js";
 import { SERVICE_ISSUES } from "../src/lib/hvacRequest.js";
-import { SEASONS, TARGET_MAX, TARGET_MIN, clampTarget, modeFor, seasonFor, triageFor } from "../src/lib/season.js";
+import { SEASONS, TARGET_MAX, TARGET_MIN, clampTarget, isTap, modeFor, seasonFor, startsTurn, triageFor } from "../src/lib/season.js";
 import { GOOGLE_PROFILE_URL, GOOGLE_WRITE_REVIEW_URL, REVIEWS } from "../src/content/reviews.js";
-import { HOME_BASE, MAP_TOWNS, RING_MILES, milesFromBase, offsetMiles } from "../src/content/area-map.js";
-import { AVAILABILITY_CHECK_COMMUNITIES } from "../src/content/pages.js";
+import { HOME_BASE, MAP_TOWNS, RING_MILES, milesFromBase, nearestTowns, offsetMiles } from "../src/content/area-map.js";
+import { SERVED_COMMUNITIES } from "../src/content/pages.js";
 import { currentPeriod, isOutdoorRequest, outdoorResponse } from "../worker/outdoor.js";
 
 const escapeHtml = (text) => text.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#x27;");
@@ -36,6 +36,35 @@ test("thermostat: mode and limits", () => {
   assert.equal(clampTarget(95), TARGET_MAX);
   assert.equal(clampTarget(12), TARGET_MIN);
   assert.equal(clampTarget(71.6), 72);
+});
+
+test("thermostat on a phone: scrolling past it scrolls the page, only a tap or a sideways drag turns it", () => {
+  // A thumb moving up or down the screen is a scroll, however far it goes.
+  assert.equal(startsTurn(0, -160), false);
+  assert.equal(startsTurn(6, -40), false);
+  assert.equal(startsTurn(-20, 60), false, "a diagonal that is mostly vertical is still a scroll");
+  // A clear sideways move turns the dial; a twitch does not.
+  assert.equal(startsTurn(13, 0), true);
+  assert.equal(startsTurn(-26, 2), true);
+  assert.equal(startsTurn(5, 0), false);
+  // Lifting the finger where it landed is a tap.
+  assert.equal(isTap(0, 0), true);
+  assert.equal(isTap(4, -5), true);
+  assert.equal(isTap(0, 40), false);
+  // The dial must never switch touch scrolling off, and the rule lives on the HTML box.
+  const css = read("src", "home.css");
+  assert.doesNotMatch(css, /touch-action:\s*none/, "touch-action: none on the dial traps the page scroll on phones");
+  assert.match(css, /\.thermostat \{[^}]*touch-action: pan-y;/);
+  const dial = read("src", "components", "Thermostat.jsx");
+  assert.match(dial, /if \(touch\) return;/, "a touch does not change the temperature when it lands");
+  assert.match(dial, /onPointerCancel=\{onPointerCancel\}/);
+});
+
+test("airflow never pre-draws in one long burst", () => {
+  const src = read("src", "components", "Airflow.jsx");
+  assert.doesNotMatch(src, /for \(let i = 0; i < \(still \? \d+ : \d+\); i \+= 1\) step\(\);/, "the old 90-step warm-up froze slow phones on load");
+  assert.match(src, /window\.setTimeout\(locate, 600\)/, "the late re-measure only re-reads the thermostat position");
+  assert.match(src, /STILL_BATCH = 20/);
 });
 
 test("triage: every choice lands on a real page and a real issue", () => {
@@ -115,20 +144,29 @@ test("reviews: Google only, attributed, linked to the public profile, no rating 
   assert.match(GOOGLE_WRITE_REVIEW_URL, /^https:\/\/search\.google\.com\/local\/writereview\?placeid=/);
 });
 
-test("service-area map: the approved call-to-check towns, at believable distances and bearings", () => {
-  assert.deepEqual(MAP_TOWNS.map((t) => t.name), AVAILABILITY_CHECK_COMMUNITIES.slice(0, MAP_TOWNS.length), "the map shows the first towns of the approved list, in order");
+test("service-area map: every served town, at believable distances and bearings", () => {
+  assert.deepEqual(MAP_TOWNS.map((t) => t.name), SERVED_COMMUNITIES);
+  assert.equal(MAP_TOWNS.length, 12);
   assert.equal(HOME_BASE.name, config.site.location.city);
   for (const town of MAP_TOWNS) {
     const miles = milesFromBase(town);
     assert.ok(miles > 5 && miles < Math.max(...RING_MILES), `${town.name} is ${miles.toFixed(1)} mi out, inside the outer ring`);
     assert.ok(["left", "right"].includes(town.label));
+    assert.match(town.slug, /^[a-z-]+-ga$/);
+    assert.ok(config.serviceArea.summary.value.includes(town.name), `${town.name} is in the approved service-area fact`);
   }
-  // Spot checks against the real map: Dahlonega is northeast, Alpharetta south-southwest, Jasper west.
+  // Spot checks against the real map.
   const by = Object.fromEntries(MAP_TOWNS.map((t) => [t.name, offsetMiles(t)]));
-  assert.ok(by.Dahlonega.east > 0 && by.Dahlonega.north > 0);
-  assert.ok(by.Alpharetta.east < 0 && by.Alpharetta.north < -20);
-  assert.ok(by.Jasper.east < -15 && Math.abs(by.Jasper.north) < 6);
-  assert.ok(Math.abs(milesFromBase(MAP_TOWNS.find((t) => t.name === "Cumming")) - 14.7) < 1.5, "Cumming is about 15 miles south");
+  assert.ok(by.Dahlonega.east > 0 && by.Dahlonega.north > 0, "Dahlonega is northeast");
+  assert.ok(by.Cleveland.east > 15 && by.Cleveland.north > 8, "Cleveland is farther northeast");
+  assert.ok(by.Alpharetta.east < 0 && by.Alpharetta.north < -20, "Alpharetta is south-southwest");
+  assert.ok(by.Jasper.east < -15 && Math.abs(by.Jasper.north) < 6, "Jasper is west");
+  assert.ok(by.Atlanta.north < -40, "Atlanta is the far south end");
+  const miles = (name) => milesFromBase(MAP_TOWNS.find((t) => t.name === name));
+  assert.ok(Math.abs(miles("Cumming") - 14.7) < 1.5, "Cumming is about 15 miles south");
+  assert.ok(Math.abs(miles("Atlanta") - 49) < 2, "Atlanta is about 49 miles");
+  assert.equal(Math.max(...MAP_TOWNS.map((t) => milesFromBase(t))), miles("Atlanta"), "Atlanta is the farthest, as its page says");
+  assert.deepEqual(nearestTowns(MAP_TOWNS.find((t) => t.name === "Roswell")).map((t) => t.name), ["Alpharetta", "Johns Creek", "Canton"]);
 });
 
 test("built homepage: living hero, triage, reviews, license, new number and both mobile actions", () => {
@@ -139,7 +177,7 @@ test("built homepage: living hero, triage, reviews, license, new number and both
   assert.match(html, /<canvas class="airflow" aria-hidden="true">/);
   assert.match(html, /This room is a demonstration, not your thermostat\./);
   assert.match(html, /What is your system doing\?/);
-  assert.match(html, /href="\/urgent\/"[^>]*>No heat</);
+  assert.match(html, /<a class="triage-tile tone-warm" href="\/urgent\/"[^>]*><svg[^>]*>.*?<\/svg><span>No heat<\/span><\/a>/);
   assert.match(html, /href="\/book-service\/\?issue=maintenance"/);
   for (const review of REVIEWS) {
     assert.ok(html.includes(escapeHtml(review.text)), `${review.author}'s review is quoted as written`);
@@ -152,7 +190,7 @@ test("built homepage: living hero, triage, reviews, license, new number and both
   assert.match(html, /class="mobile-bar__book" href="\/book-service\/"/);
   assert.doesNotMatch(html, /aggregateRating|reviewRating|ratingValue|out of 5|\d(\.\d)? stars?\b|five.star/i, "no rating figures are published");
   assert.doesNotMatch(html, /climate-precision-hero/, "the illustrative stock-style photo is no longer the hero");
-  assert.match(html, /<svg[^>]*role="img"[^>]*aria-label="Map centered on Dawsonville with rings at 10, 20, 30 miles\./);
+  assert.match(html, /<svg[^>]*role="img"[^>]*aria-label="Map centered on Dawsonville with rings at 10, 25, 50 miles\./);
   assert.match(html, /class="closing__phone" href="tel:\+17065020877"/);
   assert.doesNotMatch(html, /Insured|Locally owned|family.owned/i, "no unconfirmed trust wording");
   assert.doesNotMatch(html, /Manrope/, "the retired display face is not referenced");

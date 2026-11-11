@@ -63,7 +63,8 @@ def main():
     checks = []
     sitemap = get("/sitemap.xml")
     paths = [n.text.removeprefix(ORIGIN) for n in ET.fromstring(sitemap).iter("{http://www.sitemaps.org/schemas/sitemap/0.9}loc")]
-    assert len(paths) == len(set(paths)) == 12
+    # 11 site pages plus one page for each of the 13 communities (Dawsonville and twelve more).
+    assert len(paths) == len(set(paths)) == 24
     assert all(p.startswith("/") and "?" not in p and p not in ("/assistant/", "/privacy/") for p in paths)
     for path in paths:
         page = Page(get(path))
@@ -75,7 +76,7 @@ def main():
         assert all(t in types for t in ("HVACBusiness", "WebSite", "WebPage")), path
         if path != "/":
             assert "BreadcrumbList" in types, path
-        if path.startswith("/services/"):
+        if path.startswith("/services/") or (path.startswith("/service-areas/") and path != "/service-areas/"):
             assert "Service" in types, path
         visible = re.sub(r"\s+", " ", "".join(page.text))
         for faq in [n for n in page.graph if n["@type"] == "FAQPage"]:
