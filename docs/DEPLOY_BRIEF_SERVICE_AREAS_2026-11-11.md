@@ -115,8 +115,8 @@ note them in your report.
 - Open `dist/service-areas/cumming-ga/` through a local static server: the heading reads
   "Heating and cooling service in Cumming.", the map picks Cumming out in amber, and there are
   no console errors.
-- The built stylesheet in `dist/assets/` contains `--r-control:10px` and does not contain
-  `linear-gradient(115deg`: `findstr /m /c:"--r-control" dist\assets\*.css` lists the file and
+- The built stylesheet in `dist/assets/` contains `--r-control` (the new shape token) and does
+  not contain `linear-gradient(115deg` (the old button gradient): `findstr /m /c:"--r-control" dist\assets\*.css` lists the file and
   `findstr /m /c:"linear-gradient(115deg" dist\assets\*.css` lists nothing.
 - `dist/maintenance-plans/index.html` contains "visits a year" twice.
 
