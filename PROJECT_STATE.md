@@ -1,3 +1,19 @@
+# Verified live release and follow-up — 2026-11-11
+
+The service-area pages, interface rebuild and thermostat scroll fix from `2f65717` are live.
+The original server module, all 18 bindings, runtime, schedules and domains are preserved.
+Production version `f7ec6109-c8dd-47d0-92c8-231db5d81286` serves 100%; the release record
+contains deployment and rollback IDs and the 76-test, 24-page, 55-file and browser evidence.
+
+Adam approved the assistant/search follow-up after publication. The existing assistant now
+names Dawsonville and all twelve approved communities; provider readback and a public synthetic
+text chat verified the wording. Other agent settings and tools are unchanged. IndexNow accepted
+the twelve new town URLs with HTTP 200. Search Console sitemap resubmission is waiting for
+owner reauthentication as `diazdestination@gmail.com`; indexing is not confirmed.
+
+See [the current release record](docs/RELEASE_SERVICE_AREAS_2026-11-11.md).
+PR #11 remains draft/unmerged, and main is unchanged. The candidate entries below are historical.
+
 # Service-area candidate — 2026-11-11 (branch `claude/css-service-areas-20261111`)
 
 Built on `codex/css-text-assistant-activation-20261110`. Not merged and not deployed: the live

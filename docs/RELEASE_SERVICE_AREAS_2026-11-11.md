@@ -83,3 +83,40 @@ rollback is needed because its configuration was not changed.
 
 Nonsecret snapshots, logs, hash manifests, screenshots and browser results:
 `C:\Forge\artifacts\css-service-areas-20261111`.
+
+## Approved assistant and search follow-up — November 11, 2026
+
+Adam subsequently approved brief steps 7 and 8 in the same Codex session.
+
+- Updated the existing agent `agent_3301m73gbx5kfh1bp0h1nssgba8k`, Main branch
+  `agtbrch_9401m73gbyh3emarbbvn2v3sq6ab`, which still serves 100% of agent traffic.
+  New version: `agtvrsn_6101m760jemmesg91fxev1r3dzp0`.
+- Ran `provision:dry-run` from the published frontend source and verified that the only
+  wording changes are the service-area line in the prompt and company-facts knowledge text.
+  Attached replacement company-facts document `hStHtqiIjCL24OjW0gmM`; retained the prior
+  document `ODibmVUwtv29rlwvJGZP` for rollback. Safety and FAQ documents are unchanged.
+  Exact provider readback confirms every other selected agent setting is unchanged,
+  including tools, model, authentication, call limits, privacy, recording and text-only mode.
+- A real public text-chat setup check listed Dawsonville, Dahlonega, Cumming, Gainesville,
+  Jasper, Ball Ground, Canton, Buford, Alpharetta, Cleveland, Roswell, Johns Creek and Atlanta.
+  The synthetic session was ended; no service request, file upload, voice call or lead was sent.
+- IndexNow accepted exactly the twelve new town URLs at 19:15:23 UTC with HTTP 200.
+  The existing public ownership file and all twelve URL HEAD responses were verified first.
+  Submission acceptance does not establish indexing.
+- Google Search Console resubmission is **pending owner sign-in**. The existing authorized
+  `diazdestination@gmail.com` session shows "Verify it’s you" and requires a fresh sign-in.
+  The sitemap-property tab is left open for the owner. No sitemap resubmission or new
+  indexing confirmation is claimed.
+- No website Worker upload or deployment was needed for this follow-up. The frontend,
+  server module, bindings, domains and schedules remain as recorded above. PR #11 is still
+  draft/unmerged and main is unchanged.
+
+The earlier "Held follow-ups" paragraph is historical; assistant and IndexNow are now complete.
+Search Console authorization is still needed, and the existing sign-in question remains pending.
+
+For assistant rollback, restore the previous prompt and knowledge references from
+`assistant-area-rollback.json` (previous agent version
+`agtvrsn_2401m73ge5sbfysby43mszmbac1v`). Rolling back the website alone does not undo
+this separately applied assistant update. Evidence: `assistant-area-update.json`,
+`assistant-area-live-verification.json`, `assistant-service-area-live.png` and
+`town-indexnow-receipt.json` in the same release artifact directory.
