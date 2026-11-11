@@ -4,7 +4,7 @@ import config from "../site.config.mjs";
 import { ensureBuilt, read } from "./helpers.mjs";
 import { routeFor } from "../src/routes.js";
 import { SERVICE_ISSUES } from "../src/lib/hvacRequest.js";
-import { SEASONS, TARGET_MAX, TARGET_MIN, clampTarget, modeFor, seasonFor, triageFor } from "../src/lib/season.js";
+import { SEASONS, TARGET_MAX, TARGET_MIN, clampTarget, isTap, modeFor, seasonFor, startsTurn, triageFor } from "../src/lib/season.js";
 import { GOOGLE_PROFILE_URL, GOOGLE_WRITE_REVIEW_URL, REVIEWS } from "../src/content/reviews.js";
 import { HOME_BASE, MAP_TOWNS, RING_MILES, milesFromBase, nearestTowns, offsetMiles } from "../src/content/area-map.js";
 import { SERVED_COMMUNITIES } from "../src/content/pages.js";
@@ -36,6 +36,35 @@ test("thermostat: mode and limits", () => {
   assert.equal(clampTarget(95), TARGET_MAX);
   assert.equal(clampTarget(12), TARGET_MIN);
   assert.equal(clampTarget(71.6), 72);
+});
+
+test("thermostat on a phone: scrolling past it scrolls the page, only a tap or a sideways drag turns it", () => {
+  // A thumb moving up or down the screen is a scroll, however far it goes.
+  assert.equal(startsTurn(0, -160), false);
+  assert.equal(startsTurn(6, -40), false);
+  assert.equal(startsTurn(-20, 60), false, "a diagonal that is mostly vertical is still a scroll");
+  // A clear sideways move turns the dial; a twitch does not.
+  assert.equal(startsTurn(13, 0), true);
+  assert.equal(startsTurn(-26, 2), true);
+  assert.equal(startsTurn(5, 0), false);
+  // Lifting the finger where it landed is a tap.
+  assert.equal(isTap(0, 0), true);
+  assert.equal(isTap(4, -5), true);
+  assert.equal(isTap(0, 40), false);
+  // The dial must never switch touch scrolling off, and the rule lives on the HTML box.
+  const css = read("src", "home.css");
+  assert.doesNotMatch(css, /touch-action:\s*none/, "touch-action: none on the dial traps the page scroll on phones");
+  assert.match(css, /\.thermostat \{[^}]*touch-action: pan-y;/);
+  const dial = read("src", "components", "Thermostat.jsx");
+  assert.match(dial, /if \(touch\) return;/, "a touch does not change the temperature when it lands");
+  assert.match(dial, /onPointerCancel=\{onPointerCancel\}/);
+});
+
+test("airflow never pre-draws in one long burst", () => {
+  const src = read("src", "components", "Airflow.jsx");
+  assert.doesNotMatch(src, /for \(let i = 0; i < \(still \? \d+ : \d+\); i \+= 1\) step\(\);/, "the old 90-step warm-up froze slow phones on load");
+  assert.match(src, /window\.setTimeout\(locate, 600\)/, "the late re-measure only re-reads the thermostat position");
+  assert.match(src, /STILL_BATCH = 20/);
 });
 
 test("triage: every choice lands on a real page and a real issue", () => {

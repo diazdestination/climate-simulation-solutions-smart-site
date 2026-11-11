@@ -47,6 +47,16 @@ export const TARGET_MIN = 60;
 export const TARGET_MAX = 80;
 export const clampTarget = (value) => Math.min(TARGET_MAX, Math.max(TARGET_MIN, Math.round(value)));
 
+// Touch on the dial. A thumb that lands on the dial while someone scrolls the page must scroll
+// the page, not turn the dial, so a touch only becomes a turn once it has clearly moved sideways.
+// Up-and-down movement is left to the browser (the dial is `touch-action: pan-y`).
+export const TURN_SLOP_PX = 8;
+export const TAP_SLOP_PX = 10;
+/** Has a touch that moved (dx, dy) pixels since it landed become a deliberate turn of the dial? */
+export const startsTurn = (dx, dy) => Math.abs(dx) >= TURN_SLOP_PX && Math.abs(dx) > Math.abs(dy);
+/** Did a touch that ended (dx, dy) pixels from where it landed stay put, i.e. was it a tap? */
+export const isTap = (dx, dy) => Math.hypot(dx, dy) <= TAP_SLOP_PX;
+
 /** "heating" | "cooling" | "holding": what the system is doing to move the room to the set point. */
 export function modeFor(room, target) {
   const gap = target - room;

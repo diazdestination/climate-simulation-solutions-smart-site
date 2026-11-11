@@ -18,7 +18,13 @@
 .climate-hero__actions { display: flex; flex-wrap: wrap; gap: .85rem; margin-top: 2rem; }
 
 .climate-hero__dial { grid-area: dial; display: flex; flex-direction: column; align-items: center; text-align: center; }
-.thermostat { position: relative; width: min(400px, 100%); aspect-ratio: 1; filter: drop-shadow(0 0 46px color-mix(in srgb, var(--air) 26%, transparent)); transition: filter .6s ease; }
+/* touch-action is set here, on the HTML box, because browsers do not apply it reliably to shapes
+   inside an SVG. pan-y, never none: a thumb that lands on the dial must still scroll the page
+   up and down, while a sideways drag is left to the dial (see Thermostat.jsx). */
+.thermostat { position: relative; isolation: isolate; width: min(400px, 100%); aspect-ratio: 1; touch-action: pan-y; }
+/* The glow is a gradient behind the dial, not a filter: a filter is repainted every time the
+   reading changes, which is ten times a second while the room is moving. */
+.thermostat::before { content: ""; position: absolute; z-index: -1; inset: -14%; border-radius: 50%; background: radial-gradient(closest-side, color-mix(in srgb, var(--air) 30%, transparent) 62%, transparent 100%); pointer-events: none; }
 .thermostat-dial { display: block; width: 100%; height: 100%; overflow: visible; }
 .thermostat-face { fill: rgba(6, 19, 40, .88); stroke: rgba(255,255,255,.16); stroke-width: 1; }
 .thermostat-ticks line { stroke: rgba(255,255,255,.26); stroke-width: 1.5; stroke-linecap: round; }
@@ -27,10 +33,10 @@
 .thermostat-track, .thermostat-gap, .thermostat-hit { fill: none; stroke-linecap: round; }
 .thermostat-track { stroke: rgba(255,255,255,.13); stroke-width: 8; }
 .thermostat-gap { stroke: var(--air); stroke-width: 8; }
-.thermostat-hit { stroke: transparent; stroke-width: 46; pointer-events: stroke; cursor: grab; touch-action: none; outline: none; }
+.thermostat-hit { stroke: transparent; stroke-width: 46; pointer-events: stroke; cursor: grab; outline: none; }
 .thermostat-hit:active { cursor: grabbing; }
 .thermostat-hit:focus-visible { stroke: rgba(86,209,250,.28); }
-.thermostat-handle { fill: var(--white); stroke: var(--air); stroke-width: 5; pointer-events: none; filter: drop-shadow(0 3px 6px rgba(0,0,0,.45)); transition: stroke .4s ease; }
+.thermostat-handle { fill: var(--white); stroke: var(--air); stroke-width: 5; pointer-events: none; transition: stroke .4s ease; }
 .thermostat-readout { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .1rem; padding-bottom: 6%; pointer-events: none; }
 .thermostat-room { font: 800 clamp(4.2rem, 9vw, 6.2rem)/1 var(--display); font-stretch: 112%; letter-spacing: -.04em; font-variant-numeric: tabular-nums; }
 .thermostat-room sup { font-size: .42em; font-weight: 700; vertical-align: top; position: relative; top: .14em; margin-left: .04em; color: var(--air); transition: color .4s ease; }

@@ -1,6 +1,6 @@
 import { forwardRef, useRef } from "react";
 import { FaMinus, FaPlus } from "react-icons/fa6";
-import { TARGET_MAX, TARGET_MIN, clampTarget } from "../lib/season.js";
+import { TARGET_MAX, TARGET_MIN, clampTarget, isTap, startsTurn } from "../lib/season.js";
 
 // A round thermostat: a 270-degree scale from 60 to 80 with the gap at the bottom. The handle is
 // the set point; the filled arc is the distance the system still has to move the room.
@@ -27,7 +27,8 @@ const TICKS = Array.from({ length: TARGET_MAX - TARGET_MIN + 1 }, (_, i) => TARG
 const MODE_LABEL = { heating: "Heating to", cooling: "Cooling to", holding: "Holding at" };
 
 export const Thermostat = forwardRef(function Thermostat({ room, target, mode, onChange }, ref) {
-  const dragging = useRef(false);
+  // The gesture in progress: null, or { id, x, y, turning } for the pointer that is down.
+  const gesture = useRef(null);
 
   const valueAt = (event) => {
     const box = event.currentTarget.ownerSVGElement.getBoundingClientRect();
@@ -39,16 +40,34 @@ export const Thermostat = forwardRef(function Thermostat({ room, target, mode, o
     return clampTarget(TARGET_MIN + ((clamped - START) / SWEEP) * (TARGET_MAX - TARGET_MIN));
   };
 
+  // Mouse and pen: press anywhere on the ring and drag, as before.
+  // Touch: the ring sits in the middle of a phone screen, right where a thumb lands to scroll.
+  // So a touch does nothing when it lands. It turns the dial only after it has clearly moved
+  // sideways, and sets the temperature on a tap. A vertical swipe scrolls the page: the browser
+  // takes it (touch-action: pan-y in home.css) and sends pointercancel.
   const onPointerDown = (event) => {
-    dragging.current = true;
+    const touch = event.pointerType === "touch";
+    gesture.current = { id: event.pointerId, x: event.clientX, y: event.clientY, turning: !touch };
+    if (touch) return;
     event.currentTarget.setPointerCapture(event.pointerId);
     onChange(valueAt(event));
   };
   const onPointerMove = (event) => {
-    if (dragging.current) onChange(valueAt(event));
+    const g = gesture.current;
+    if (!g || g.id !== event.pointerId) return;
+    if (!g.turning && startsTurn(event.clientX - g.x, event.clientY - g.y)) {
+      g.turning = true;
+      event.currentTarget.setPointerCapture(event.pointerId);
+    }
+    if (g.turning) onChange(valueAt(event));
   };
-  const onPointerUp = () => {
-    dragging.current = false;
+  const onPointerUp = (event) => {
+    const g = gesture.current;
+    gesture.current = null;
+    if (g && g.id === event.pointerId && !g.turning && isTap(event.clientX - g.x, event.clientY - g.y)) onChange(valueAt(event));
+  };
+  const onPointerCancel = () => {
+    gesture.current = null;
   };
   const onKeyDown = (event) => {
     const steps = { ArrowUp: 1, ArrowRight: 1, ArrowDown: -1, ArrowLeft: -1, PageUp: 5, PageDown: -5 };
@@ -95,7 +114,7 @@ export const Thermostat = forwardRef(function Thermostat({ room, target, mode, o
           onPointerDown={onPointerDown}
           onPointerMove={onPointerMove}
           onPointerUp={onPointerUp}
-          onPointerCancel={onPointerUp}
+          onPointerCancel={onPointerCancel}
           onKeyDown={onKeyDown}
         />
         <circle className="thermostat-handle" cx={hx} cy={hy} r="13" aria-hidden="true" />

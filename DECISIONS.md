@@ -1,5 +1,24 @@
 # Decisions
 
+## 2026-11-11 — Homepage thermostat no longer traps scrolling on phones
+
+- **Report (Adam):** on a phone the page "seems to freeze on the down scroll" at the thermostat.
+- **Cause 1, touch.** The dial's ring had `touch-action: none` and changed the temperature the
+  moment a finger landed on it. On a phone the dial fills the middle of the first screen, so a
+  thumb that landed on the ring to scroll either moved nothing or turned the dial instead.
+- **Fix.** `touch-action: pan-y` on the dial's HTML box (`.thermostat`), never `none`, and never
+  on the SVG shapes, where browsers do not apply it reliably. A touch now does nothing when it
+  lands: a tap sets the temperature, a sideways drag turns the dial, and an up-or-down swipe
+  scrolls the page. Mouse, keyboard and the plus and minus buttons are unchanged.
+- **Cause 2, load.** The airflow canvas pre-drew 90 animation steps in one go on load and again
+  0.6 seconds later, blocking the page for up to about 0.1 s each time on a desktop and several
+  times that on a phone. It now draws one frame per frame and lets the trails build up; the
+  0.6-second pass only re-reads where the thermostat is. The dial's glow is a gradient instead
+  of a filter that was repainted ten times a second.
+- **Tested** in Chrome's iPhone emulation with real touch sequences (swipes starting on six
+  parts of the dial all scroll the page and leave the dial alone; tap and sideways drag still
+  work; no long main-thread tasks during load). Not tested on a physical iPhone from here.
+
 ## 2026-11-11 — Twelve communities are served, each with its own page (Adam, in Claude chat)
 
 - **Coverage is now stated, not hedged.** Adam confirmed CSS serves Dahlonega, Cumming,

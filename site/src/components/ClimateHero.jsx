@@ -77,7 +77,7 @@ export function ClimateHero() {
           <Thermostat ref={dialRef} room={room} target={target} mode={mode} onChange={setTarget} />
           <p className="climate-hero__outside">
             {outdoor ? <><strong>{outdoor.tempF}°</strong> outside in {LOCATION.city} right now</> : start.outside}
-            <span>Turn the dial. This room is a demonstration, not your thermostat.</span>
+            <span>Tap or turn the dial. This room is a demonstration, not your thermostat.</span>
           </p>
           <p className="climate-hero__follow" aria-live="polite">
             {followUp.text} <a href={followUp.href} data-acquisition-event="project_form_opened" data-surface={`hero-dial-${mode}`}>{followUp.cta}</a>
