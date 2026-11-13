@@ -1,4 +1,18 @@
-# Scroll-assembly corrected candidate — 2026-11-13 (after the rollback below)
+# Scroll-assembly corrected retry live — 2026-11-13
+
+Codex accepted Adam's corrected-retry publish instruction relayed by Claude, built exact
+c21b65c, and published version 00cde59b-827b-4c9c-85b6-773d84d4eaf5 at 100%, deployment
+5af0c426-f5d8-4832-8f9e-c9c8be05242c at 08:30:54 UTC. Confirmed rollback remains
+f7ec6109-c8dd-47d0-92c8-231db5d81286. All 82 Windows tests, 24 production discovery pages,
+226 production file hashes, exact live server and 18 bindings/runtime/settings/schedules/domains
+pass. Chrome 390x844 and 375x548 locally, at 0% candidate, and direct production show all 3 captions
+fully above docked bar, forward/reverse. Desktop/reduced-motion/lazy-load checks pass. Physical
+iPhone, reliable touch-injection proof and exact CSS-pixel dwell remain unverified. No lead/chat/
+search/provider write, main update or merge. Separate Claude standing ownership remains pending
+Adam confirmation; no authority file changed. See docs/RELEASE_SCROLL_ASSEMBLY_RETRY_2026-11-13.md
+and retry artifacts.
+
+# Scroll-assembly corrected candidate — 2026-11-13 (historical pre-retry entry)
 
 Claude fixed the phone caption fault that caused the rollback: source
 `c21b65c069bf6873e9b5ca00640d2a95d8b87eae` on `claude/css-scroll-assembly-20261113`. Not

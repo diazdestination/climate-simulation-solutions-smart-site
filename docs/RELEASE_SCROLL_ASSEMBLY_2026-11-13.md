@@ -1,5 +1,8 @@
 # Scroll assembly release attempt — rolled back
 
+Historical first attempt. The [corrected retry](RELEASE_SCROLL_ASSEMBLY_RETRY_2026-11-13.md)
+was subsequently published; its record supersedes the current-state statements below.
+
 The new frontend is **not live**. The original homepage is restored at 100% after a
 production phone-layout check failed. No frontend correction was included in this release task.
 
