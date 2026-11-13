@@ -1,4 +1,22 @@
-# Reviews-scroll candidate — 2026-11-13 (branch `claude/css-reviews-scroll-20261113`)
+# Reviews-scroll frontend live — 2026-11-13
+
+Codex accepted Adam's specific "Make it live" instruction relayed by Claude and
+reviewed branch head 441ed03 before building exact 57d756c. Version
+4e18ca97-8602-4d6d-b6b2-a82c702452f2 now serves 100%, deployment
+6fb02d72-44e6-486c-b58f-01af491956f5 at 09:58:30 UTC. Confirmed rollback is
+00cde59b-827b-4c9c-85b6-773d84d4eaf5. All 88 Windows tests, 24 production
+discovery pages and 226 candidate/production file hashes pass. Exact server,
+18 bindings, runtime/settings/schedules/domains retained. Native Chrome local,
+zero-traffic candidate and direct production at 390x844 and 375x548 verify the
+heading, complete lead review, all 45 words, Blake attribution, four subsequent
+reviews without overlap, and all three assembly captions above the docked bar,
+forward/reverse. Desktop, reduced motion, emulated swipe, thermostat and assistant
+disclosure checks pass. No assistant conversation/test lead or provider/search
+write. Main remains b5867bb; no merge. Physical iPhone/Safari remains open;
+standing Claude assignment remains deferred. See
+docs/RELEASE_REVIEWS_SCROLL_2026-11-13.md and release artifacts.
+
+# Reviews-scroll candidate — historical pre-release entry
 
 Built on `claude/css-scroll-assembly-20261113` at `4ed4b09` (the live frontend is its source
 `c21b65c`, version `00cde59b`). Not merged and not deployed: csshvac.com still shows the
