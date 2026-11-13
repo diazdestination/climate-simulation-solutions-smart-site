@@ -7,7 +7,7 @@ import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import path from "node:path";
 import { ensureBuilt, read, root } from "./helpers.mjs";
 import { routeFor } from "../src/routes.js";
-import { ASSEMBLY, ASSEMBLY_ALT, ASSEMBLY_NOTE, ASSEMBLY_STAGES, frameUrl, loadOrder, nearestLoaded, progressFor, stageAt } from "../src/content/system-assembly.js";
+import { ASSEMBLY, ASSEMBLY_ALT, ASSEMBLY_NOTE, ASSEMBLY_STAGES, LEAD, frameUrl, loadOrder, nearestLoaded, progressFor, stageAt } from "../src/content/system-assembly.js";
 
 const CLOUDFLARE_ASSET_LIMIT = 25 * 1024 * 1024;
 const escapeHtml = (text) => text.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#x27;");
@@ -55,7 +55,11 @@ test("scroll maths: progress, captions and the order frames load in", () => {
 
   assert.equal(ASSEMBLY_STAGES.length, 3);
   assert.equal(ASSEMBLY_STAGES[0].from, 0);
-  assert.deepEqual([0, 0.19, 0.2, 0.54, 0.55, 1].map(stageAt), [0, 0, 1, 1, 2, 2]);
+  assert.deepEqual([0, 0.35, 0.36, 0.57, 0.58, 1].map((p) => stageAt(p)), [0, 0, 1, 1, 2, 2]);
+  // Wide layout, 900 px screen: the first caption is still the marked one when the section pins,
+  // and stays marked for a visible stretch of scrolling after that.
+  assert.equal(stageAt(progressFor(0, 2340, 900)), 0);
+  assert.equal(stageAt(progressFor(-150, 2340, 900)), 0);
   for (const [a, b] of [[0, 1], [1, 2]]) assert.ok(ASSEMBLY_STAGES[a].from < ASSEMBLY_STAGES[b].from);
 
   const order = loadOrder(ASSEMBLY.frames);
@@ -71,6 +75,32 @@ test("scroll maths: progress, captions and the order frames load in", () => {
   assert.equal(nearestLoaded(loaded, 6), 9);
   loaded[6] = {};
   assert.equal(nearestLoaded(loaded, 6), 6);
+});
+
+test("one-column layout: every caption is current for a readable stretch after the section has pinned", () => {
+  // The first production check (2026-11-13) failed on a phone: with the wide layout's timing the
+  // first caption was only current while the section was still sliding in, behind the docked
+  // bar. In one column only the current caption is shown, so each must last while pinned.
+  const css = read("src", "home.css");
+  const tablet = css.slice(css.indexOf("@media (max-width: 980px)"), css.indexOf("@media (max-width: 560px)"));
+  const trackScreens = Number(tablet.match(/\.assembly--live \.assembly__track \{ height: (\d+)vh; height: (\d+)svh; \}/)?.[2]) / 100;
+  assert.ok(trackScreens >= 2.2, "the stacked track height was read from the stylesheet");
+  assert.match(read("src", "components", "SystemAssembly.jsx"), /window\.matchMedia\("\(max-width: 980px\)"\)/, "the script and the stylesheet agree on where one column starts");
+  for (const screen of [568, 664, 844, 1180]) {
+    const track = screen * trackScreens;
+    const pinnedScroll = track - screen;
+    const current = (scrolled) => stageAt(progressFor(-scrolled, track, screen, LEAD.stacked), true);
+    assert.equal(current(0), 0, `${screen}px: the first caption is current at the moment the section pins`);
+    const held = [0, 0, 0];
+    for (let scrolled = 0; scrolled <= pinnedScroll; scrolled += 1) held[current(scrolled)] += 1;
+    for (const [index, pixels] of held.entries()) {
+      assert.ok(pixels >= screen * 0.3, `${screen}px: caption ${index + 1} is current for ${pixels}px of pinned scroll, under 30% of a screen`);
+    }
+    assert.equal(progressFor(-pinnedScroll, track, screen, LEAD.stacked), 1, "and the clip has finished when the pin lets go");
+  }
+  for (const stage of ASSEMBLY_STAGES) assert.ok(stage.fromStacked >= stage.from, "stacked captions never change earlier than the wide ones");
+  assert.deepEqual([0, 0.42, 0.43, 0.71, 0.72, 1].map((p) => stageAt(p, true)), [0, 0, 1, 1, 2, 2]);
+  assert.ok(LEAD.stacked < LEAD.wide);
 });
 
 test("captions: plain statements, no offers or promises, and a link that goes somewhere real", () => {

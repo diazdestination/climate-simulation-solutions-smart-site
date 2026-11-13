@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { ASSEMBLY, ASSEMBLY_ALT, ASSEMBLY_NOTE, ASSEMBLY_STAGES, frameUrl, loadOrder, nearestLoaded, progressFor, stageAt } from "../content/system-assembly.js";
+import { ASSEMBLY, ASSEMBLY_ALT, ASSEMBLY_NOTE, ASSEMBLY_STAGES, LEAD, frameUrl, loadOrder, nearestLoaded, progressFor, stageAt } from "../content/system-assembly.js";
 
 // A heating and cooling unit that comes together as the visitor scrolls: the section pins to the
 // screen and the scroll position picks which frame of the clip is drawn.
@@ -36,6 +36,8 @@ export function SystemAssembly() {
     const ctx = canvas.getContext("2d");
     const slow = /(^|-)(2g|3g)$/.test(navigator.connection?.effectiveType ?? "");
     const set = slow || window.matchMedia("(max-width: 560px)").matches ? "phone" : "full";
+    // One column (captions stacked under the picture) at the same width the stylesheet uses.
+    const stacked = window.matchMedia("(max-width: 980px)");
     const count = ASSEMBLY.frames;
     const images = new Array(count).fill(null);
     const queue = loadOrder(count);
@@ -63,7 +65,7 @@ export function SystemAssembly() {
       raf = 0;
       const gap = target - shown;
       shown = Math.abs(gap) < 0.002 ? target : shown + gap * 0.22;
-      const next = stageAt(shown);
+      const next = stageAt(shown, stacked.matches);
       if (next !== currentStage) {
         currentStage = next;
         setStage(next);
@@ -97,7 +99,7 @@ export function SystemAssembly() {
 
     const measure = () => {
       const rect = track.getBoundingClientRect();
-      target = progressFor(rect.top, rect.height, window.innerHeight);
+      target = progressFor(rect.top, rect.height, window.innerHeight, stacked.matches ? LEAD.stacked : LEAD.wide);
       schedule();
     };
     const onScroll = () => {
