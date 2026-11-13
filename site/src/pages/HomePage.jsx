@@ -1,6 +1,7 @@
 import { HOME_FAQ as FAQ } from "../content/home-faqs.js";
 import { ClimateHero, SeasonNote } from "../components/ClimateHero.jsx";
 import { AreaMap } from "../components/AreaMap.jsx";
+import { SystemAssembly } from "../components/SystemAssembly.jsx";
 import { HoursLine, openAssistant } from "../components/Layout.jsx";
 import { MAP_TOWNS } from "../content/area-map.js";
 import { SERVICE_PAGES, areaPath, servicePath } from "../content/pages.js";
@@ -61,6 +62,8 @@ export function HomePage() {
           ))}
         </ul>
       </section>
+
+      <SystemAssembly />
 
       <section className="request-steps" aria-labelledby="steps-title">
         <h2 id="steps-title">Good service starts before anyone turns a wrench.</h2>

@@ -1,3 +1,16 @@
+# Scroll-assembly candidate — 2026-11-13 (branch `claude/css-scroll-assembly-20261113`)
+
+Built on `claude/css-service-areas-20261111` (the source of the live frontend). Not merged and
+not deployed: csshvac.com is unchanged. The homepage gains one section after the services
+index, where a clip Adam supplied plays as the visitor scrolls (see the 2026-11-13 entry in
+`DECISIONS.md`). Adam has not yet reviewed the built section, its wording or whether this clip
+should ship: the clip is not an accurate picture of a real unit and the entry says why.
+Verified locally in `site/`: 25 prerendered routes; `npm test` 80 passed, 1 skipped, 0 failed;
+release gate publishable with the labeled draft privacy policy; `python
+scripts/check-discovery.py --directory dist` 24 pages pass. `dist` grows from 55 files to 226
+(171 picture files, 5.7 MB). Viewed in Chrome at 390, 820 and 1440 px with no console errors
+or sideways scroll. Publishing steps: `docs/DEPLOY_BRIEF_SCROLL_ASSEMBLY_2026-11-13.md`.
+
 # Verified live release and follow-up — 2026-11-11
 
 The service-area pages, interface rebuild and thermostat scroll fix from `2f65717` are live.

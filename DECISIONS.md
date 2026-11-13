@@ -1,5 +1,59 @@
 # Decisions
 
+## 2026-11-13 — A second thing moves on the homepage: the system, assembled by scrolling (Adam, in Claude chat)
+
+- **Request.** Adam asked what format a video needs so it "plays as the user scrolls down",
+  whether that could be applied to csshvac.com, and then sent a six-second clip
+  (720 by 1280, 24 frames a second) of a heating and cooling unit coming together out of its
+  parts. He has not yet seen the built section, its placement or its wording.
+- **This changes a rule.** The 2026-11-10 design pass said "the hero is the only thing that
+  moves". The homepage now has one more moving thing, added at Adam's request. It moves only
+  while the visitor scrolls and never on its own. Nothing else on the page should start moving
+  because of this entry.
+- **Frames, not a video file.** Scrubbing a normal video with the scrollbar stutters, most of
+  all on iPhones and when scrolling back up, because a browser can only jump cheaply to a
+  keyframe. The clip is turned into 85 still frames (`site/scripts/make-scroll-frames.py`,
+  from `site/media/system-assembly.mp4`) and drawn to a canvas. Two sets: 720 px wide
+  (3.6 MB) and 480 px wide for phones and slow connections (2.0 MB). The largest single file
+  is 55 kB; Cloudflare's limit per file is 25 MiB.
+- **Where.** After the services index and on the same paper colour, so the light band reads
+  as one chapter: what CSS works on, then what is inside it. The hero and its thermostat are
+  untouched.
+- **How the clip sits on the page.** The clip's backdrop is an uneven light grey. The script
+  levels it to pure white and the page lays the frames over the paper with multiply, so only
+  the equipment and its floor shadow show. The cabinet doors swing in from outside the picture,
+  so the left and right edges fade out instead of ending in a hard line.
+- **It never holds the scroll.** No wheel or touch handling and no scroll snapping. The page
+  scrolls natively and the section only reads how far it has got (the thermostat's
+  2026-11-11 phone bug is the reason this is a test). The section pins for about a screen and
+  a half of scrolling on phones and a little more on desktop.
+- **It costs the top of the page nothing.** No frame is requested until the section is within
+  a screen and a half. The prerendered HTML is a still picture beside three captions, and it
+  stays a still for reduced motion, for data saver and without JavaScript.
+- **Phones.** Pinned, the picture takes the screen and the three captions share one place
+  under it. The pinned view ends above the docked Call and Book bar. No Call or Book button is
+  added, so the bar is still the one set of actions on the screen.
+- **Wording (written by Claude, not yet reviewed by Adam or the owner).** Heading: "A lot has
+  to work together before the air feels right." Three captions in general terms about central
+  air conditioners and heat pumps, the last linking to `/maintenance-plans/`. No price,
+  promise, response time or credential. The text lives in
+  `site/src/content/system-assembly.js`.
+- **Open: the clip is not a true picture of a unit.** The 2026-11-10 rule also said "every
+  graphic shows something true". In this clip the compressors, the fan and a small coil end up
+  outside the closed cabinet, the lettering on the fan and the compressor labels is not real
+  writing, and parts fade into existence. It is labelled on the page as "An illustration, not
+  a diagram of your equipment", the way the thermostat is labelled a demonstration. Someone
+  who works on these units will still see that it is not how one is built. Replacing the clip
+  with an accurate one is a re-run of the script and needs no code change. Adam decides
+  whether this clip ships.
+- **Source resolution.** The clip is 720 px wide, which is sharp on phones and slightly soft
+  on a large high-density desktop screen. A 1080 px wide source would fix that.
+- **Checked** in Chrome at 390 by 664, 820 by 1180 and 1440 by 900: no console errors, no
+  sideways scroll, no frame requests on load, the right frame set per width, each caption
+  taking over in turn, a mouse wheel carrying straight through to the bottom of the page, no
+  long main-thread tasks while scrubbing up and down, and the still version under reduced
+  motion. Not checked on a physical phone or in Safari from here.
+
 ## 2026-11-11 — Buttons, cards and forms rebuilt as one system (Adam, in Claude chat)
 
 - **Request.** Adam sent a phone screenshot of the homepage buttons and triage chips and asked
