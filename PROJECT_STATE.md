@@ -1,4 +1,17 @@
-# Scroll-assembly candidate — 2026-11-13 (branch `claude/css-scroll-assembly-20261113`)
+# Scroll-assembly release attempted and rolled back — 2026-11-13
+
+Codex accepted Adam's specific publish instruction relayed by Claude, reviewed the branch,
+built exact ac93195 and staged/published frontend version ed03920d. All81Windows tests,
+24production discovery pages and226production file hashes passed, but the390x844phone
+check found the first caption obscured by the docked Call/Book bar until the next caption
+took over. Rolled back at08:03:47UTC to f7ec6109-c8dd-47d0-92c8-231db5d81286 at100%,
+deployment5f58dc1b-692d-4ac7-b9c5-9bdfc02170df. All55prior files, readiness endpoints,
+24discovery pages, exact server and18bindings/settings/schedules/domains reverified.
+No main/merge/provider/search changes. Physical iPhone remains open. Fix and review phone
+caption timing/clearance before a newly authorized release. Ongoing Claude ownership remains
+pending Adam confirmation. See docs/RELEASE_SCROLL_ASSEMBLY_2026-11-13.md and local artifacts.
+
+# Scroll-assembly candidate — 2026-11-13 (historical pre-release entry)
 
 Built on `claude/css-service-areas-20261111` (the source of the live frontend). Not merged and
 not deployed: csshvac.com is unchanged. The homepage gains one section after the services
