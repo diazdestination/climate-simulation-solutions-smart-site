@@ -1,50 +1,19 @@
 import { HOME_FAQ as FAQ } from "../content/home-faqs.js";
 import { ClimateHero, SeasonNote } from "../components/ClimateHero.jsx";
 import { AreaMap } from "../components/AreaMap.jsx";
+import { ReviewsScroll } from "../components/ReviewsScroll.jsx";
 import { SystemAssembly } from "../components/SystemAssembly.jsx";
 import { HoursLine, openAssistant } from "../components/Layout.jsx";
 import { MAP_TOWNS } from "../content/area-map.js";
 import { SERVICE_PAGES, areaPath, servicePath } from "../content/pages.js";
-import { GOOGLE_PROFILE_URL, GOOGLE_WRITE_REVIEW_URL, REVIEWS } from "../content/reviews.js";
-import { LICENSE_NUMBER, LOCATION, PHONE_DISPLAY, PHONE_LINK } from "../lib/siteFacts.js";
-
-function Reviews() {
-  const lead = REVIEWS.find((r) => r.lead);
-  const rest = REVIEWS.filter((r) => !r.lead);
-  return (
-    <section className="reviews" aria-labelledby="reviews-title">
-      <div className="reviews__head">
-        <h2 id="reviews-title">What customers wrote on Google.</h2>
-        <ul className="reviews__facts">
-          {LICENSE_NUMBER && <li>{`License no. ${LICENSE_NUMBER}`}</li>}
-          <li>{`Based in ${LOCATION.city}, Georgia`}</li>
-        </ul>
-      </div>
-      <figure className="review review--lead">
-        <blockquote>{lead.text}</blockquote>
-        <figcaption>{`${lead.author}, ${lead.source} review`}</figcaption>
-      </figure>
-      <div className="reviews__list">
-        {rest.map((r) => (
-          <figure className="review" key={r.author}>
-            <blockquote>{r.text}</blockquote>
-            <figcaption>{`${r.author}, ${r.source} review`}</figcaption>
-          </figure>
-        ))}
-      </div>
-      <p className="reviews__more">
-        These are excerpts, quoted as written. <a href={GOOGLE_PROFILE_URL} rel="noopener">Read every review on Google</a> or <a href={GOOGLE_WRITE_REVIEW_URL} rel="noopener">write your own</a>.
-      </p>
-    </section>
-  );
-}
+import { PHONE_DISPLAY, PHONE_LINK } from "../lib/siteFacts.js";
 
 export function HomePage() {
   return (
     <>
       <ClimateHero />
       <SeasonNote />
-      <Reviews />
+      <ReviewsScroll />
 
       <section className="work" id="services" aria-labelledby="services-title">
         <div className="work__head">
