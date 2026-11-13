@@ -1,5 +1,26 @@
 # Decisions
 
+## 2026-11-13 — Claude leads this site (Adam, in Claude chat)
+
+- **Adam's words:** "I would really like for you to be able to do all of this and even push
+  your work to the live site when ever I want you to. I want you to take lead on this site
+  unless I ask otherwise."
+- **What that means here.** Claude is the default owner of this site's design, code, branches,
+  records and release briefs. Other agents work on it when Adam asks them to.
+- **What it does not change.** A release goes to csshvac.com only when Adam says so for that
+  release. `main` still changes only through a reviewed pull request. The live server module,
+  bindings, secrets, DNS, the AI assistant and anything that writes to GrowthOS keep their own
+  approvals. The rules on stated facts in `AGENTS.md` stand.
+- **Forge record, pending.** `C:\Forge\AI_COLLABORATION.md` says an exclusive assignment to
+  Claude is recorded by Codex in `AI_PUSH_AUTHORITY.json`, and that Claude must not write that
+  record itself. As of this entry the file lists no exclusive project. The request to Codex is
+  `C:\Forge\CODEX_REQUEST_CSS_CLAUDE_LEAD_2026-11-13.md`.
+- **Deploy access, not yet in place.** Releases so far were run by Codex on WILLOWFORGE with
+  the Cloudflare command-line tool under Adam's sign-in. Checked on 2026-11-13: that tool is
+  not signed in for Claude's shell on that machine, so Claude cannot publish yet. Claude does
+  not sign in, copy sign-in data or create tokens on its own. Until Adam sets up a route,
+  Claude prepares the release and the brief, and Codex or Adam runs the publish step.
+
 ## 2026-11-13 — A second thing moves on the homepage: the system, assembled by scrolling (Adam, in Claude chat)
 
 - **Request.** Adam asked what format a video needs so it "plays as the user scrolls down",
