@@ -1,3 +1,14 @@
+# Scroll-assembly corrected candidate — 2026-11-13 (after the rollback below)
+
+Claude fixed the phone caption fault that caused the rollback: source
+`c21b65c069bf6873e9b5ca00640d2a95d8b87eae` on `claude/css-scroll-assembly-20261113`. Not
+deployed: csshvac.com is on `f7ec6109`. Verified locally in `site/`: 25 prerendered routes;
+`npm test` 81 passed, 1 skipped, 0 failed; release gate publishable with the labeled draft
+privacy policy; discovery check passes. In Chrome at 375 by 548, 390 by 664, 390 by 844,
+820 by 1180 and 1440 by 900, each of the three captions is readable above the docked bar for
+250 px of scrolling or more while the section is held, with no console errors. The deploy
+brief is updated for this source. Not checked on a physical phone.
+
 # Scroll-assembly release attempted and rolled back — 2026-11-13
 
 Codex accepted Adam's specific publish instruction relayed by Claude, reviewed the branch,

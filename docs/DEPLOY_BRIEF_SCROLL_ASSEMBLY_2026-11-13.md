@@ -3,6 +3,13 @@
 For the Codex agent. Written by Claude on 2026-11-13 after Adam asked for a video that plays
 as the visitor scrolls and supplied the clip.
 
+**Second attempt.** The first attempt (source `ac93195`) was published and rolled back the
+same day: the production phone check found the first caption hidden behind the docked Call
+and Book bar until the second caption took over
+(`docs/RELEASE_SCROLL_ASSEMBLY_2026-11-13.md`). This brief now points at the corrected
+source. The correction changes three files under `site/` (caption timing in the one-column
+layout, and a test for it); the 171 picture files are unchanged.
+
 This brief asks for one thing: publish the new **frontend** from branch
 `claude/css-scroll-assembly-20261113` to the live Worker, the same way the November 11
 service-area release was published. The server module, bindings, secrets and domains stay
@@ -11,12 +18,14 @@ exactly as they are.
 **Two approvals are needed before step 5, both from Adam in your session. This file is
 neither.**
 
-1. That this clip ships. As of this brief he has not seen the built section. The clip is an
-   illustration that is not accurate to a real unit (parts stay outside the closed cabinet and
-   the lettering on the fan is not real writing); `DECISIONS.md`, 2026-11-13, has the detail.
-   If he wants a different clip first, stop: the frames are remade on this branch and this
-   brief gets a new commit.
-2. The usual go-ahead to deploy.
+1. That this clip ships. The clip is an illustration that is not accurate to a real unit
+   (parts stay outside the closed cabinet and the lettering on the fan is not real writing);
+   `DECISIONS.md`, 2026-11-13, has the detail. Adam was told this and answered, in the Claude
+   chat on 2026-11-13: "I'm just ready to check it out live first and then if I need it fixed
+   I'll ask you. I just want codex to publish it now".
+2. The usual go-ahead to deploy. The same sentence was accepted for the first attempt. Adam
+   has not written anything further since the rollback; whether it covers this corrected
+   retry is Codex's call under Forge's rules.
 
 ## What is being published
 
@@ -24,14 +33,14 @@ neither.**
 |---|---|
 | Repository | `diazdestination/climate-simulation-solutions-smart-site` |
 | Branch | `claude/css-scroll-assembly-20261113` (base `claude/css-service-areas-20261111`) |
-| Frontend source commit | `ac93195bd7f6d451058c724304975f48c9bfb842` |
+| Frontend source commit | `c21b65c069bf6873e9b5ca00640d2a95d8b87eae` |
 | Worker | `climate-simulation-solutions-site` (serves `csshvac.com` and `www.csshvac.com`) |
-| Live version before this release | `f7ec6109-c8dd-47d0-92c8-231db5d81286` (per `docs/RELEASE_SERVICE_AREAS_2026-11-11.md`; confirm, do not assume) |
+| Live version before this release | `f7ec6109-c8dd-47d0-92c8-231db5d81286` (restored by the rollback, per `docs/RELEASE_SCROLL_ASSEMBLY_2026-11-13.md`; confirm, do not assume) |
 | Server module that must stay | SHA-256 `15f4e6843a6d247ca0fa8036679ecb088f5383921ae3fdbd978314e3898ec5ef` |
 
 Later commits on the branch that only touch `docs/` (this brief included) do not change the
 built assets. If the branch head has moved past the commit above, list the changed paths
-(`git diff --stat ac93195..HEAD`) and stop if anything outside `docs/` or the root `*.md` files
+(`git diff --stat c21b65c..HEAD`) and stop if anything outside `docs/` or the root `*.md` files
 changed, unless Adam tells you to include it.
 
 What visitors will see change, on the homepage only:
@@ -85,7 +94,7 @@ Run in `site/`:
 
 ```
 git fetch origin claude/css-scroll-assembly-20261113
-git checkout --detach ac93195bd7f6d451058c724304975f48c9bfb842
+git checkout --detach c21b65c069bf6873e9b5ca00640d2a95d8b87eae
 npm ci
 $env:SITE_PUBLIC_ORIGIN = "https://csshvac.com"   # PowerShell; in cmd use: set SITE_PUBLIC_ORIGIN=https://csshvac.com
 npm run build
@@ -97,13 +106,15 @@ python scripts/check-discovery.py --directory dist
 Expected results:
 
 - Build: "Built 25 prerendered routes + /privacy/."
-- Tests: 81 tests, 0 fail. On Linux one test is skipped (80 pass); on Windows the last release
-  ran with none skipped. The five new tests are in `tests/scroll-assembly.test.mjs`.
+- Tests: 82 tests, 0 fail. On Linux one test is skipped (81 pass); on Windows the last release
+  ran with none skipped. The six tests for this section are in
+  `tests/scroll-assembly.test.mjs`; "one-column layout: every caption is current for a
+  readable stretch after the section has pinned" is the one added after the rollback.
 - Release gate: publishable with the labeled draft privacy policy (unchanged).
 - Discovery check: 24 pages pass (unchanged).
 
-On Linux this commit produced `assets/index-0L75rcDM.js`, `assets/index-BiLgr7UT.css` and
-`assets/VoiceDesk-BIWEhgxN.js`. Different names on Windows are not a failure on their own, but
+On Linux this commit produced `assets/index-DPOMZVtT.js`, `assets/index-BiLgr7UT.css` and
+`assets/VoiceDesk-BwP70pAE.js` (the stylesheet is unchanged from the first attempt). Different names on Windows are not a failure on their own, but
 note them in your report.
 
 ### 3. Check the build before it goes anywhere
@@ -150,9 +161,16 @@ Send 100% of traffic to the staged version. Record the new deployment ID and tim
   directly on the pale background). The caption with the dark bar beside it moves down the
   list as you go. The mouse wheel is never held: keep scrolling and the page reaches "Good
   service starts before anyone turns a wrench."
-- Homepage at phone width with touch (device emulation is fine): the picture fills the screen
-  above one caption, the caption changes twice, and the picture and caption end above the
-  Call and Book service bar, not under it. Swiping up and down moves the page at all times.
+- Homepage at phone width with touch (device emulation is fine; use 390 by 844, the size that
+  failed, and one short screen such as 375 by 548): once the picture has stopped rising and
+  is held on screen, the caption under it reads "The parts that move heat", fully above the
+  Call and Book service bar. Keep scrolling: it changes to "The lines between them" and then
+  "One cabinet outside", each one readable above the bar for a few swipes before the next.
+  Scrolling back up shows them in reverse. Swiping up and down moves the page at all times.
+  Measured locally in Chrome: each caption stays readable for 250 to 450 px of scrolling at
+  those two sizes.
+- Homepage at desktop width: the dark bar is beside "The parts that move heat" when the
+  section first holds still, then moves to the second and third captions.
 - On a real iPhone (ask Adam): the same swipe through the section. This is the one check that
   was not possible before release; it was tested in Chrome only.
 - In the browser's network panel, loading the homepage and not scrolling requests **no** file

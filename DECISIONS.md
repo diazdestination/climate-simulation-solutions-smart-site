@@ -69,6 +69,16 @@
   whether this clip ships.
 - **Source resolution.** The clip is 720 px wide, which is sharp on phones and slightly soft
   on a large high-density desktop screen. A 1080 px wide source would fix that.
+- **First release rolled back, and why.** Codex published source `ac93195` on 2026-11-13 and
+  rolled it back four minutes later (`docs/RELEASE_SCROLL_ASSEMBLY_2026-11-13.md`). On a
+  phone the first caption was current only while the section was still sliding into place,
+  where it sat behind the docked bar; by the time it could be read the second caption had
+  taken over. Claude's own check had recorded the second caption showing at the moment of
+  pinning and did not treat it as a fault. Fixed in `c21b65c`: the one-column layout has its
+  own caption timing (`fromStacked`) and a shorter lead, the wide layout keeps the first
+  caption marked past the moment of pinning, and a test fails if any caption gets less than
+  30% of a screen of pinned scrolling. Rule for future work on this section: check what a
+  visitor can read at each point of the scroll, not only that each state occurs.
 - **Checked** in Chrome at 390 by 664, 820 by 1180 and 1440 by 900: no console errors, no
   sideways scroll, no frame requests on load, the right frame set per width, each caption
   taking over in turn, a mouse wheel carrying straight through to the bottom of the page, no
