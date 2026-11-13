@@ -1,5 +1,59 @@
 # Decisions
 
+## 2026-11-13 — The reviews section tells itself by scrolling (Adam, in Claude chat)
+
+- **Request.** With the scroll-assembly section live, Adam sent a 12-second clip (1080 by
+  1920) of the reviews section as a motion graphic and asked: "Could we do the same with this
+  video to replace the Google review section?" The clip shows the heading, the license and
+  location line, the lead review appearing a word at a time, the other four reviews stacking
+  in as cards, then Call and Book buttons.
+- **Built as live text, not as frames cut from the clip (Claude's call as lead).** The clip is
+  a picture of text. As frames it would be about a hundred pictures to download, soft when
+  scaled, a narrow portrait strip on a desktop screen, and invisible to search engines and
+  screen readers, which is where five word-for-word Google reviews earn their keep. The same
+  sequence is done with the page's own text, moved by the scrollbar. Nothing extra is
+  downloaded. The clip is the storyboard. If Adam wants the clip itself instead, the frame
+  method from the assembly section applies as it is.
+- **What happens.** The section pins for about a screen and a half of scrolling. The heading
+  is shown as it arrives; it lifts away, the lead review's block appears with its words dim,
+  the words light up in order, then the author's name, then a short hold. The pin lets go and
+  the other four reviews rise into place one by one directly under it, followed by the links
+  to Google. Timing lives in `site/src/lib/reviewScroll.js`.
+- **Readable without the effect.** The prerendered HTML is the whole section as plain, visible
+  text with the lead review as one sentence. Every number the script writes defaults to
+  "fully shown" in the stylesheet, so nothing stays hidden if the script never runs. Reduced
+  motion keeps the plain version. A word that has not been reached is dim (20%), never
+  invisible. No wheel or touch handling and no timers.
+- **Left out from the clip, on purpose.**
+  - *Star ratings.* The clip puts five stars over the heading and over each review. The
+    2026-11-10 decision is that no rating figure is published, and nothing in this repository
+    records what rating each quoted review carried; a lookup of the Google listing from here
+    returned nothing. Five stars over the heading would also read as the business's overall
+    rating. Adam or the owner can confirm each quoted review is a five-star review, and then
+    stars beside each review (not over the heading) are a small change.
+  - *Call and Book buttons.* On phones the docked bar already has both, and one set of
+    actions per screen is the 2026-11-11 rule.
+  - *Tracked-capital labels* ("CLIMATE SIMULATION SOLUTIONS", "WHAT CUSTOMERS WROTE ON
+    GOOGLE"), which the 2026-11-10 design pass removed from the site.
+  - Two slips in the clip itself: the license line is drawn over the word "Google", and the
+    Call button covers the last review's author.
+- **Kept from the clip.** The dark field with one warm and one cool glow, "Google." in amber,
+  the amber rule beside the lead review, and the order of events.
+- **Unchanged.** The five reviews, word for word; their attribution; the links to the Google
+  profile and the write-a-review page; the license and location line; the section's place
+  between the hero and the services.
+- **Third moving thing on the homepage,** after the hero and the assembly section. Like the
+  assembly section it moves only with the scrollbar. Two pinned sections is the limit worth
+  holding to: each one makes the page longer to get through.
+- **Checked** in Chrome at 320 by 480, 375 by 548, 390 by 664, 390 by 844, 820 by 1180,
+  1440 by 900 and 1920 by 1080, stepping through the scroll 10 px at a time and recording
+  what could be read: the heading is readable when the section pins; the lead review is never
+  cut off by the screen or the docked bar; all 45 words light; the finished review and name
+  are held for 100 px or more; the hand-over from heading to review is 50 to 130 px; every
+  list row reaches full strength; the list never comes closer than 48 px to the lead review;
+  no console errors; no sideways scroll. Reduced motion shows the plain section. Not checked
+  on a physical phone or in Safari.
+
 ## 2026-11-13 — Claude leads this site (Adam, in Claude chat)
 
 - **Adam's words:** "I would really like for you to be able to do all of this and even push

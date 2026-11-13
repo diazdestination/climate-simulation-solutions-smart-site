@@ -1,3 +1,16 @@
+# Reviews-scroll candidate — 2026-11-13 (branch `claude/css-reviews-scroll-20261113`)
+
+Built on `claude/css-scroll-assembly-20261113` at `4ed4b09` (the live frontend is its source
+`c21b65c`, version `00cde59b`). Not merged and not deployed: csshvac.com still shows the
+static reviews section. Source `57d756c46f0b596ca18045f0e384a9f389dc6aa5` replaces that
+section with one that pins and reveals the lead review a word at a time as the visitor
+scrolls (2026-11-13 entry in `DECISIONS.md`); Adam asked for it from a clip and has not yet
+seen the built version. Verified locally in `site/`: 25 prerendered routes; `npm test` 87
+passed, 1 skipped, 0 failed; release gate publishable with the labeled draft privacy policy;
+24 discovery pages pass; `dist` still 226 files. Stepped through in Chrome at seven screen
+sizes from 320 by 480 to 1920 by 1080. Publishing steps:
+`docs/DEPLOY_BRIEF_REVIEWS_SCROLL_2026-11-13.md`.
+
 # Scroll-assembly corrected retry live — 2026-11-13
 
 Codex accepted Adam's corrected-retry publish instruction relayed by Claude, built exact
