@@ -3,7 +3,7 @@ import { FaBars, FaPhone, FaWrench, FaXmark } from "react-icons/fa6";
 import { MeasurementChoices } from "./MeasurementChoices.jsx";
 // The ElevenLabs SDK is large: load the assistant desk only when a visitor opens it.
 const VoiceDesk = lazy(() => import("./VoiceDesk.jsx").then((m) => ({ default: m.VoiceDesk })));
-import { BRAND_NAME, HOURS_CONFIRMED, HOURS_FALLBACK, HOURS_TEXT, LICENSE_NUMBER, LOCATION, PHONE_DISPLAY, PHONE_LINK, officeStatus } from "../lib/siteFacts.js";
+import { BRAND_NAME, BUSINESS_EMAIL, HOURS_CONFIRMED, HOURS_FALLBACK, HOURS_TEXT, LICENSE_NUMBER, LOCATION, PHONE_DISPLAY, PHONE_LINK, officeStatus } from "../lib/siteFacts.js";
 
 const LOGO = "/assets/css-logo-transparent.png";
 const NAV = [
@@ -92,6 +92,7 @@ export function Layout({ children, currentPath, initialAssistantOpen = false }) 
           {HOURS_CONFIRMED && <p>{HOURS_TEXT}</p>}
           {LICENSE_NUMBER && <p>{`License no. ${LICENSE_NUMBER}`}</p>}
           <a href={PHONE_LINK} data-surface="footer">{PHONE_DISPLAY}</a>
+          {BUSINESS_EMAIL && <a href={`mailto:${BUSINESS_EMAIL}`} data-surface="footer">{BUSINESS_EMAIL}</a>}
         </div>
         <div className="footer-links">
           <a href="/urgent/">Urgent help</a>

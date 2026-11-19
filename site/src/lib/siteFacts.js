@@ -3,6 +3,7 @@
 import pub from "./publicConfig.js";
 
 export const BRAND_NAME = pub.brandName;
+export const BUSINESS_EMAIL = pub.businessEmail;
 export const PHONE_DISPLAY = pub.phone.display;
 export const PHONE_E164 = pub.phone.e164;
 export const PHONE_LINK = `tel:${PHONE_E164}`;
