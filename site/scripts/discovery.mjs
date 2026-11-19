@@ -14,6 +14,7 @@ export function graphFor(route, config, homeFaq) {
     "@type": "HVACBusiness", "@id": businessId,
     name: config.brand.name.value, url: `${origin}/`,
     telephone: config.contact.mainPhone.value,
+    ...(config.contact.businessEmail?.value ? { email: config.contact.businessEmail.value } : {}),
     logo: `${origin}/assets/css-logo-transparent.png`,
     address: { "@type": "PostalAddress", addressLocality: config.site.location.city, addressRegion: config.site.location.state, addressCountry: "US" },
     areaServed: SERVED,
@@ -77,6 +78,7 @@ export function llmsText(routes, config) {
 
 - Website: ${origin}/
 - Business telephone: ${config.contact.mainPhone.display}
+- Business email: ${config.contact.businessEmail?.value ?? "Contact the office by phone"}
 - Office hours: ${config.hours.summary.display}
 - Online requests are not confirmed appointments. The office confirms scheduling directly.
 - Urgent calls outside office hours are emergency-hours requests; response depends on availability and location. No arrival time is guaranteed online.

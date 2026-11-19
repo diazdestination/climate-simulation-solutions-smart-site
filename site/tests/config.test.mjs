@@ -18,7 +18,6 @@ test("GrowthOS is connected by default on the hvac profile; email only in pre-Gr
   assert.equal(config.growthos.profile, "hvac");
   for (const code of config.growthos.serviceCodes) assert.ok(GROWTHOS_PROFILES.hvac.includes(code), code);
   assert.deepEqual(config.emailBridge, { enabled: true, preGrowthOS: true });
-  assert.doesNotMatch(JSON.stringify(config), /@(?!example\.)[a-z0-9-]+\.[a-z]{2,}/i, "no real email addresses in config");
   assert.equal(config.sms.compliantConsentApproved, false);
   assert.equal(config.growthos.requireOriginHeader, true);
 });
@@ -49,7 +48,9 @@ test("approved assistant is public text-only and limited to the three registry t
 
 test("no owner direct contacts or invented claims in config", () => {
   const text = JSON.stringify(config);
-  assert.doesNotMatch(text, /@(?!example)[a-z0-9-]+\.[a-z]/i, "no email addresses");
+  const emails = text.match(/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/g) ?? [];
+  assert.deepEqual([...new Set(emails)], ["info@csshvac.com"], "only the approved public business inbox; no staff or delivery-recipient addresses");
+  assert.ok(config.contact.businessEmail.approvedBy);
   const phones = text.match(/\+1\d{10}/g) ?? [];
   assert.deepEqual([...new Set(phones)], ["+17065020877"], "only the public business line");
   assert.equal(config.site.maintenancePlans.pricing, null, "plan pricing not approved");

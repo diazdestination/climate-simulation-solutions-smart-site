@@ -21,6 +21,7 @@ export function toPublicConfig(cfg) {
   const plans = cfg.site.maintenancePlans;
   return {
     brandName: cfg.brand.name.value,
+    businessEmail: publicFactText(cfg.contact.businessEmail),
     phone: { e164: cfg.contact.mainPhone.value, display: cfg.contact.mainPhone.display },
     hours: { confirmed: hoursConfirmed, text: publicFactText(cfg.hours.summary), schedule: hoursConfirmed ? cfg.site.hoursSchedule ?? null : null },
     serviceArea: publicFactText(cfg.serviceArea.summary),

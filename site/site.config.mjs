@@ -26,8 +26,10 @@ export default {
   // 2026-11-10 (CSS owner via Adam): publish (706) 502-0877 on the site until the owner says
   // otherwise. It replaces (706) 809-5076, the line shown on the old csshvacga.com site and the
   // v8 demo. Whether the old line stays on Google/Facebook listings is an open owner question.
-  // No public business email is published; owners' direct contacts are NOT published.
+  // Adam confirmed the primary public business inbox with both CSS owners present, Nov 19.
+  // Individual staff account addresses are not public contact details.
   contact: {
+    businessEmail: { value: "info@csshvac.com", approvedBy: "CSS owners via Adam, onboarding November 19", approvedOn: "2026-11-19" },
     mainPhone: { value: "+17065020877", display: "(706) 502-0877", ...OWNER_NOV10 },
     // Same line: the owner named no separate emergency or on-call number.
     emergencyPhone: { value: "+17065020877", display: "(706) 502-0877", ...OWNER_NOV10 },
